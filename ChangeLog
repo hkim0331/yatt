@@ -1,0 +1,141 @@
+2005-05-19  Hiroshi Kimura  <hkim@nimbus.melt.kyutech.ac.jp>
+
+	* yatt.rb (Trainer::insert): ドキュメントの選び方をちょっと改良。
+
+2004-05-14  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+
+	* rename yatt2d_probe.rb as yatt2probe.rb
+
+2004-05-10  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+
+	* yatt2.rb (menu_new): bug fix. 
+
+2004-05-08  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+
+	* yatt2-branch joined. 
+	osx での動作を確認。
+	--myid myid オプション
+	認証を authentication(), authenticated に分離
+	ランキングボードにランクインの日付を表示
+	過去のソースを清算。
+	drb-2.0.4 の採用。
+	
+2004-05-03  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+
+	* yatt2-branch start.
+
+2003-10-08  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+
+	* yatt_score_server.rb (STUDENTS): --db dbfile オプション。
+	初期値 STUDENTS を上書きする。
+	(db): インタラプト例外を捕獲し、データをダンプする。
+
+	* Makefile: s/yatt/yatt.rb/g
+	yatt.rb を学期ごとに yatt でラップして使おう。
+
+2003-02-21  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* yatt.rb: drb を用いてスコアサーバを全面的に書き直し。これにてバー
+	ジョンは 0.8 に。
+
+2002-10-21  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* デバッグ出力を整理。
+	* ttserv, ttbind を yatt_logger, yatt_snort にリネーム。
+	* メソッド reset を clear にリネーム。
+
+2002-10-10  Hiroshi KIMURA  <hkim@nimbus>
+
+	* ttserv: ラッパーなしでも認証するように。つまり、認証を甘くしたわ
+	けだ。
+
+	* yatt.rb: (happy birth day! aoi-chan) 環境別設定を整理。Windows
+	ではまともに動かないだろう。パスのセパレータ等を見直す必要あり。
+		
+2002-07-05  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* yatt.rb (is_alive?): ttserv との接続にタイムアウトを設けた。
+	これにより、ttserv と通信できないときに、join_compe や reload を実
+	行して yatt が停止してしまうバグを回避。
+	ソケット関数を一本化。
+	join_compe, sumit メソッドを Scoreboard クラスに移動。
+	
+2002-06-12  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* yatt.rb :情報センターでも compe に参加できるようにする。
+	バグ: runnable_before で立ち上がった後、時間が来ても run できる。
+
+2002-06-11  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* yatt.rb (YATT_VERSION): windows でも動くようになった。
+	speed meterの追加。
+
+2002-06-08  Hiroshi KIMURA  <hkim@nimbus>
+
+	* yatt.rb (key_press): 書き直し。これによって、オーバーランした入
+	力を次の面に繰り越さなくなった。yatt.rb が落ちることもなくなった。
+	また、コードもきっと見やすくなったと思うぞ。
+
+	* BUG : キー入力のオーバーランが多いと yatt.rb が落ちる。これは
+	Loose モードで発生しやすい(上の作業で fix)。
+
+	* yatt.rb : bonus(complete, perfect)。メニューのプログラムを変更。
+	ブロック内部から外部インスタンス変数を参照しそこなう。(ブロック定
+	義時の環境をコピーしている?) あとでもう一度メニューに手を入れる。
+	チェックボックス風に。
+	(Logger#score) 計算式を新規に。
+
+	* ttbind : functions get/reset/dump/load
+
+	* ttserv : load 
+
+2002-06-07  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* yatt.rb (MyText.sticky): stickyモード --タイプミスの場所をしつこ
+	く表示する。 
+	create class MyPlot
+	Trainer.submit 毎回 auth
+
+2002-06-06  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+
+	* yatt.rb (key_press): 	@@epilog を使い、ダイアログをひとつしか表
+	示しないように。
+
+	* yatt.rb (join_compe): md5sum によるソースファイル認証。
+
+2002-06-01 Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
+	過去ログ
+	* ログ(half done, 06.01)
+	統計情報をファイルに記録する。ファイルを読んでグラフ表示する。成績
+	と頻度(正解+誤タイプ)。キーごとに成績を表示する。
+
+	* total/todays がまだ未実装。
+
+	* タイムアウト
+	途中終了したときとそうでないときとの成績に差をつける。
+
+	* startup ファイルの準備
+
+	* ボードの表示が整列してない(06.01)。
+
+	* ダイアログ、スレッドまわりの動作が不安定(06.01)
+	スレッドやめた。やめて TkAfter に変更したら安定した感じ。
+
+	* リアルタイム成績表示プログラム(05.30)
+	オンラインでスコアを集計し、表示するプログラムとの連動。
+	woody ruby-1.6.7-3 の動作がおかしい。
+
+	* タイマーの処理(half done 05.28) 
+	現バージョンは有無を言わさず exit する。これをきちんと後始末をする
+	ように変える。 
+
+	* 細かいプログラムの流れ(05.28)
+	現バージョンは、ウィンドウがオープンすると即、タイマーがカウントを
+	始める。これをさいしょの keypress イベントからに変える。 
+
+	* リトライ(05.28)
+
+	* パラメータ処理(05.25)
+	コマンドラインと、初期化ファイルの扱いを一元化する。
+	
+

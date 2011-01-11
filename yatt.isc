@@ -1,0 +1,8 @@
+#!/bin/sh
+RUBY=/edu/bin/ruby
+YATT=/edu/bin/yatt.rb
+SERV=edu.melt.kyutech.ac.jp
+LIB=/edu/lib/yatt
+
+${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
+

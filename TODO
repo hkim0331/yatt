@@ -1,0 +1,20 @@
+* 2009-04-13
+** courier 14pt を isc のデフォルトに。
+** make install せずに使えるように。yatt.doc, yatt.gif の場所、
+
+* admin/config
+contest
+min     3
+max     10
+thres   100
+
+の設定をすると、最低３回、最高１０回、100点を超えた時点で終了するように。
+
+* yatt_server の BASE 
+
+* doc はランダムに選ばれているか？
+
+* font の扱い---自分用としてフォントセットをセーブできるように。
+
+* New すると減点する。
+
