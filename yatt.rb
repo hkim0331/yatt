@@ -39,7 +39,11 @@ MAXBUF=1024
 YATTD="localhost"
 PORT=23002
 LIB="/Users/hkim/Library/yatt"
-TIMEOUT=20
+if DEBUG
+  TIMEOUT=20
+else
+  TIMEOUT=60
+end
 
 #############
 # fixme

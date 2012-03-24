@@ -7,36 +7,36 @@ YATTD_VERSION="0.3.5"
 DATE="2005.06.08"
 
 REQ_RUBY="1.8.2"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0 
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
 require 'drb' or raise "score server depends on drb"
 
 def usage
   print <<EOF
-USAGE 
+USAGE
   yatt_server [OPTION]...
 
 OPTIONS(default value)
 
   --server name, --hostname name, --fqdn name
-  	use name as yatt score server hostname(localhost).
+        use name as yatt score server hostname(localhost).
 
   --port num
-	use num/tcp as yatt score server port(23002).
+        use num/tcp as yatt score server port(23002).
 
   --authdir dir
-  	use dir to authenticate yatt users.
-	the dir must contain files whose name is equal
-	to user id. only permit uses can join contest.
-	authdir's default value is yatt_server's working dir.
+        use dir to authenticate yatt users.
+        the dir must contain files whose name is equal
+        to user id. only permit uses can join contest.
+        authdir's default value is yatt_server's working dir.
 
   --noauth
-  	do not authenticate. 
+        do not authenticate.
         in other words, return true for all queries.
 
   --log file
-  	log yatt/yatt_server communication into file.
-    	file must be gives as an absolute path(./%y%m%d.log).
+        log yatt/yatt_server communication into file.
+        file must be gives as an absolute path(./%y%m%d.log).
 
   --debug
         debug mode.
@@ -90,7 +90,7 @@ class ScoreServer
       @auth=false
       return
     end
-    
+
     raise "authdir #{db} does not exist." unless FileTest.exists?(db)
 
     Dir.foreach(db) do |uid|
@@ -124,7 +124,7 @@ class ScoreServer
       @score[name]=[score, time]
     end
   end
-  
+
   def del(name)
     @score.delete(name)
   end
@@ -145,7 +145,7 @@ class ScoreServer
       @score[who]=[score.to_i, time]
     end
   end
-  
+
   def rank(name)
     pt=@score[name][0]
     length=0
