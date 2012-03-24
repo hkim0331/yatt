@@ -1,6 +1,8 @@
+* ruby 1.9 で動くように。
+
 * osx で /opt/local/bin/ruby を使うとエラー、
   /opt/local/lib/ruby/1.8/drb/drb.rb:852:in `initialize': getaddrinfo: nodename nor servname provided, or not known (SocketError)
-  
+
   /usr/bin/ruby でもエラー、
   yatt.rb:192:in `initialize': /usr/local/lib/yatt/yatt.doc does not exist  (RuntimeError)
 

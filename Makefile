@@ -4,11 +4,11 @@ BIN=${PREFIX}/bin
 LIB=${PREFIX}/lib/yatt
 
 #osx
-#PREFIX=${HOME}
-#BIN=${PREFIX}/bin
-#LIB=${PREFIX}/Library/yatt
+PREFIX=${HOME}
+BIN=${PREFIX}/bin
+LIB=${PREFIX}/Library/yatt
 
-isc: yatt.isc yatt.rb README lib/yatt.doc
+all: yatt.osx yatt.rb README lib/yatt.doc
 	if [ ! -d ${LIB} ]; then \
 		mkdir ${LIB}; \
 	fi
@@ -16,7 +16,7 @@ isc: yatt.isc yatt.rb README lib/yatt.doc
 	cp lib/yatt.doc ${LIB}/yatt.doc
 	cp lib/yatt.gif ${LIB}
 	install -m 0755 yatt.rb ${BIN}
-	install -m 0755 yatt.isc ${BIN}/yatt
+	install -m 0755 yatt.osx ${BIN}/yatt
 
 server: yatt_server.rb yatt_server
 	install -m 0755 yatt_server.rb /usr/local/bin
