@@ -8,8 +8,7 @@
 # 2012-03-24, update for ruby1.9.
 
 $MYDEBUG=false
-
-DEBUG=false
+DEBUG=true
 def debug(s)
   puts s if DEBUG
 end
@@ -385,35 +384,22 @@ class Trainer
   # does not work in ruby19.
   def key_press(key)
     return if @epilog
-
-#    key &= 0x00ff
-#    return if (key>128) # shift, control or alt. do nothing
-#    debug "raw key:#{key}"
-    return if key==0
-
+    key &= 0x00ff
+    return if (key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
-      #      return if key==0x0d # debug, ignore uninvited return-key
       @wait_for_first_key=false
       @logger.start
     end
-
     @num_chars+=1
-
     if (@time_remains<0) or (@line>=@lines) # session ends
       @logger.finish    # stop KeyPress event ASAP
       epilog
       return
     end
-
-    # return key?
-    c=key.chr unless key==65293
-#    debug "target:#{@text[@line][@char].length}"
-#    p @text[@line][@char]
-#    debug "c:#{c}"
-
+    c=key.chr
     case target=@text[@line][@char]
     when "\n"
-      if (key==65293) #match
+      if (key==0x0d) #match
         @logger.add_good(target)
         @textarea.unlight(@line,@char)
         @line+=1
