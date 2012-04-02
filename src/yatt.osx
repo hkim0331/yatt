@@ -1,4 +1,7 @@
 #!/usr/bin/env dash
+#-*- mode: Makefile -*-
+# VERSION: 0.11
+
 RUBY=/usr/local/bin/ruby
 YATT=/Users/hkim/bin/yatt.rb
 LIB=/Users/hkim/Library/yatt

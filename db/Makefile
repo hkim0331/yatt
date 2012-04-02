@@ -1,3 +1,5 @@
+# VERSION: 0.11
+
 DB=yatt.db
 
 create:
