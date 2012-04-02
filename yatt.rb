@@ -1,10 +1,17 @@
-#!/opt/local/bin/ruby
+#!/usr/bin/env ruby
+#-*- coding: utf-8 -*-
+#
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002, 2003, 2004, 2005 Hiroshi Kimura
 # 2009-04-13, config changed.
+# 2012-03-24, update for ruby1.9.
 
 $MYDEBUG=false
+DEBUG=true
+def debug(s)
+  puts s if DEBUG
+end
 
 require 'tk'
 
@@ -16,27 +23,26 @@ rescue
   $drb=false
 end
 
-YATT_VERSION="0.9.1"
-DATE="2009-05-14"
+YATT_VERSION="0.10"
+DATE="2012-03-24"
 
-REQ_RUBY="1.8.2"
+REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
 GOOD="green"
 BAD="red"
-
 ADMIN="yatt"
-ADMIN_DIR="/home/hkim"
-
+ADMIN_DIR="/Users/hkim"
 RANKER=30
 MAXBUF=1024
-
 YATTD="localhost"
 PORT=23002
-
-LIB="/usr/local/lib/yatt"
-
-TIMEOUT=10
+LIB="/Users/hkim/Library/yatt"
+if DEBUG
+  TIMEOUT=20
+else
+  TIMEOUT=60
+end
 
 #############
 # fixme
@@ -56,10 +62,10 @@ class Trainer
     message="Yet Another Typing Trainer\n"+
       "(version "+YATT_VERSION+", "+DATE+")\n"+
       "programmed by\n Hiroshi.Kimura@melt.kyutech.ac.jp\n"+
-      "Copyright (C) 2002-2009.\n"
+      "Copyright (C) 2002-2012.\n"
     TkDialog.new(:title=>'yatt',
-		 :message=>message,
-		 :buttons=>['continue'])
+                 :message=>message,
+                 :buttons=>['continue'])
   end
 
   def readme
@@ -71,13 +77,13 @@ class Trainer
       frame1.pack
       text=TkText.new(frame1)
       text.configure(:width=>30,
-		     :height=>20)
+                     :height=>20)
       text.pack(:side=>'right')
       scr=TkScrollbar.new(frame1)
       scr.pack(:side=>'left',:fill=>'y')
       text.yscrollbar(scr)
       File.foreach(README) do |line|
-	text.insert('end',line)
+        text.insert('end',line)
       end
       text.configure(:state=>'disabled')
     end
@@ -113,9 +119,9 @@ class Trainer
     base=TkFrame.new(root, :relief=>'groove', :borderwidth=>2)
     base.pack
     @textarea=MyText.new(base,
-			 :background=>'white',
-			 :width=>@width,
-			 :height=>@lines+1)
+      :background=>'white',
+      :width=>@width,
+      :height=>@lines+1)
     @font="Courier"
     @size="14"
     my_set_font()
@@ -127,11 +133,11 @@ class Trainer
     @speed_meter.pack(:side=>'left')
 
     @scale=TkScale.new(meter_frame,
-		       :orient=>'horizontal',
-		       :length=>600,
-		       :from=>0,
-		       :to=>@timeout,
-		       :tickinterval=>@timeout/2)
+      :orient=>'horizontal',
+      :length=>600,
+      :from=>0,
+      :to=>@timeout,
+      :tickinterval=>@timeout/2)
     @scale.pack(:fill=>'x')
 
     graph_frame=TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
@@ -156,52 +162,52 @@ class Trainer
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu=[
       [['File',0],
-	['New', proc{menu_new},0],
-	#	['Pref'],
-	['Quit',proc{menu_quit},0]],
+        ['New', proc{menu_new},0],
+        #       ['Pref'],
+        ['Quit',proc{menu_quit},0]],
       [['Misc',0],
-	['Contest',proc{menu_toggle_contest},0],
-	['reLoad', proc{menu_reload},2],
-	['My ranking', proc{menu_my_rank},0],
-	['Remove me',proc{menu_remove_me},0],
-	['show All participant',proc{menu_show_all},5],
-	'---',
-	['Sticky',proc{menu_sticky},0],
-	['Loose',proc{menu_loose},0],
-	['Default',proc{menu_default},0],
-	'---',
-	['Percentile graph', proc{menu_percentile},0],
-	'---',
-	['Speed Meter',proc{menu_speed_meter},0],
-	['Today\'s score', proc{menu_todays_score},0],
-	['total Score',proc{menu_total_score},6]],
+        ['Contest',proc{menu_toggle_contest},0],
+        ['reLoad', proc{menu_reload},2],
+        ['My ranking', proc{menu_my_rank},0],
+        ['Remove me',proc{menu_remove_me},0],
+        ['show All participant',proc{menu_show_all},5],
+        '---',
+        ['Sticky',proc{menu_sticky},0],
+        ['Loose',proc{menu_loose},0],
+        ['Default',proc{menu_default},0],
+        '---',
+        ['Percentile graph', proc{menu_percentile},0],
+        '---',
+        ['Speed Meter',proc{menu_speed_meter},0],
+        ['Today\'s score', proc{menu_todays_score},0],
+        ['total Score',proc{menu_total_score},6]],
       [['Font',0],
-	['courier', proc{menu_setfont('Courier')}],
-	['fixed', proc{menu_setfont('Fixed')}],
-	['helvetica', proc{menu_setfont('Helvetica')}],
-	['mincho', proc{menu_setfont('Mincho')}],
-	['sazanami', proc{menu_setfont('Sazanami')}],
-	['times', proc{menu_setfont('Times')}],
-	'---',
-	['10', proc{menu_setsize(10)}],
-	['12', proc{menu_setsize(12)}],
-	['14', proc{menu_setsize(14)}],
-	['18', proc{menu_setsize(18)}],
-	['24', proc{menu_setsize(24)}],
-	['34', proc{menu_setsize(34)}],
+        ['courier', proc{menu_setfont('Courier')}],
+        ['fixed', proc{menu_setfont('Fixed')}],
+        ['helvetica', proc{menu_setfont('Helvetica')}],
+        ['mincho', proc{menu_setfont('Mincho')}],
+        ['sazanami', proc{menu_setfont('Sazanami')}],
+        ['times', proc{menu_setfont('Times')}],
+        '---',
+        ['10', proc{menu_setsize(10)}],
+        ['12', proc{menu_setsize(12)}],
+        ['14', proc{menu_setsize(14)}],
+        ['18', proc{menu_setsize(18)}],
+        ['24', proc{menu_setsize(24)}],
+        ['34', proc{menu_setsize(34)}],
         '---',
         ['save font']],
       [['Help',0],
-	['readme', proc{readme},0],
-	['about...',proc{about},0],
-	'---',
-	['parameters', proc{show_params},0],
-	['debug',proc{menu_debug}]]]
+        ['readme', proc{readme},0],
+        ['about...',proc{about},0],
+        '---',
+        ['parameters', proc{show_params},0],
+        ['debug',proc{menu_debug}]]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
   def show_params
-    message = 
+    message =
       "ruby: #{RUBY_VERSION}\n"+
       "version: #{YATT_VERSION}\n"+
       "date: #{DATE}\n"+
@@ -210,8 +216,8 @@ class Trainer
       "server: #{@server}\n"+
       "port: #{@port}\n"
     TkDialog.new(:title=>'yatt params',
-		 :message=>message,
-		 :buttons=>['continue'])
+                 :message=>message,
+                 :buttons=>['continue'])
   end
 
   def menu_new
@@ -243,8 +249,8 @@ class Trainer
       @logger.clear_highscore
     else
       TkDialog.new(:title=>'yatt server',
-		   :message=>"FAIL:\n#{@myid} does not belong to this class.",
-		   :buttons=>'continue')
+                   :message=>"FAIL:\n#{@myid} does not belong to this class.",
+                   :buttons=>'continue')
     end
   end
 
@@ -333,21 +339,21 @@ class Trainer
       fp.gets
       start-=1
     end
-    
+
     @text=[]
     while (num_lines>0)
       line=fp.gets
       next if line=~/^\s*$/
       line=line.gsub(/(  \s+)|(\t+)/," ")
       while line.length>@width
-	line=line.sub(/\w+\W*$/,"")
+        line=line.sub(/\w+\W*$/,"")
       end
       @text.push(line.strip+"\n")
       num_lines-=1
     end
     fp.close
 
-    @textarea.insert(@text.to_s)
+    @textarea.insert(@text.join)
     @textarea.highlight("good",@line,@char)
     @scale.set(@timeout)
     @logger=Logger.new
@@ -355,16 +361,16 @@ class Trainer
     tick=1000
     interval=tick/1000 # interval==1
     @timer=TkAfter.new(tick, #msec
-		       -1,    #forever
- 		       proc{
- 			 if (@time_remains<0 or self.finished?)
- 			   @timer.cancel
- 			 elsif (! @wait_for_first_key)
- 			   @scale.set(@time_remains-=interval)
- 			   @speed_meter.plot(@num_chars) if @speed_meter_status
- 			   @num_chars=0
- 			 end
-		       }).start
+      -1,    #forever
+      proc{
+        if (@time_remains<0 or self.finished?)
+          @timer.cancel
+        elsif (! @wait_for_first_key)
+          @scale.set(@time_remains-=interval)
+          @speed_meter.plot(@num_chars) if @speed_meter_status
+          @num_chars=0
+        end
+      }).start
   end
 
   def time_for_train?(now,crit)
@@ -375,28 +381,24 @@ class Trainer
 
   # core of yatt.rb
   # rewrite 2002.06.08
+  # does not work in ruby19.
   def key_press(key)
     return if @epilog
-
     key &= 0x00ff
     return if (key>128) # shift, control or alt. do nothing
-
     if @wait_for_first_key
-      #      return if key==0x0d # debug, ignore uninvited return-key
       @wait_for_first_key=false
       @logger.start
     end
-
     @num_chars+=1
-
     if (@time_remains<0) or (@line>=@lines) # session ends
-      @logger.finish	# stop KeyPress event ASAP
+      @logger.finish    # stop KeyPress event ASAP
       epilog
       return
     end
-
-    case target=@text[@line][@char] 
-    when 10 # 10 is return-key
+    c=key.chr
+    case target=@text[@line][@char]
+    when "\n"
       if (key==0x0d) #match
         @logger.add_good(target)
         @textarea.unlight(@line,@char)
@@ -413,12 +415,12 @@ class Trainer
         @logger.add_ng(target,key)
         @textarea.highlight("bad",@line,@char)
         if @textarea.value_loose
-          @line += 1 
+          @line += 1
           @char=0
           @textarea.highlight("good",@line,@char)
         end
       end# when "\n"
-    when key	# match
+    when c    # match
       @logger.add_good(target)
       @textarea.unlight(@line,@char)
       @char+=1
@@ -427,7 +429,7 @@ class Trainer
       @logger.add_ng(target,key)
       @textarea.highlight("bad",@line,@char)
       if @textarea.value_loose
-        @char += 1 
+        @char += 1
         @textarea.highlight("good",@line,@char)
       end
     end
@@ -476,13 +478,13 @@ class Trainer
     if score > @logger.highscore
       @logger.set_highscore(score)
       if (@contest and @scoreboard.authenticated)
-	@scoreboard.submit(@myid,score)
+        @scoreboard.submit(@myid,score)
       end
     end
     @scoreboard.update if @contest
     ret=TkDialog.new(:title=>'yet another type trainer',
-		     :message=>msg,
-		     :buttons=>'continue').value
+                     :message=>msg,
+                     :buttons=>'continue').value
     sleep(1)
     insert(@textfile, @lines)
     @epilog=false
@@ -639,8 +641,8 @@ class Logger
     end
     s
   end
-  
-  def accumulate 
+
+  def accumulate
     @good.each do |key,value|
       @@sum_good[key]+=value
     end
@@ -680,10 +682,10 @@ class MyStatus <TkCanvas
   C_HEIGHT=20
 
   def initialize(parent,splash)
-    @graph=TkCanvas.new(parent, 
-			:width=>WIDTH,
-			:height=>HEIGHT,
-			:background=>'white')
+    @graph=TkCanvas.new(parent,
+                        :width=>WIDTH,
+                        :height=>HEIGHT,
+                        :background=>'white')
     if FileTest.exists?(splash)
       img=TkPhotoImage.new(:file=>splash)
       TkcImage.new(@graph,WIDTH/2,130,:image=>img)
@@ -706,7 +708,7 @@ class MyStatus <TkCanvas
     dx=(WIDTH-2*C_WIDTH).to_f/(keys.length-1) # -1 for ' '
     max=0
     keys.each do |key|
-      next if key.chr==' ' 	# do not display ' '
+      next if key.chr==' '      # do not display ' '
       n=good[key]+bad[key]
       max=n if n>max
     end
@@ -716,12 +718,12 @@ class MyStatus <TkCanvas
     half_x=dx/2
     base_y=HEIGHT-C_HEIGHT/2
     while (key=keys.shift)
-      next if key.chr==' ' 	# do not display ' '
+      next if key.chr==' '      # do not display ' '
       if (@percentile)
-	n=good[key]+bad[key]
-	rect(ox,oy,good[key].to_f*max/n,bad[key].to_f*max/n,dx,ratio)
+        n=good[key]+bad[key]
+        rect(ox,oy,good[key].to_f*max/n,bad[key].to_f*max/n,dx,ratio)
       else
-	rect(ox,oy,good[key],bad[key],dx,ratio)
+        rect(ox,oy,good[key],bad[key],dx,ratio)
       end
       text(ox+half_x,base_y,key)
       ox+=dx
@@ -749,11 +751,11 @@ class Scoreboard
 
   def initialize(parent,server,port, stat)
     @text=TkText.new(parent,
-		     :takefocus=>0,
-		     :background=>'gray',
-		     :width=>WIDTH,
-		     :height=>HEIGHT,
-		     :state=>'disabled')
+                     :takefocus=>0,
+                     :background=>'gray',
+                     :width=>WIDTH,
+                     :height=>HEIGHT,
+                     :state=>'disabled')
     @stat=stat
     @scr=TkScrollbar.new(parent)
     @text.yscrollbar(@scr)
@@ -762,7 +764,7 @@ class Scoreboard
     @port=port
     @my_id=my_env('USER')
     @authenticated=false
-    self.start_drb if $drb
+    self.start_drb unless @server
   end
 
   def start_drb
@@ -780,9 +782,9 @@ class Scoreboard
 
   def can_not_talk(server)
     TkDialog.new(:title=>'scoreboard daemon',
-		 :message=>"scoreboard is not available at #{server}.\n"+
-		 "you can not join contest.",
-		 :buttons=>['continue'])
+                 :message=>"scoreboard is not available at #{server}.\n"+
+                 "you can not join contest.",
+                 :buttons=>['continue'])
   end
 
   def pack(param)
@@ -798,7 +800,7 @@ class Scoreboard
 
   def highlight(color)
     @text.tag_configure("highlight",
-			:background=>"red",:foreground=>"white")
+                        :background=>"red",:foreground=>"white")
   end
 
   def remove(user)
@@ -810,10 +812,10 @@ class Scoreboard
     @text.configure(:state=>'normal')
     @text.delete('1.0','end')
     @text.insert('end',
-		 "= Realtime Typing Contest =\n\n"+
-		 "choose contest from \n"+
-		 "Misc menu to join.\n\n"+
-		 "last modified:\n" + DATE)
+                 "= Realtime Typing Contest =\n\n"+
+                 "choose contest from \n"+
+                 "Misc menu to join.\n\n"+
+                 "last modified:\n" + DATE)
     @text.configure(:state=>'disabled')
   end
 
@@ -825,7 +827,7 @@ class Scoreboard
   end
 
   def display(str)
-    if (str.empty?) 
+    if (str.empty?)
       self.empty
       return
     end
@@ -836,8 +838,8 @@ class Scoreboard
     while (ranker=buf.shift)
       point=buf.shift
       date=buf.shift
-      ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker + 
-	"%5s" % date+"\n"
+      ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
+        "%5s" % date+"\n"
       my_entry=line if @my_id=~/#{ranker}/
       line+=1
     end
@@ -854,7 +856,7 @@ class Scoreboard
 
   def bgcolor(color)
     @text.configure(:state=>'normal')
-    @text.configure(:background=>color) 
+    @text.configure(:background=>color)
     @text.configure(:state=>'disabled')
   end
 
@@ -867,8 +869,8 @@ class Scoreboard
     return if (@obj.nil?)
     if (ans=@obj.my_rank(user))
       TkDialog.new(:title=>'your ranking',
-		   :message=>"#{user}: #{ans}",
-		   :buttons=>['continue'])
+                   :message=>"#{user}: #{ans}",
+                   :buttons=>['continue'])
     else
       self.can_not_talk(@server)
     end
@@ -903,10 +905,10 @@ class Scoreboard
   def auth(uid)
     STDERR.puts "auth: #{uid}" if $MYDEBUG
     @authenticated=if (! @obj.nil?)
-		     @obj.auth(uid)
-		   else
-		     self.start_drb and self.auth(uid)
-		   end
+                     @obj.auth(uid)
+                   else
+                     self.start_drb and self.auth(uid)
+                   end
   end
 end # Scoreboard
 
@@ -917,16 +919,16 @@ class MyPlot
   SHRINK=0.86
   MX=30
   MY=10
-  R=5 
+  R=5
 
   def initialize(title)
     @toplevel=TkToplevel.new(:title=>title)
     @graph=TkCanvas.new(@toplevel,
-			:width=>WIDTH,
-			:height=>HEIGHT)
+                        :width=>WIDTH,
+                        :height=>HEIGHT)
     @graph.pack
   end
-  
+
   def plot(lst)
     len=lst.length
     max=0
@@ -978,13 +980,13 @@ class SpeedMeter
     else
       clear
     end
-  end  
+  end
 
   def initialize(parent)
     @canvas=TkCanvas.new(parent,
-			 :width=>WIDTH,
-			 :height=>HEIGHT,
-			 :takefocus=>0)
+                         :width=>WIDTH,
+                         :height=>HEIGHT,
+                         :takefocus=>0)
     r=(WIDTH/2)*0.8
     pi=3.14
     @xy=(0..MAX).map{|n| [r*cos(pi-n*pi/MAX), r*sin(pi-n*pi/MAX)]}
@@ -1006,12 +1008,12 @@ class SpeedMeter
     n=min(n,MAX)
     x,y=@xy[n]
     TkcLine.new(@canvas,@ox,@oy,@ox+x,@oy-y,
-		:width=>2,:fill=>'red')
+                :width=>2,:fill=>'red')
     TkcOval.new(@canvas,@ox-2,@oy-2,@ox+2,@oy+2,:fill=>'black')
   end
 
   def min(m,n)
-    if m<n 
+    if m<n
       m
     else
       n

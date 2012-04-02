@@ -1,9 +1,7 @@
 #!/bin/sh
-RUBY=/edu/bin/ruby
-YATT=/edu/bin/yatt.rb
-LIB=/edu/lib/yatt
-
+RUBY=/usr/local/bin/ruby
+YATT=/Users/hkim/bin/yatt.rb
+LIB=/Users/hkim/Library/yatt
 SERV=edu.melt.kyutech.ac.jp
 
 ${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
-
