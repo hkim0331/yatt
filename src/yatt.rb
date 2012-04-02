@@ -383,7 +383,8 @@ class Trainer
   def key_press(key)
     return if @epilog
     key &= 0x00ff
-    return if (key>128) # shift, control or alt. do nothing
+    debug key
+    return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
       @wait_for_first_key=false
       @logger.start
@@ -817,37 +818,18 @@ class Scoreboard
     @text.configure(:state=>'disabled')
   end
 
-  # no use method.
-  def emptize
-    debug "#{__method__}"
-    @text.configure(:state=>'normal')
-    @text.delete('1.0','end')
-    @text.insert('end',"no entry.")
-    @text.configure(:state=>'disabled')
-  end
-
-  # ruby1.9 return array.
+  # changed: rankers is an array. [[hkim, [65, "2012-04-02"]]]
   def display(rankers)
     debug "#{__method__}: rankers=#{rankers}"
     if (rankers.empty?)
       debug "rankers emty."
-      self.emptize
       @text.configure(:state=>'normal')
       @text.delete('1.0','end')
       @text.insert('end',"no entry.")
       @text.configure(:state=>'disabled')
     else
-#      buf=str.split(/,/)
       line=1
       my_entry=0
-      # while (ranker=buf.shift)
-      #   point=buf.shift
-      #   date=buf.shift
-      #   ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
-      #   "%5s" % date+"\n"
-      #   my_entry=line if @my_id=~/#{ranker}/
-      #   line+=1
-      # end
       ranking=""
       rankers.each do |data|
         debug "#{data}"
@@ -919,11 +901,11 @@ class Scoreboard
   end
 
   def auth(uid)
-    STDERR.puts "auth: #{uid}" if $MYDEBUG
+    debug "#{__method__}: #{uid}"
     @authenticated=if (! @obj.nil?)
-                     @obj.auth(uid)
+                      @obj.auth(uid)
                    else
-                     self.start_drb and self.auth(uid)
+                      self.start_drb and self.auth(uid)
                    end
   end
 end # Scoreboard

@@ -87,7 +87,10 @@ class ScoreServer
   attr_reader :score
 
   def initialize(logfile)
+#    raise "only one yatt_server is allowed." if @@server.defined?
+#    @@server=true
     @score=Hash.new(0)
+    @logfile=logfile
   end
 
   def clear
@@ -110,6 +113,9 @@ class ScoreServer
 
   def put(name,score,time)
     debug ("#{__method__}: #{name}, #{score}, #{time}")
+    File.open(@logfile,"a") do |fp|
+      fp.puts "#{time} #{name} #{score}"
+    end
     if score>@score[name][0]
       @score[name]=[score, time]
     end
