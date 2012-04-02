@@ -1,7 +1,9 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+#-*- coding: utf-8 -*-
+# 
 # yatt_probe - realtime ranking board frontend for YATT
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
-# Copyright (C) 2002-2005,  Hiroshi Kimura
+# Copyright (C) 2002-2008,  Hiroshi Kimura
 # debug: 2008-06-17,
 
 $MYDEBUG=true
