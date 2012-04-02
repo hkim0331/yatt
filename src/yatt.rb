@@ -10,7 +10,7 @@
 
 $MYDEBUG=false
 
-DEBUG=true
+DEBUG=false
 def debug(s)
   puts s if DEBUG
 end
@@ -38,7 +38,11 @@ MAXBUF=1024
 YATTD="localhost"
 PORT=23002
 LIB="/Users/hkim/Library/yatt"
-TIMEOUT=if DEBUG; 20; else 60; end
+if DEBUG
+  TIMEOUT=20
+else
+  TIMEOUT=60
+end
 
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 

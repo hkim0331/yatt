@@ -6,23 +6,24 @@
 # Copyright (C)2002-2005, Hiroshi Kimura
 # update 2012-04-02, icome connection.
 
-DEBUG=true
+DEBUG=false
 
 def debug(s)
   puts s if DEBUG
 end
 
+require 'drb'
+require 'sequel'
+
 YATTD_VERSION="0.4"
 DATE="2012-04-02"
 REQ_RUBY="1.9.3"
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 HOSTNAME="localhost"
 PORT=23002
 BEST=30
 LOG=File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
-
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-require 'drb'
-require 'sequel'
+DB="../db/yatt.db"
 
 def usage
   print <<EOF
@@ -57,53 +58,24 @@ OPTIONS(default value)
         debug mode.
 
 EOF
-exit 1
-end
-
-class Logger
-  @@logfile_defined=false
-  attr_reader :logfile
-  def initialize(name)
-    if (@@logfile_defined)
-      STDERR.puts("logfile #{@logfile} already defined.\n")
-      exit(1)
-    end
-    @logfile=name
-    @fp=File.new(@logfile,"w")
-  end
-
-  def puts(host, s)
-    wday, month, day, clock, tz, year=Time.now.to_s.split(/ /)
-    @fp.puts "#{month} #{day} #{clock} [#{host}] #{s}"
-    @fp.flush
-  end
-
-  def stop
-    @fp.close
-  end
+  exit 1
 end
 
 class ScoreServer
   attr_reader :score
 
-  def initialize(logfile)
-#    raise "only one yatt_server is allowed." if @@server.defined?
-#    @@server=true
+  def initialize(logfile, db)
     @score=Hash.new(0)
     @logfile=logfile
+    @db=Sequel.sqlite(db)
   end
 
   def clear
     @score.clear
   end
 
-  # return array.
+  # CHANGED: return array (was string).
   def best(n)
-    # orig=$,
-    # $,=','
-    # result=@score.sort{|a,b| b[1][0]<=>a[1][0]}[0..n-1].to_s
-    # $,=orig
-    # result
     @score.sort{|a,b| b[1][0]<=>a[1][0]}[0..n-1]
   end
 
@@ -116,6 +88,8 @@ class ScoreServer
     File.open(@logfile,"a") do |fp|
       fp.puts "#{time} #{name} #{score}"
     end
+    @db[:yatt].insert(:uid=>name,:score=>score,
+      :updated_at=>Time.now.strftime("%Y-%m-%d %H:%M:%S"))
     if score>@score[name][0]
       @score[name]=[score, time]
     end
@@ -187,9 +161,10 @@ end #ScoreServer
 # main
 #
 
+hostname="localhost"
 port=PORT
 logfile=LOG
-hostname="localhost"
+db=DB
 
 while (arg=ARGV.shift)
   case arg
@@ -205,14 +180,16 @@ while (arg=ARGV.shift)
     authdir=ARGV.shift
   when /\A--noauth\Z/
     authdir=nil
+  when /\A--db/
+    db=ARGV.shift
   else
     usage
   end
 end
-debug([YATTD_VERSION, hostname, port,authdir].join(", "))
+debug([YATTD_VERSION, hostname, port, db].join(", "))
 
 begin
-  score_server=ScoreServer.new(logfile)
+  score_server=ScoreServer.new(logfile, db)
   uri="druby://#{hostname}:#{port}"
   DRb.start_service(uri,score_server)
   puts uri
