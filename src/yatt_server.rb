@@ -1,15 +1,18 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
+#-*- coding: utf-8 -*-
+#
 # yatt score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2005, Hiroshi Kimura
+# update 2012-04-02, icome connection.
 
-YATTD_VERSION="0.3.5"
-DATE="2005.06.08"
+YATTD_VERSION="0.4"
+DATE="2012-04-02"
 
-REQ_RUBY="1.8.2"
+REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
-require 'drb' or raise "score server depends on drb"
+require 'drb' or raise "score server depends on drb."
 
 def usage
   print <<EOF
@@ -36,7 +39,7 @@ OPTIONS(default value)
 
   --log file
         log yatt/yatt_server communication into file.
-        file must be gives as an absolute path(./%y%m%d.log).
+        file must be gives as an absolute path(../log/yyyy-mm-dd.log).
 
   --debug
         debug mode.

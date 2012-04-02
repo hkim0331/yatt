@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env dash
 RUBY=/usr/local/bin/ruby
 YATT=/Users/hkim/bin/yatt.rb
 LIB=/Users/hkim/Library/yatt
