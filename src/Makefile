@@ -1,3 +1,5 @@
+# VERSION: 0.11
+
 all:
 	@echo "'make osx' to install on osx(develop)."
 	@echo "'make isc' to install on isc."

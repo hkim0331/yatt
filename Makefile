@@ -6,3 +6,4 @@ install:
 
 clean:
 	${RM} *~ .\#*
+	find ./ -name \*.bak -exec rm {} \;

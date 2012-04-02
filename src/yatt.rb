@@ -3,7 +3,10 @@
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
-# Copyright (C) 2002, 2003, 2004, 2005 Hiroshi Kimura
+# Copyright (C) 2002-2012 Hiroshi Kimura.
+# 
+# VERSION: 0.11
+#
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
 # 2012-04-02, server updates.

@@ -3,7 +3,10 @@
 #
 # yatt score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
-# Copyright (C)2002-2005, Hiroshi Kimura
+# Copyright (C)2002-2012, Hiroshi Kimura.
+# 
+# VERSION: 0.11
+#
 # update 2012-04-02, icome connection.
 
 DEBUG=false
