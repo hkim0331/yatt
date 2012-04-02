@@ -6,13 +6,23 @@
 # Copyright (C)2002-2005, Hiroshi Kimura
 # update 2012-04-02, icome connection.
 
+DEBUG=true
+
+def debug(s)
+  puts s if DEBUG
+end
+
 YATTD_VERSION="0.4"
 DATE="2012-04-02"
-
 REQ_RUBY="1.9.3"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
+HOSTNAME="localhost"
+PORT=23002
+BEST=30
+LOG=File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
 
-require 'drb' or raise "score server depends on drb."
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
+require 'drb'
+require 'sequel'
 
 def usage
   print <<EOF
@@ -28,12 +38,14 @@ OPTIONS(default value)
         use num/tcp as yatt score server port(23002).
 
   --authdir dir
+  (no work. remain compatibility only.)
         use dir to authenticate yatt users.
         the dir must contain files whose name is equal
         to user id. only permit uses can join contest.
         authdir's default value is yatt_server's working dir.
 
   --noauth
+  (no work. remain compatibility only.)
         do not authenticate.
         in other words, return true for all queries.
 
@@ -47,15 +59,6 @@ OPTIONS(default value)
 EOF
 exit 1
 end
-
-
-HOSTNAME="localhost"
-PORT=23002
-
-AUTH_DIR=File.join(".","user.allow")
-LOG=File.join(".",Time.now.strftime("%y%m%d.log"))
-
-BEST=30
 
 class Logger
   @@logfile_defined=false
@@ -83,38 +86,22 @@ end
 class ScoreServer
   attr_reader :score
 
-  def initialize(db)
+  def initialize(logfile)
     @score=Hash.new(0)
-    @students=Array.new
-
-    # for authentication
-    if db.nil?
-      # no auth
-      @auth=false
-      return
-    end
-
-    raise "authdir #{db} does not exist." unless FileTest.exists?(db)
-
-    Dir.foreach(db) do |uid|
-      next if uid=~/^\./
-      uid=uid.chomp
-      @students.push(uid)
-      STDERR.puts "allow: #{uid}" if $DEBUG
-    end
-    @auth=true
   end
 
   def clear
     @score.clear
   end
 
+  # return array.
   def best(n)
-    orig=$,
-    $,=','
-    result=@score.sort{|a,b| b[1][0]<=>a[1][0]}[0..n-1].to_s
-    $,=orig
-    result
+    # orig=$,
+    # $,=','
+    # result=@score.sort{|a,b| b[1][0]<=>a[1][0]}[0..n-1].to_s
+    # $,=orig
+    # result
+    @score.sort{|a,b| b[1][0]<=>a[1][0]}[0..n-1]
   end
 
   def all
@@ -122,7 +109,7 @@ class ScoreServer
   end
 
   def put(name,score,time)
-    STDERR.puts "put: #{name}, #{score}, #{time}" if $DEBUG
+    debug ("#{__method__}: #{name}, #{score}, #{time}")
     if score>@score[name][0]
       @score[name]=[score, time]
     end
@@ -130,15 +117,6 @@ class ScoreServer
 
   def del(name)
     @score.delete(name)
-  end
-
-  def dump(name)
-    fp=File.new(name,"w+")
-    fp.puts "# #{$0} dump #{Time.now}\n"
-    @score.each do |who, score,time|
-      fp.puts "#{who}\t#{score}\t#{time}"
-    end
-    fp.close
   end
 
   def load(fname)
@@ -164,20 +142,15 @@ class ScoreServer
     end
   end
 
-#############
+  # return array
   def get(num)
-    STDERR.puts "get: #{num}" if $DEBUG
+    debug("#{__method__}: #{num}")
+    debug "#{self.best(num)}"
     self.best(num)
   end
 
   def remove(me)
     self.del(me)
-  end
-
-  def auth(uid)
-    return true unless @auth
-    return true if $DEBUG
-    return @students.include?(uid)
   end
 
   def reload
@@ -198,15 +171,19 @@ class ScoreServer
   def quit
 
   end
+  
+  def auth(id)
+    true
+  end
 end #ScoreServer
 
 #
 # main
 #
+
 port=PORT
 logfile=LOG
 hostname="localhost"
-authdir=AUTH_DIR
 
 while (arg=ARGV.shift)
   case arg
@@ -226,18 +203,14 @@ while (arg=ARGV.shift)
     usage
   end
 end
-
-STDERR.puts [YATTD_VERSION, hostname, port,authdir].join(", ") if $DEBUG
+debug([YATTD_VERSION, hostname, port,authdir].join(", "))
 
 begin
-  score_server=ScoreServer.new(authdir)
-  DRb.start_service("druby://#{hostname}:#{port}",score_server)
+  score_server=ScoreServer.new(logfile)
+  uri="druby://#{hostname}:#{port}"
+  DRb.start_service(uri,score_server)
+  puts uri
   DRb.thread.join
-rescue Interrupt
-  score_server.dump(logfile)
-  exit 0
+
 end
 
-#Local Variables:
-#mode: Ruby
-#End:

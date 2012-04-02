@@ -6,8 +6,10 @@
 # Copyright (C) 2002, 2003, 2004, 2005 Hiroshi Kimura
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
+# 2012-04-02, server updates.
 
 $MYDEBUG=false
+
 DEBUG=true
 def debug(s)
   puts s if DEBUG
@@ -15,20 +17,18 @@ end
 
 require 'tk'
 
+# for standalone use
 begin
   require 'drb'
-  $drb=true
+  DRB_ENABLED=true
 rescue
   STDERR.puts "you can not join contest without drb installed."
-  $drb=false
+  DRB_ENABLED=false
 end
 
 YATT_VERSION="0.10"
 DATE="2012-03-24"
-
 REQ_RUBY="1.9.3"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-
 GOOD="green"
 BAD="red"
 ADMIN="yatt"
@@ -38,11 +38,9 @@ MAXBUF=1024
 YATTD="localhost"
 PORT=23002
 LIB="/Users/hkim/Library/yatt"
-if DEBUG
-  TIMEOUT=20
-else
-  TIMEOUT=60
-end
+TIMEOUT=if DEBUG; 20; else 60; end
+
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
 #############
 # fixme
@@ -819,39 +817,57 @@ class Scoreboard
     @text.configure(:state=>'disabled')
   end
 
-  def empty
+  # no use method.
+  def emptize
+    debug "#{__method__}"
     @text.configure(:state=>'normal')
     @text.delete('1.0','end')
     @text.insert('end',"no entry.")
     @text.configure(:state=>'disabled')
   end
 
-  def display(str)
-    if (str.empty?)
-      self.empty
-      return
-    end
-    ranking=""
-    buf=str.split(/,/)
-    line=1
-    my_entry=0
-    while (ranker=buf.shift)
-      point=buf.shift
-      date=buf.shift
-      ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
+  # ruby1.9 return array.
+  def display(rankers)
+    debug "#{__method__}: rankers=#{rankers}"
+    if (rankers.empty?)
+      debug "rankers emty."
+      self.emptize
+      @text.configure(:state=>'normal')
+      @text.delete('1.0','end')
+      @text.insert('end',"no entry.")
+      @text.configure(:state=>'disabled')
+    else
+#      buf=str.split(/,/)
+      line=1
+      my_entry=0
+      # while (ranker=buf.shift)
+      #   point=buf.shift
+      #   date=buf.shift
+      #   ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
+      #   "%5s" % date+"\n"
+      #   my_entry=line if @my_id=~/#{ranker}/
+      #   line+=1
+      # end
+      ranking=""
+      rankers.each do |data|
+        debug "#{data}"
+        ranker,point_date=data
+        point,date=point_date
+        ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
         "%5s" % date+"\n"
-      my_entry=line if @my_id=~/#{ranker}/
-      line+=1
-    end
-    @text.configure(:state=>'normal')
-    @text.delete('1.0','end')
-    @text.insert('end',ranking)
+        my_entry=line if @my_id=~/#{ranker}/
+        line+=1
+      end
+      @text.configure(:state=>'normal')
+      @text.delete('1.0','end')
+      @text.insert('end',ranking)
 
-    # hilight his entry
-    @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end") unless
+      # hilight his entry
+      @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end") unless
       my_entry==0
 
-    @text.configure(:state=>'disabled')
+      @text.configure(:state=>'disabled')
+    end
   end
 
   def bgcolor(color)
