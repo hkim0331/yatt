@@ -6,29 +6,29 @@
 # Copyright (C) 2002, 2003, 2004, 2005 Hiroshi Kimura
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
+# 2012-04-02, server updates.
 
 $MYDEBUG=false
-DEBUG=true
+
+DEBUG=false
 def debug(s)
   puts s if DEBUG
 end
 
 require 'tk'
 
+# for standalone use
 begin
   require 'drb'
-  $drb=true
+  DRB_ENABLED=true
 rescue
   STDERR.puts "you can not join contest without drb installed."
-  $drb=false
+  DRB_ENABLED=false
 end
 
 YATT_VERSION="0.10"
 DATE="2012-03-24"
-
 REQ_RUBY="1.9.3"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-
 GOOD="green"
 BAD="red"
 ADMIN="yatt"
@@ -43,6 +43,8 @@ if DEBUG
 else
   TIMEOUT=60
 end
+
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
 #############
 # fixme
@@ -385,7 +387,8 @@ class Trainer
   def key_press(key)
     return if @epilog
     key &= 0x00ff
-    return if (key>128) # shift, control or alt. do nothing
+    debug key
+    return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
       @wait_for_first_key=false
       @logger.start
@@ -819,39 +822,38 @@ class Scoreboard
     @text.configure(:state=>'disabled')
   end
 
-  def empty
-    @text.configure(:state=>'normal')
-    @text.delete('1.0','end')
-    @text.insert('end',"no entry.")
-    @text.configure(:state=>'disabled')
-  end
-
-  def display(str)
-    if (str.empty?)
-      self.empty
-      return
-    end
-    ranking=""
-    buf=str.split(/,/)
-    line=1
-    my_entry=0
-    while (ranker=buf.shift)
-      point=buf.shift
-      date=buf.shift
-      ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
+  # changed: rankers is an array. [[hkim, [65, "2012-04-02"]]]
+  def display(rankers)
+    debug "#{__method__}: rankers=#{rankers}"
+    if (rankers.empty?)
+      debug "rankers emty."
+      @text.configure(:state=>'normal')
+      @text.delete('1.0','end')
+      @text.insert('end',"no entry.")
+      @text.configure(:state=>'disabled')
+    else
+      line=1
+      my_entry=0
+      ranking=""
+      rankers.each do |data|
+        debug "#{data}"
+        ranker,point_date=data
+        point,date=point_date
+        ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
         "%5s" % date+"\n"
-      my_entry=line if @my_id=~/#{ranker}/
-      line+=1
-    end
-    @text.configure(:state=>'normal')
-    @text.delete('1.0','end')
-    @text.insert('end',ranking)
+        my_entry=line if @my_id=~/#{ranker}/
+        line+=1
+      end
+      @text.configure(:state=>'normal')
+      @text.delete('1.0','end')
+      @text.insert('end',ranking)
 
-    # hilight his entry
-    @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end") unless
+      # hilight his entry
+      @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end") unless
       my_entry==0
 
-    @text.configure(:state=>'disabled')
+      @text.configure(:state=>'disabled')
+    end
   end
 
   def bgcolor(color)
@@ -903,11 +905,11 @@ class Scoreboard
   end
 
   def auth(uid)
-    STDERR.puts "auth: #{uid}" if $MYDEBUG
+    debug "#{__method__}: #{uid}"
     @authenticated=if (! @obj.nil?)
-                     @obj.auth(uid)
+                      @obj.auth(uid)
                    else
-                     self.start_drb and self.auth(uid)
+                      self.start_drb and self.auth(uid)
                    end
   end
 end # Scoreboard

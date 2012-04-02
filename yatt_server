@@ -1,5 +1,0 @@
-#!/usr/bin/env dash
-# 2009-04-13, change --log destination.
-/usr/local/bin/yatt_server.rb --hostname edu.melt.kyutech.ac.jp \
-    --log /usr/local/var/log/yatt.log
-

@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 * ruby 1.9 で動くように。
 
 * osx で /opt/local/bin/ruby を使うとエラー、
