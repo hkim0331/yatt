@@ -4,7 +4,7 @@
 # yatt score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
-# 
+#
 # VERSION: 0.11
 #
 # update 2012-04-02, icome connection.
@@ -147,17 +147,10 @@ class ScoreServer
     "ok"
   end
 
-  def start
-
-  end
-
-  def quit
-
-  end
-  
   def auth(id)
     true
   end
+
 end #ScoreServer
 
 #
@@ -198,5 +191,7 @@ begin
   puts uri
   DRb.thread.join
 
+rescue =>e
+  puts "#{e.class}:#{e.message}"
 end
 

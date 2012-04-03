@@ -4,7 +4,7 @@
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
-# 
+#
 # VERSION: 0.11
 #
 # 2009-04-13, config changed.
@@ -32,15 +32,18 @@ end
 YATT_VERSION="0.10"
 DATE="2012-03-24"
 REQ_RUBY="1.9.3"
+
 GOOD="green"
 BAD="red"
+
 ADMIN="yatt"
-ADMIN_DIR="/Users/hkim"
-RANKER=30
-MAXBUF=1024
+ADMIN_DIR="/home/t/hkim"
+LIB="/Users/hkim/Library/yatt"
+
 YATTD="localhost"
 PORT=23002
-LIB="/Users/hkim/Library/yatt"
+RANKER=30
+
 if DEBUG
   TIMEOUT=20
 else
@@ -50,8 +53,8 @@ end
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
 #############
-# fixme
-# this is far from complete.
+# FIXME:
+# for windows version. Windows lacks ENV[].
 module MyEnv
   def my_env(var)
     ENV[var]
@@ -190,7 +193,9 @@ class Trainer
         ['courier', proc{menu_setfont('Courier')}],
         ['fixed', proc{menu_setfont('Fixed')}],
         ['helvetica', proc{menu_setfont('Helvetica')}],
+        ['menlo', proc{menu_setfont('Menlo')}],
         ['mincho', proc{menu_setfont('Mincho')}],
+        ['monaco', proc{menu_setfont('Monaco')}],
         ['sazanami', proc{menu_setfont('Sazanami')}],
         ['times', proc{menu_setfont('Times')}],
         '---',
@@ -338,7 +343,7 @@ class Trainer
     @wait_for_first_key=true
 
     start=rand(@doclength-2*num_lines)
-    STDERR.puts "doclen=#{@doclengh}, start=#{start}" if $MYDEBUG
+    debug "doclen=#{@doclengh}, start=#{start}"
     fp=File.open(file,"r")
     while (start>0)
       fp.gets
@@ -755,7 +760,7 @@ class Scoreboard
 
   attr_reader :authenticated
 
-  def initialize(parent,server,port, stat)
+  def initialize(parent, server, port, stat)
     @text=TkText.new(parent,
                      :takefocus=>0,
                      :background=>'gray',
@@ -777,7 +782,6 @@ class Scoreboard
     begin
       DRb.start_service()
       @obj=DRbObject.new(nil, "druby://#{@server}:#{@port}")
-      @obj.start
       true
     rescue DRb::DRbConnError
       self.can_not_talk(@server)
@@ -800,7 +804,6 @@ class Scoreboard
 
   def destroy
     return if @obj.nil?
-    @obj.quit
     @obj=nil
   end
 
