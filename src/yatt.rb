@@ -13,7 +13,7 @@
 
 $MYDEBUG=false
 
-DEBUG=true
+DEBUG=false
 
 def debug(s)
   puts s if DEBUG
