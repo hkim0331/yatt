@@ -1,6 +1,10 @@
 #!/usr/bin/env dash
-# VERSION: 0.12
+#-*- mode: Makefile -*-
+# VERSION: 0.13
 
-/usr/bin/env ruby ./yatt.rb --server edu.melt.kyutech.ac.jp \
-             --lib /home/hkim/lib/yatt
+RUBY=/usr/bin/env ruby
+YATT=${HOME}/bin/yatt.rb
+LIB=${HOME}/lib/yatt
+SERV=edu.melt.kyutech.ac.jp
 
+${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
