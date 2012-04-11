@@ -14,8 +14,8 @@ osx: yatt.osx yatt.rb
 	install -m 0755 yatt.osx /Users/hkim/bin/yatt
 
 linux: yatt.linux yatt.rb
-	install -m 0755 yatt.rb /Users/hkim/bin/yatt.rb
-	install -m 0755 yatt.isc /Users/hkim/bin/yatt
+	install -m 0755 yatt.rb /home/hkim/bin/yatt.rb
+	install -m 0755 yatt.linux /home/hkim/bin/yatt
 
 server: yatt_server.rb yatt_server
 	install -m 0755 yatt_server.rb /usr/local/bin

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #-*- coding: utf-8 -*-
-# 
+#
 # yatt_probe - realtime ranking board frontend for YATT
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2008,  Hiroshi Kimura
@@ -8,7 +8,7 @@
 
 $MYDEBUG=true
 
-def usage 
+def usage
 STDERR.print <<EOF
 USAGE:
     yatt_probe.rb [OPTIONS]
@@ -18,37 +18,36 @@ OPTIONS
 (*) are unimplemented yet.
 
     --clear(*)
-  	clear yatt_server record
+        clear yatt_server record
 
     --color color
-  	tk will use  'color' to display.
+        tk will use  'color' to display.
 
     --dump /path/to/the/file
 
     --interval s
-  	poll yatt_server every second s.
+        poll yatt_server every second s.
 
     --length n
-  	fetch n entries.
-    
+        fetch n entries.
+
     --load /path/to/the/file (*)
 
-  
     --loop l
-  	update l times and exit.
+        update l times and exit.
 
     --one-shot
-  	force --without-x --length 9999
+        force --without-x --length 9999
 
     --port port_number
 
     --server name
 
     --with-x
-  	display using TK widget.
+        display using TK widget.
 
     --without-x
-  	display to stdout.
+        display to stdout.
 
 EOF
 exit(1)
@@ -73,7 +72,7 @@ class Scoreboard
     @server,@port,@color,@length,@dump=[server,port,color,length,dump]
     @x11=x11
     STDERR.puts [@server,@port,@color,@length,@dump].join("\n") if $MYDEBUG
-    if (@x11) 
+    if (@x11)
       self.tkinit
     end
     DRb.start_service()
@@ -84,21 +83,21 @@ class Scoreboard
     require 'tk'
     @root=TkRoot.new{title $0}
     menu=[[['File'],
-	['Clear',proc{my_clear},0],
-	['Get',proc{update},0],
-	['Dump',proc{my_dump},0],
-	['Load',proc{my_load},0],
-#	['New Key',proc{my_new_key},0],
-	['Quit',proc{@sock.close; exit},0]]]
+        ['Clear',proc{my_clear},0],
+        ['Get',proc{update},0],
+        ['Dump',proc{my_dump},0],
+        ['Load',proc{my_load},0],
+#       ['New Key',proc{my_new_key},0],
+        ['Quit',proc{@sock.close; exit},0]]]
     TkMenubar.new(@root,menu).pack('side'=>'top','fill'=>'x')
 
     scr=TkScrollbar.new(@root)
     scr.pack('side'=>'left','fill'=>'y')
     @text=TkText.new(@root,
-		    'takefocus'=>0,
-		    'background'=>'white',
-		    'width'=>WIDTH,
-		    'height'=>HOW_MANY)
+                    'takefocus'=>0,
+                    'background'=>'white',
+                    'width'=>WIDTH,
+                    'height'=>HOW_MANY)
     @text.pack
     @text.yscrollbar(scr)
     @color=false
@@ -120,7 +119,7 @@ class Scoreboard
   def my_load
     @obj.load(@dump)
     self.update
-  end  
+  end
 
   def set_color(color)
     @color=true
@@ -132,8 +131,8 @@ class Scoreboard
       display_x11(str)
     else
       str.scan(/.+?,.+?,.+?,/).map{|x| x.gsub(/,/,"\t")}.each do |line|
-	next if line.nil? # why nil appears in ?
-	puts line
+        next if line.nil? # why nil appears in ?
+        puts line
       end
     end
   end
@@ -152,7 +151,7 @@ class Scoreboard
     @text.insert('end',ranking)
     if @color
       (1..line).each do |n|
-	@text.tag_add("color","#{n}.0","#{n}.end") if n%2 ==1
+        @text.tag_add("color","#{n}.0","#{n}.end") if n%2 ==1
       end
     end
     @text.configure('state'=>'disabled')
@@ -232,7 +231,7 @@ while (arg=ARGV.shift)
     with_x11=false
     loop=1
     length=99999 # means 'all'
-  else  
+  else
     raise "#{arg}: unknown option"
   end#case
 end#while
