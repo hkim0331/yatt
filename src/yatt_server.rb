@@ -5,7 +5,7 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.11
+# VERSION: 0.12
 #
 # update 2012-04-02, icome connection.
 
@@ -18,8 +18,9 @@ end
 require 'drb'
 require 'sequel'
 
-YATTD_VERSION="0.4"
-DATE="2012-04-02"
+YATT_VERSION='0.12'
+DATE='2012-04-11'
+
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 HOSTNAME="localhost"
@@ -182,7 +183,7 @@ while (arg=ARGV.shift)
     usage
   end
 end
-debug([YATTD_VERSION, hostname, port, db].join(", "))
+debug([YATT_VERSION, hostname, port, db].join(", "))
 
 begin
   score_server=ScoreServer.new(logfile, db)

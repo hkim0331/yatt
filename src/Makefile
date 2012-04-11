@@ -1,4 +1,4 @@
-# VERSION: 0.11
+# VERSION: 0.12
 
 all:
 	@echo "'make osx' to install on osx(develop)."
@@ -22,4 +22,4 @@ server: yatt_server.rb yatt_server
 	install -m 0755 yatt_server /usr/local/bin
 
 clean:
-	${RM} *~ .\#*
+	${RM} *~ .\#* *.bak
