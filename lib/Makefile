@@ -14,10 +14,10 @@ osx: yatt.txt yatt.gif
 	cp yatt.txt yatt.gif /Users/hkim/Library/yatt/
 
 linux: yatt.txt yatt.gif
-	if [ ! -d /usr/local/share/yatt ]; then \
-		mkdir /usr/local/share/yatt; \
+	if [ ! -d /home/hkim/lib/yatt ]; then \
+		mkdir /home/hkim/lib/yatt; \
 	fi
-	cp yatt.txt yatt.gif /usr/local/share/yatt/
+	cp yatt.txt yatt.gif /home/hkim/lib/yatt/
 
 clean:
-	${RM} *~ .\#*
+	${RM} *~ .\#*$ yatt.txt
