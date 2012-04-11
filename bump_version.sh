@@ -39,4 +39,6 @@ for i in src/yatt.rb src/yatt_server.rb; do
 	-e "s/^YATT_VERSION\s*=.*$/YATT_VERSION='${VERSION}'/" \
 	-e "s/^DATE\s*=.*$/DATE='${DATE}'/" $i
 done
-	
+
+echo ${VERSION} > VERSION
+

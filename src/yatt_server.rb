@@ -5,7 +5,7 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.12
+# VERSION: 0.13
 #
 # update 2012-04-02, icome connection.
 
@@ -18,7 +18,7 @@ end
 require 'drb'
 require 'sequel'
 
-YATT_VERSION='0.12'
+YATT_VERSION='0.13'
 DATE='2012-04-11'
 
 REQ_RUBY="1.9.3"
