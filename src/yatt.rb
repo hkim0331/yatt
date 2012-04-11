@@ -1048,7 +1048,3 @@ while (arg=ARGV.shift)
 end
 trainer=Trainer.new(server, port, lib)
 Tk.mainloop
-
-#Local Variables:
-#mode: Ruby
-#End:
