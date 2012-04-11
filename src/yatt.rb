@@ -4,7 +4,7 @@
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
-# 
+#
 # VERSION: 0.11
 #
 # 2009-04-13, config changed.
@@ -14,6 +14,7 @@
 $MYDEBUG=false
 
 DEBUG=false
+
 def debug(s)
   puts s if DEBUG
 end
@@ -32,26 +33,32 @@ end
 YATT_VERSION="0.10"
 DATE="2012-03-24"
 REQ_RUBY="1.9.3"
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
+
 GOOD="green"
 BAD="red"
-ADMIN="yatt"
-ADMIN_DIR="/Users/hkim"
-RANKER=30
-MAXBUF=1024
+
+LIB="/Users/hkim/Library/yatt"
+YATT_TXT="yatt.txt"
+YATT_IMG="yatt.gif"
+
 YATTD="localhost"
 PORT=23002
-LIB="/Users/hkim/Library/yatt"
+RANKER=30
+
 if DEBUG
   TIMEOUT=20
 else
   TIMEOUT=60
 end
 
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
+# Use?
+ADMIN="yatt"
+ADMIN_DIR="/home/t/hkim"
 
 #############
-# fixme
-# this is far from complete.
+# FIXME:
+# for windows version. Windows lacks ENV[].
 module MyEnv
   def my_env(var)
     ENV[var]
@@ -106,9 +113,8 @@ class Trainer
     @history="history"
     @width=78
     @lines=6
-    @timeout=TIMEOUT
-    @textfile=File.join(@lib,"yatt.doc")
-    @splash  =File.join(@lib,"yatt.gif")
+    @textfile=File.join(@lib,YATT_TXT)
+    @splash  =File.join(@lib,YATT_IMG)
     @readme  =File.join(@lib,"yatt.README")
 
     @runnable_before="25:00"
@@ -116,7 +122,7 @@ class Trainer
     @speed_meter_status=true
     @myid = my_env('USER')
 
-    srand(Time.now.to_i)
+    srand($$)
     Dir.mkdir @conf_dir unless File.directory?(@conf_dir)
     root=TkRoot.new{title 'yet another type trainer'}
     root.bind('KeyPress',proc{|e| key_press(e)},'%N')
@@ -141,8 +147,8 @@ class Trainer
       :orient=>'horizontal',
       :length=>600,
       :from=>0,
-      :to=>@timeout,
-      :tickinterval=>@timeout/2)
+      :to=>TIMEOUT,
+      :tickinterval=>TIMEOUT/2)
     @scale.pack(:fill=>'x')
 
     graph_frame=TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
@@ -159,6 +165,7 @@ class Trainer
     File.foreach(@textfile) do |line|
       @doclength+=1
     end
+    debug "@doclength=#{@doclength}"
     insert(@textfile,@lines)
   end
 
@@ -190,7 +197,9 @@ class Trainer
         ['courier', proc{menu_setfont('Courier')}],
         ['fixed', proc{menu_setfont('Fixed')}],
         ['helvetica', proc{menu_setfont('Helvetica')}],
+        ['menlo', proc{menu_setfont('Menlo')}],
         ['mincho', proc{menu_setfont('Mincho')}],
+        ['monaco', proc{menu_setfont('Monaco')}],
         ['sazanami', proc{menu_setfont('Sazanami')}],
         ['times', proc{menu_setfont('Times')}],
         '---',
@@ -334,33 +343,26 @@ class Trainer
     @line=0
     @char=0
     @epilog=false
-    @time_remains=@timeout
+    @time_remains=TIMEOUT
     @wait_for_first_key=true
 
-    start=rand(@doclength-2*num_lines)
-    STDERR.puts "doclen=#{@doclengh}, start=#{start}" if $MYDEBUG
-    fp=File.open(file,"r")
-    while (start>0)
-      fp.gets
-      start-=1
-    end
-
+    start=rand(@doclength-2*num_lines) # 2 for programming ease.
+    debug "start: #{start}"
     @text=[]
-    while (num_lines>0)
-      line=fp.gets
-      next if line=~/^\s*$/
-      line=line.gsub(/(  \s+)|(\t+)/," ")
-      while line.length>@width
-        line=line.sub(/\w+\W*$/,"")
+    File.open(file,"r") do |fp|
+      # read off 'start' lines
+      start.times do
+        fp.gets
       end
-      @text.push(line.strip+"\n")
-      num_lines-=1
+      # readin 'num_lines'
+      num_lines.times do
+        @text.push fp.gets
+      end
     end
-    fp.close
 
     @textarea.insert(@text.join)
     @textarea.highlight("good",@line,@char)
-    @scale.set(@timeout)
+    @scale.set(TIMEOUT)
     @logger=Logger.new
     @num_chars=0
     tick=1000
@@ -390,7 +392,7 @@ class Trainer
   def key_press(key)
     return if @epilog
     key &= 0x00ff
-    debug key
+#    debug key
     return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
       @wait_for_first_key=false
@@ -755,7 +757,7 @@ class Scoreboard
 
   attr_reader :authenticated
 
-  def initialize(parent,server,port, stat)
+  def initialize(parent, server, port, stat)
     @text=TkText.new(parent,
                      :takefocus=>0,
                      :background=>'gray',
@@ -777,7 +779,6 @@ class Scoreboard
     begin
       DRb.start_service()
       @obj=DRbObject.new(nil, "druby://#{@server}:#{@port}")
-      @obj.start
       true
     rescue DRb::DRbConnError
       self.can_not_talk(@server)
@@ -800,7 +801,6 @@ class Scoreboard
 
   def destroy
     return if @obj.nil?
-    @obj.quit
     @obj=nil
   end
 
