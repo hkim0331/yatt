@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.13
+# VERSION: 0.14
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -30,8 +30,8 @@ rescue
   DRB_ENABLED=false
 end
 
-YATT_VERSION='0.13'
-DATE='2012-04-11'
+YATT_VERSION='0.14'
+DATE='2012-04-12'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
