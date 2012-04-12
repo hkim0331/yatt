@@ -3,8 +3,8 @@
 # VERSION: 0.14
 
 RUBY=/usr/local/bin/ruby
-YATT=/Users/hkim/bin/yatt.rb
-LIB=/Users/hkim/Library/yatt
+YATT=${HOME}/bin/yatt.rb
+LIB=${HOME}/Library/yatt
 SERV=edu.melt.kyutech.ac.jp
 
 ${RUBY} ${YATT} --server ${SERV} --lib ${LIB}

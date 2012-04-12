@@ -39,7 +39,7 @@ raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 GOOD="green"
 BAD="red"
 
-LIB="/Users/hkim/Library/yatt"
+LIB=File.join(ENV['HOME'],"Library/yatt")
 YATT_TXT="yatt.txt"
 YATT_IMG="yatt.gif"
 

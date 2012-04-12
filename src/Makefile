@@ -12,10 +12,12 @@ isc: yatt.isc yatt.rb
 	install -m 0755 yatt.isc /edu/bin/yatt
 
 osx: yatt.osx yatt.rb
+	mkdir -p ${BIN}
 	install -m 0755 yatt.rb ${BIN}/yatt.rb
 	install -m 0755 yatt.osx ${BIN}/yatt
 
 linux: yatt.linux yatt.rb
+	mkdir -p ${BIN}
 	install -m 0755 yatt.rb ${BIN}/yatt.rb
 	install -m 0755 yatt.linux ${BIN}/yatt
 
