@@ -1,4 +1,6 @@
-# VERSION: 0.13
+# VERSION: 0.14
+
+BIN=${HOME}/bin
 
 all:
 	@echo "'make osx' to install on osx(develop)."
@@ -10,12 +12,12 @@ isc: yatt.isc yatt.rb
 	install -m 0755 yatt.isc /edu/bin/yatt
 
 osx: yatt.osx yatt.rb
-	install -m 0755 yatt.rb /Users/hkim/bin/yatt.rb
-	install -m 0755 yatt.osx /Users/hkim/bin/yatt
+	install -m 0755 yatt.rb ${BIN}/yatt.rb
+	install -m 0755 yatt.osx ${BIN}/yatt
 
 linux: yatt.linux yatt.rb
-	install -m 0755 yatt.rb /home/hkim/bin/yatt.rb
-	install -m 0755 yatt.linux /home/hkim/bin/yatt
+	install -m 0755 yatt.rb ${BIN}/yatt.rb
+	install -m 0755 yatt.linux ${BIN}/yatt
 
 server: yatt_server.rb yatt_server
 	install -m 0755 yatt_server.rb /usr/local/bin

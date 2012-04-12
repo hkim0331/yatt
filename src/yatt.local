@@ -1,5 +1,5 @@
 #!/usr/bin/env dash
-# VERSION: 0.13
+# VERSION: 0.14
 
-/usr/bin/env ruby ./yatt.rb --server edu.melt.kyutech.ac.jp --lib ./lib
+/usr/bin/env ruby ./yatt.rb --server localhost --lib ../lib
 

@@ -8,16 +8,16 @@ isc: yatt.txt yatt.gif
 	cp yatt.txt yatt.gif /edu/lib/yatt/
 
 osx: yatt.txt yatt.gif
-	if [ ! -d /Users/hkim/Library/yatt ]; then \
-		mkdir /Users/hkim/Library/yatt; \
+	if [ ! -d ${HOME}/Library/yatt ]; then \
+		mkdir ${HOME}/Library/yatt; \
 	fi
-	cp yatt.txt yatt.gif /Users/hkim/Library/yatt/
+	cp yatt.txt yatt.gif ${HOME}/Library/yatt/
 
 linux: yatt.txt yatt.gif
-	if [ ! -d /home/hkim/lib/yatt ]; then \
-		mkdir /home/hkim/lib/yatt; \
+	if [ ! -d ${HOME}/lib/yatt ]; then \
+		mkdir -p ${HOME}/lib/yatt; \
 	fi
-	cp yatt.txt yatt.gif /home/hkim/lib/yatt/
+	cp yatt.txt yatt.gif ${HOME}/lib/yatt/
 
 clean:
 	${RM} *~ .\#*$ yatt.txt
