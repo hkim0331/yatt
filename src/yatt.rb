@@ -11,7 +11,6 @@
 # 2012-03-24, update for ruby1.9.
 # 2012-04-02, server updates.
 
-$MYDEBUG=false
 DEBUG=false
 
 def debug(s)
@@ -38,7 +37,7 @@ raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 GOOD="green"
 BAD="red"
 
-LIB=File.join(ENV['HOME'],"Library/yatt")
+LIB=File.join(ENV['HOME'], "Library/yatt")
 YATT_TXT="yatt.txt"
 YATT_IMG="yatt.gif"
 
@@ -51,6 +50,10 @@ if DEBUG
 else
   TIMEOUT=60
 end
+
+YATT_DIR=File.join(ENV['HOME'],'.yatt')
+Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
+HISTORY=File.join(YATT_DIR,'history')
 
 # still in use?
 ADMIN="yatt"
@@ -72,8 +75,8 @@ class Trainer
   @epilog=false
   def about
     message="Yet Another Typing Trainer\n"+
-      "(version "+YATT_VERSION+", "+DATE+")\n"+
-      "programmed by\n Hiroshi.Kimura@melt.kyutech.ac.jp\n"+
+      "programmed by\nHiroshi Kimura,\n"+
+      "version "+YATT_VERSION+", "+DATE+".\n"+
       "Copyright (C) 2002-2012.\n"
     TkDialog.new(:title=>'yatt',
                  :message=>message,
@@ -104,13 +107,12 @@ class Trainer
   def initialize(server,port,lib)
     @server=server
     @port=port
+
     @lib=lib
 
     @windows=nil
-    @conf_dir=File.join(my_env('HOME'),".yatt")
-    @user_config=File.join(@conf_dir,"config")
+    @user_config=File.join(YATT_DIR,"config")
     @admin_config=File.join(ADMIN_DIR,".yatt","admin")
-    @history="history"
     @width=78
     @lines=6
     @textfile=File.join(@lib,YATT_TXT)
@@ -123,9 +125,8 @@ class Trainer
     @myid = my_env('USER')
 
     srand($$)
-    Dir.mkdir @conf_dir unless File.directory?(@conf_dir)
-    root=TkRoot.new{title 'yet another type trainer'}
-    root.bind('KeyPress',proc{|e| key_press(e)},'%N')
+    root=TkRoot.new {title 'yet another type trainer'}
+    root.bind('KeyPress', proc{|e| key_press(e)},'%N')
     do_menu(root)
     base=TkFrame.new(root, :relief=>'groove', :borderwidth=>2)
     base.pack
@@ -216,7 +217,7 @@ class Trainer
         ['about...',proc{about},0],
         '---',
         ['parameters', proc{show_params},0],
-        ['debug',proc{menu_debug}]]]
+      ]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
@@ -240,7 +241,6 @@ class Trainer
   end
 
   def menu_quit
-    @logger.save_and_quit(File.join(@conf_dir,@history))
     exit(0)
   end
 
@@ -257,6 +257,7 @@ class Trainer
     @textarea.set_sticky(false)
   end
 
+  # FIXME: complex.
   def menu_toggle_contest
 #    @contest = @scoreboard.toggle_contest(@myid)
 #    @logger.clear_highscore
@@ -294,7 +295,7 @@ class Trainer
     t=Time.now
     today=t.strftime("%m%d")
     lst=[]
-    File.foreach(File.join(@conf_dir, today)) do |line|
+    File.foreach(File.join(YATT_DIR, today)) do |line|
       lst.push(line.chomp.to_i)
     end
     @todays=MyPlot.new(today)
@@ -304,7 +305,7 @@ class Trainer
 
   def menu_total_score
     lst=[]
-    File.foreach(File.join(@conf_dir, @history)) do |line|
+    File.foreach(HISTORY) do |line|
       point, rest=line.split(/\s+/)
       lst.push(point.to_i)
     end
@@ -329,10 +330,6 @@ class Trainer
 
   def menu_percentile
     @stat.percentile
-  end
-
-  def menu_debug
-    $MYDEBUG = !$MYDEBUG
   end
 
   def insert(file, num_lines)
@@ -394,7 +391,7 @@ class Trainer
   def key_press(key)
     return if @epilog
     key &= 0x00ff
-#    debug key
+    # debug key
     return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
       @wait_for_first_key=false
@@ -477,13 +474,11 @@ class Trainer
     end
     msg += "becomes #{score}!!!\n" if (c or p)
 
-    @logger.save(score,@conf_dir)
+    @logger.save(score)
     @logger.accumulate
     @stat.plot(@logger.sum_good,@logger.sum_ng)
 
-    if $MYDEBUG
-      STDERR.puts "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
-    end
+    debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
 
     if score > @logger.highscore
       @logger.set_highscore(score)
@@ -630,6 +625,7 @@ class Logger
 
   def set_highscore(score)
     @@highscore=score
+    save_highscore(score)
   end
 
   def clear_highscore
@@ -668,16 +664,23 @@ class Logger
     end
   end
 
-  def save(score,dir)
-    fp=File.open(File.join(dir,@today),"a")
-    fp.puts(score)
-    fp.close
+  def save(score)
+    today=Time.now.strftime("%m-%d")
+    File.open(File.join(YATT_DIR, today),"a") do |fp|
+      fp.puts(score)
+    end
+  end
+
+  def save_highscore(score)
+    File.open(HISTORY,"a") do |fp|
+      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
+    end
   end
 
   def save_and_quit(file)
-    fp=File.open(file,"a+")
-    fp.puts @@highscore.to_s+"\t"+Time.now.asctime
-    fp.close
+    File.open(file,"a+") do |fp|
+      fp.puts @@highscore.to_s+"\t"+Time.now.asctime
+    end
   end
 end #Logger
 
@@ -773,15 +776,14 @@ class Scoreboard
     @server=server
     @port=port
     @my_id=my_env('USER')
-#    @authenticated=false
     @authenticated=true
     self.start_drb unless @server
   end
 
   def start_drb
     DRb.start_service
-    @obj=DRbObject.new(nil,"druby://#{@server}:#{@port}")
-    unless @obj.ping=~/ok/
+    @remote=DRbObject.new(nil,"druby://#{@server}:#{@port}")
+    unless @remote.ping=~/ok/
       raise "@server does not respond."
     end
   rescue =>e
@@ -804,8 +806,7 @@ class Scoreboard
   end
 
   def destroy
-    return if @obj.nil?
-    @obj=nil
+    @remote=nil unless @remote.nil?
   end
 
   def highlight(color)
@@ -814,8 +815,7 @@ class Scoreboard
   end
 
   def remove(user)
-    return if @obj.nil?
-    @obj.remove(user) and self.update
+    (@remote.remove(user) and self.update) unless @remote.nil?
   end
 
   def splash
@@ -870,13 +870,12 @@ class Scoreboard
   end
 
   def update
-    return if @obj.nil?
-    display(@obj.get(RANKER))
+    display(@remote.get(RANKER)) unless @remote.nil?
   end
 
   def rank(user)
-    return if (@obj.nil?)
-    if (ans=@obj.my_rank(user))
+    return if (@remote.nil?)
+    if (ans=@remote.my_rank(user))
       TkDialog.new(:title=>'your ranking',
                    :message=>"#{user}: #{ans}",
                    :buttons=>['continue'])
@@ -885,15 +884,15 @@ class Scoreboard
     end
   end
 
-  def submit(myid, score)#2003.06.30
-    STDERR.puts "submit: #{myid}, #{score}" if $MYDEBUG
-    return if @obj.nil?
+  #2003.06.30
+  def submit(myid, score)
+    debug "submit: #{myid}, #{score}"
     month_date=Time.now.strftime("%m/%d %H:%M")
-    @obj.put(myid,score,month_date)
+    @remote.put(myid,score,month_date)  unless @remote.nil?
   end
 
   def toggle_contest(uid)
-    return false if @obj.nil?
+    return false if @remote.nil?
     @stat = ! @stat
     if (@stat)
       #clear self's point
@@ -907,18 +906,19 @@ class Scoreboard
   end
 
   def show_all
-    return if @obj.nil?
-    display(@obj.all)
+    display(@remote.all) unless @remote.nil?
   end
 
-  # FIXME: ここのロジックは酷い。
   def auth(uid)
     debug "#{__method__}: #{uid}"
-    @authenticated=if (! @obj.nil?)
-                      @obj.auth(uid)
-                   else
-                     drb=self.start_drb and self.auth(uid)
-                   end
+    start_drb unless @remote
+    true
+    # changed: 2012-04-15.
+#    @authenticated=if (! @remote.nil?)
+#                      @remote.auth(uid)
+#                   else
+#                     drb=self.start_drb and self.auth(uid)
+#                   end
   end
 
 end # Scoreboard
