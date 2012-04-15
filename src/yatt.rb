@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
@@ -12,7 +12,6 @@
 # 2012-04-02, server updates.
 
 $MYDEBUG=false
-
 DEBUG=false
 
 def debug(s)
@@ -53,7 +52,7 @@ else
   TIMEOUT=60
 end
 
-# Use?
+# still in use?
 ADMIN="yatt"
 ADMIN_DIR="/home/t/hkim"
 
@@ -259,6 +258,8 @@ class Trainer
   end
 
   def menu_toggle_contest
+#    @contest = @scoreboard.toggle_contest(@myid)
+#    @logger.clear_highscore
     if @scoreboard.auth(@myid)
       @contest = @scoreboard.toggle_contest(@myid)
       @logger.clear_highscore
@@ -772,27 +773,29 @@ class Scoreboard
     @server=server
     @port=port
     @my_id=my_env('USER')
-    @authenticated=false
+#    @authenticated=false
+    @authenticated=true
     self.start_drb unless @server
   end
 
   def start_drb
-    begin
-      DRb.start_service()
-      @obj=DRbObject.new(nil, "druby://#{@server}:#{@port}")
-      true
-    rescue DRb::DRbConnError
-      self.can_not_talk(@server)
-      @obj=nil
-      false
+    DRb.start_service
+    @obj=DRbObject.new(nil,"druby://#{@server}:#{@port}")
+    unless @obj.ping=~/ok/
+      raise "@server does not respond."
     end
+  rescue =>e
+    can_not_talk(@server)
   end
 
   def can_not_talk(server)
-    TkDialog.new(:title=>'scoreboard daemon',
-                 :message=>"scoreboard is not available at #{server}.\n"+
-                 "you can not join contest.",
-                 :buttons=>['continue'])
+    TkDialog.new(:title=>'can not talk to server',
+      :message=>"サーバと通信できません。\n"+
+      "下の continue を押し、"+
+      "次にでてくるOKボタンを押せばyatt の練習はできますが"+
+      "コンテストには参加できません。\n"+
+      "しばらく秘密練習に励んでください。",
+      :buttons=>['continue'])
   end
 
   def pack(param)
@@ -908,14 +911,16 @@ class Scoreboard
     display(@obj.all)
   end
 
+  # FIXME: ここのロジックは酷い。
   def auth(uid)
     debug "#{__method__}: #{uid}"
     @authenticated=if (! @obj.nil?)
                       @obj.auth(uid)
                    else
-                      self.start_drb and self.auth(uid)
+                     drb=self.start_drb and self.auth(uid)
                    end
   end
+
 end # Scoreboard
 
 ############
@@ -1046,5 +1051,6 @@ while (arg=ARGV.shift)
     usage()
   end
 end
+
 trainer=Trainer.new(server, port, lib)
 Tk.mainloop
