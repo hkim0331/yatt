@@ -55,6 +55,8 @@ YATT_DIR=File.join(ENV['HOME'],'.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY=File.join(YATT_DIR,'history')
 
+DATE_FORMAT="%m-%d"
+
 # still in use?
 ADMIN="yatt"
 ADMIN_DIR="/home/t/hkim"
@@ -293,7 +295,7 @@ class Trainer
 
   def menu_todays_score
     t=Time.now
-    today=t.strftime("%m%d")
+    today=t.strftime(DATE_FORMAT)
     lst=[]
     File.foreach(File.join(YATT_DIR, today)) do |line|
       lst.push(line.chomp.to_i)
@@ -575,8 +577,6 @@ class Logger
   def initialize
     @good=Hash.new(0)
     @ng=Hash.new(0)
-    t=Time.now
-    @today=t.strftime("%m%d")
   end
 
   def start
@@ -665,7 +665,7 @@ class Logger
   end
 
   def save(score)
-    today=Time.now.strftime("%m-%d")
+    today=Time.now.strftime(DATE_FORMAT)
     File.open(File.join(YATT_DIR, today),"a") do |fp|
       fp.puts(score)
     end
