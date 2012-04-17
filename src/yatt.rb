@@ -39,7 +39,8 @@ BAD="red"
 
 LIB=File.join(ENV['HOME'], "Library/yatt")
 YATT_TXT="yatt.txt"
-YATT_IMG="yatt.gif"
+#YATT_IMG="yatt.gif"
+YATT_IMG="yatt3.gif"
 
 YATTD="localhost"
 PORT=23002
