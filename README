@@ -1,16 +1,19 @@
-#-*- coding: utf-8 -*-
+#-*- mode: outline; coding: utf-8 -*-
 
-* ruby 1.9 で動くように。
+* FIXME: vm3:/etc/rc.local から yatt_server が起動しない。2012-04-16.
+  => sequel を見つけていない。/usr/local/bin/ruby を使ってもダメ。
+     /etc/rc.local の制限があるのか?
+  
+* ruby 1.9 で動くように。=> 2012-03-** done.
 
 * osx で /opt/local/bin/ruby を使うとエラー、
   /opt/local/lib/ruby/1.8/drb/drb.rb:852:in `initialize': getaddrinfo: nodename nor servname provided, or not known (SocketError)
-
   /usr/bin/ruby でもエラー、
   yatt.rb:192:in `initialize': /usr/local/lib/yatt/yatt.doc does not exist  (RuntimeError)
-
   つまり、チェックアウト直後(r948)は全く動かない。
   速攻で動かせそうなのは /usr/bin/ruby の方。
-
+  => ruby 1.9 で動かす。
+  
 * isc では courier 14pt で動かすこと。2009-04-13
   => done.
 

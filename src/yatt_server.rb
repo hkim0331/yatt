@@ -188,7 +188,7 @@ debug([YATT_VERSION, hostname, port, db].join(", "))
 begin
   score_server=ScoreServer.new(logfile, db)
   uri="druby://#{hostname}:#{port}"
-  DRb.start_service(uri,score_server)
+  DRb.start_service(uri, score_server)
   puts uri
   DRb.thread.join
 

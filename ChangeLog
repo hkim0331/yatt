@@ -1,141 +1,15 @@
-2005-05-19  Hiroshi Kimura  <hkim@nimbus.melt.kyutech.ac.jp>
+2012-04-17  Hiroshi Kimura  <hiroshi.kimura.0331@gmail.com>
 
-	* yatt.rb (Trainer::insert): е╔енехесеєе╚д╬┴кд╙╩¤дЄд┴дчд├д╚▓■╬╔бг
+	* src/yatt.rb (SpeedMeter#min): TODAYS_SCORE уВТ yatt ш╡╖хЛХцЩВуБлф╜ЬцИРуАВ
 
-2004-05-14  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+2012-04-15  Hiroshi Kimura  <hiroshi.kimura.0331@gmail.com>
 
-	* rename yatt2d_probe.rb as yatt2probe.rb
+	* yatt.rb: $MYDEBUGуВТхЙКщЩдуАВуБдуБДуБзуБлуГбуГЛуГеуГ╝уВВуАВ
 
-2004-05-10  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
+	* yatt.rb (Scoreboard#auth): щЕ╖уБДauthуВТуВ╖уГ│уГЧуГлуБлуАВ
 
-	* yatt2.rb (menu_new): bug fix. 
+	* yatt.rb (Scoreboard#can_not_talk): can_not_talk уБоцЦЗчлауВТцЧецЬмшкЮуБлуАВ
 
-2004-05-08  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
-
-	* yatt2-branch joined. 
-	osx д╟д╬╞░║юдЄ│╬╟збг
-	--myid myid еке╫е╖ечеє
-	╟з╛┌дЄ authentication(), authenticated д╦╩м╬е
-	ещеєенеєе░е▄б╝е╔д╦ещеєепедеєд╬╞№╔╒дЄ╔╜╝и
-	▓с╡юд╬е╜б╝е╣дЄ└╢╗╗бг
-	drb-2.0.4 д╬║╬═╤бг
-	
-2004-05-03  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
-
-	* yatt2-branch start.
-
-2003-10-08  Hiroshi Kimura  <hkim@dercy.melt.kyutech.ac.jp>
-
-	* yatt_score_server.rb (STUDENTS): --db dbfile еке╫е╖ечеєбг
-	╜щ┤№├═ STUDENTS дЄ╛х╜ёднд╣дыбг
-	(db): едеєе┐еще╫е╚╬у│░дЄ╩с│═д╖бве╟б╝е┐дЄе└еєе╫д╣дыбг
-
-	* Makefile: s/yatt/yatt.rb/g
-	yatt.rb дЄ│╪┤№д┤д╚д╦ yatt д╟еще├е╫д╖д╞╗╚дкджбг
-
-2003-02-21  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* yatt.rb: drb дЄ═╤ддд╞е╣е│еве╡б╝е╨дЄ┴┤╠╠┼кд╦╜ёдн─╛д╖бгд│дьд╦д╞е╨б╝
-	е╕ечеєд╧ 0.8 д╦бг
-
-2002-10-21  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* е╟е╨е├е░╜╨╬╧дЄ└░═¤бг
-	* ttserv, ttbind дЄ yatt_logger, yatt_snort д╦еъе═б╝ербг
-	* есе╜е├е╔ reset дЄ clear д╦еъе═б╝ербг
-
-2002-10-10  Hiroshi KIMURA  <hkim@nimbus>
-
-	* ttserv: еще├е╤б╝д╩д╖д╟дт╟з╛┌д╣дыдшджд╦бгд─д▐дъбв╟з╛┌дЄ┤┼дпд╖д┐дя
-	д▒д└бг
-
-	* yatt.rb: (happy birth day! aoi-chan) ┤─╢н╩╠└▀─ъдЄ└░═¤бгWindows
-	д╟д╧д▐д╚дтд╦╞░длд╩ддд└дэджбге╤е╣д╬е╗е╤еьб╝е┐┼∙дЄ╕л─╛д╣╔м═╫двдъбг
-		
-2002-07-05  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* yatt.rb (is_alive?): ttserv д╚д╬└▄┬│д╦е┐едеревеже╚дЄ└▀д▒д┐бг
-	д│дьд╦дшдъбвttserv д╚─╠┐од╟днд╩ддд╚днд╦бвjoin_compe дф reload дЄ╝┬
-	╣╘д╖д╞ yatt дм─ф╗▀д╖д╞д╖д▐дже╨е░дЄ▓є╚Єбг
-	е╜е▒е├е╚┤╪┐ЇдЄ░ь╦▄▓╜бг
-	join_compe, sumit есе╜е├е╔дЄ Scoreboard епеще╣д╦░▄╞░бг
-	
-2002-06-12  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* yatt.rb :╛Ё╩єе╗еєе┐б╝д╟дт compe д╦╗▓▓├д╟дндыдшджд╦д╣дыбг
-	е╨е░: runnable_before д╟╬йд┴╛хдмд├д┐╕хбв╗■┤╓дм═шд╞дт run д╟дндыбг
-
-2002-06-11  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* yatt.rb (YATT_VERSION): windows д╟дт╞░дпдшджд╦д╩д├д┐бг
-	speed meterд╬─╔▓├бг
-
-2002-06-08  Hiroshi KIMURA  <hkim@nimbus>
-
-	* yatt.rb (key_press): ╜ёдн─╛д╖бгд│дьд╦дшд├д╞бвекб╝е╨б╝ещеєд╖д┐╞■
-	╬╧дЄ╝бд╬╠╠д╦╖лдъ▒█д╡д╩дпд╩д├д┐бгyatt.rb дм═юд┴дыд│д╚дтд╩дпд╩д├д┐бг
-	д▐д┐бве│б╝е╔дтднд├д╚╕лдфд╣дпд╩д├д┐д╚╗╫джд╛бг
-
-	* BUG : енб╝╞■╬╧д╬екб╝е╨б╝ещеєдм┬┐ддд╚ yatt.rb дм═юд┴дыбгд│дьд╧
-	Loose етб╝е╔д╟╚п└╕д╖дфд╣дд(╛хд╬║ю╢╚д╟ fix)бг
-
-	* yatt.rb : bonus(complete, perfect)бгесе╦ехб╝д╬е╫еэе░ещердЄ╩╤╣╣бг
-	е╓еэе├еп╞т╔Їдлдщ│░╔Їедеєе╣е┐еєе╣╩╤┐ЇдЄ╗▓╛╚д╖д╜д│д╩джбг(е╓еэе├еп─ъ
-	╡┴╗■д╬┤─╢ндЄе│е╘б╝д╖д╞ддды?) двд╚д╟дтдж░ь┼┘есе╦ехб╝д╦╝ъдЄ╞■дьдыбг
-	е┴езе├епе▄е├епе╣╔ўд╦бг
-	(Logger#score) ╖╫╗╗╝░дЄ┐╖╡мд╦бг
-
-	* ttbind : functions get/reset/dump/load
-
-	* ttserv : load 
-
-2002-06-07  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* yatt.rb (MyText.sticky): stickyетб╝е╔ --е┐еде╫е▀е╣д╬╛ь╜ъдЄд╖д─д│
-	дп╔╜╝ид╣дыбг 
-	create class MyPlot
-	Trainer.submit ╦ш▓є auth
-
-2002-06-06  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-
-	* yatt.rb (key_press): 	@@epilog дЄ╗╚ддбве└едевеэе░дЄд╥д╚д─д╖дл╔╜
-	╝ид╖д╩дддшджд╦бг
-
-	* yatt.rb (join_compe): md5sum д╦дшдые╜б╝е╣е╒ебедеы╟з╛┌бг
-
-2002-06-01 Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
-	▓с╡юеэе░
-	* еэе░(half done, 06.01)
-	┼¤╖╫╛Ё╩єдЄе╒ебедеыд╦╡н╧┐д╣дыбге╒ебедеыдЄ╞╔дєд╟е░еще╒╔╜╝ид╣дыбг└о└╙
-	д╚╔╤┼┘(└╡▓Є+╕эе┐еде╫)бгенб╝д┤д╚д╦└о└╙дЄ╔╜╝ид╣дыбг
-
-	* total/todays дмд▐д└╠д╝┬┴їбг
-
-	* е┐едеревеже╚
-	┼╙├ц╜к╬╗д╖д┐д╚днд╚д╜джд╟д╩ддд╚днд╚д╬└о└╙д╦║╣дЄд─д▒дыбг
-
-	* startup е╒ебедеыд╬╜р╚ў
-
-	* е▄б╝е╔д╬╔╜╝идм└░╬єд╖д╞д╩дд(06.01)бг
-
-	* е└едевеэе░бве╣еье├е╔д▐дядъд╬╞░║юдм╔╘░┬─ъ(06.01)
-	е╣еье├е╔дфдсд┐бгдфдсд╞ TkAfter д╦╩╤╣╣д╖д┐дщ░┬─ъд╖д┐┤╢д╕бг
-
-	* еъевеые┐едер└о└╙╔╜╝ие╫еэе░ещер(05.30)
-	екеєещедеєд╟е╣е│евдЄ╜╕╖╫д╖бв╔╜╝ид╣дые╫еэе░ещерд╚д╬╧в╞░бг
-	woody ruby-1.6.7-3 д╬╞░║юдмдкдлд╖ддбг
-
-	* е┐еде▐б╝д╬╜ш═¤(half done 05.28) 
-	╕╜е╨б╝е╕ечеєд╧═н╠╡дЄ╕└дяд╡д║ exit д╣дыбгд│дьдЄднд┴дєд╚╕х╗╧╦ЎдЄд╣ды
-	дшджд╦╩╤дидыбг 
-
-	* ║┘длдде╫еэе░ещерд╬╬одь(05.28)
-	╕╜е╨б╝е╕ечеєд╧бвежегеєе╔еждмекб╝е╫еєд╣дыд╚┬ибве┐еде▐б╝дмележеєе╚дЄ
-	╗╧дсдыбгд│дьдЄд╡ддд╖дчд╬ keypress еде┘еєе╚длдщд╦╩╤дидыбг 
-
-	* еъе╚ещед(05.28)
-
-	* е╤ещесб╝е┐╜ш═¤(05.25)
-	е│е▐еєе╔ещедеєд╚бв╜щ┤№▓╜е╒ебедеыд╬░╖дддЄ░ь╕╡▓╜д╣дыбг
-	
-
+	* хПдуБДChangeLogуБпцЦЗхнЧуВ│уГ╝уГЙуБоуБЫуБДуБЛуАБуБ╡уБдуБЖуБлшкнуВБуБкуБДуАВ
+	  уБЭуБДуБдуВТChangeLog.oldуБихРНхЙНуВТхдЙуБИуБжуАБ
+	  уБВуБЯуВЙуБЧуБДChangeLogуВТщЦЛхзЛуАВ
