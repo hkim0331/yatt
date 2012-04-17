@@ -1,3 +1,7 @@
+2012-04-17  Hiroshi Kimura  <hiroshi.kimura.0331@gmail.com>
+
+	* src/yatt.rb (SpeedMeter#min): TODAYS_SCORE を yatt 起動時に作成。
+
 2012-04-15  Hiroshi Kimura  <hiroshi.kimura.0331@gmail.com>
 
 	* yatt.rb: $MYDEBUGを削除。ついでにメニューも。

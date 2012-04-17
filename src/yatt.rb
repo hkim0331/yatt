@@ -54,8 +54,8 @@ end
 YATT_DIR=File.join(ENV['HOME'],'.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY=File.join(YATT_DIR,'history')
-
 DATE_FORMAT="%m-%d"
+TODAYS_SCORE=File.join(YATT_DIR,Time.now.strftime(DATE_FORMAT))
 
 # still in use?
 ADMIN="yatt"
@@ -194,8 +194,8 @@ class Trainer
         ['Percentile graph', proc{menu_percentile},0],
         '---',
         ['Speed Meter',proc{menu_speed_meter},0],
-        ['Today\'s score', proc{menu_todays_score},0],
-        ['total Score',proc{menu_total_score},6]],
+        ['Today\'s scores', proc{menu_todays_score},0],
+        ['former Scores',proc{menu_total_score},6]],
       [['Font',0],
         ['courier', proc{menu_setfont('Courier')}],
         ['fixed', proc{menu_setfont('Fixed')}],
@@ -211,11 +211,14 @@ class Trainer
         ['14', proc{menu_setsize(14)}],
         ['18', proc{menu_setsize(18)}],
         ['24', proc{menu_setsize(24)}],
-        ['34', proc{menu_setsize(34)}],
-        '---',
-        ['save font']],
+        ['34', proc{menu_setsize(34)}]
+#セーブできてからメニューを活かそう。
+#        '---',
+#        ['remember font']
+      ],
       [['Help',0],
-        ['readme', proc{readme},0],
+# 上に同じ。
+#        ['readme', proc{readme},0],
         ['about...',proc{about},0],
         '---',
         ['parameters', proc{show_params},0],
@@ -294,13 +297,11 @@ class Trainer
   end
 
   def menu_todays_score
-    t=Time.now
-    today=t.strftime(DATE_FORMAT)
     lst=[]
-    File.foreach(File.join(YATT_DIR, today)) do |line|
+    File.foreach(TODAYS_SCORE) do |line|
       lst.push(line.chomp.to_i)
     end
-    @todays=MyPlot.new(today)
+    @todays=MyPlot.new(Time.now.strftime("%Y-%m-%d"))
     @todays.clear
     @todays.plot(lst)
   end
@@ -665,8 +666,7 @@ class Logger
   end
 
   def save(score)
-    today=Time.now.strftime(DATE_FORMAT)
-    File.open(File.join(YATT_DIR, today),"a") do |fp|
+    File.open(TODAYS_SCORE,"a") do |fp|
       fp.puts(score)
     end
   end
@@ -1032,7 +1032,7 @@ class SpeedMeter
   end
 end# SpeedMeter
 #
-# main
+# main starts here.
 #
 server=YATTD
 port=PORT
@@ -1051,6 +1051,8 @@ while (arg=ARGV.shift)
     usage()
   end
 end
+
+File.open(TODAYS_SCORE,"a").close
 
 trainer=Trainer.new(server, port, lib)
 Tk.mainloop
