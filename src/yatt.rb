@@ -128,7 +128,7 @@ class Trainer
     @myid = my_env('USER')
 
     srand($$)
-    root=TkRoot.new {title 'yet another type trainer'}
+    root=TkRoot.new {title 'yet another typing trainer'}
     root.bind('KeyPress', proc{|e| key_press(e)},'%N')
     do_menu(root)
     base=TkFrame.new(root, :relief=>'groove', :borderwidth=>2)
