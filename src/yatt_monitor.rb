@@ -5,7 +5,7 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.15
+# VERSION: 0.15.1
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
@@ -20,7 +20,7 @@ end
 require 'drb'
 require 'sequel'
 
-YATT_VERSION='0.15'
+YATT_VERSION='0.15.1'
 DATE='2012-04-21'
 
 REQ_RUBY="1.9.3"
@@ -146,7 +146,7 @@ class ScoreServer
         ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
       end
     end
-    ret.to_a
+    ret.to_a.sort{|a,b| a[1][0] <=> b[1][0]}
   end
   
   def get_myclass(num)
