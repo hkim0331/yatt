@@ -18,8 +18,10 @@ osx:
 	(cd src && make osx)
 	(cd lib && make osx)
 
-server:
-	(cd src && make server)
+server: monitor
+
+monitor:
+	(cd src && make monitor)
 
 clean:
 	${RM} *~ .\#*
