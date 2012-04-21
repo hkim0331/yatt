@@ -1,3 +1,8 @@
+2012-04-22  Hiroshi Kimura  <hiroshi.kimura.0331@gmail.com>
+
+  * git のログとこの ChangeLog にだぶって記録を残すのはめんどう。
+    めんどうだとよくないことが必ず起こる。
+  
 2012-04-17  Hiroshi Kimura  <hiroshi.kimura.0331@gmail.com>
 
 	* src/yatt.rb (SpeedMeter#min): TODAYS_SCORE を yatt 起動時に作成。
