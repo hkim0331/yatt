@@ -34,7 +34,7 @@ done
 #sed -i.bak "s/PBL2011_VERSION=.*$/PBL2011_VERSION=${VERSION}/" \
 #	common.rb
 DATE=`date +"%Y-%m-%d"`
-for i in src/yatt.rb src/yatt_server.rb; do
+for i in src/yatt.rb src/yatt_monitor.rb; do
     sed -i.bak \
 	-e "s/^YATT_VERSION\s*=.*$/YATT_VERSION='${VERSION}'/" \
 	-e "s/^DATE\s*=.*$/DATE='${DATE}'/" $i
