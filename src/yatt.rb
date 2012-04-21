@@ -10,8 +10,9 @@
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
 # 2012-04-02, server updates.
+# 2012-04-21, feature/database.
 
-DEBUG=false
+DEBUG=(RUBY_PLATFORM=~/darwin/)
 
 def debug(s)
   puts s if DEBUG
@@ -39,7 +40,6 @@ BAD="red"
 
 LIB=File.join(ENV['HOME'], "Library/yatt")
 YATT_TXT="yatt.txt"
-#YATT_IMG="yatt.gif"
 YATT_IMG="yatt3.gif"
 
 YATTD="localhost"
@@ -47,7 +47,7 @@ PORT=23002
 RANKER=30
 
 if DEBUG
-  TIMEOUT=20
+  TIMEOUT=10
 else
   TIMEOUT=60
 end
@@ -59,8 +59,8 @@ DATE_FORMAT="%m-%d"
 TODAYS_SCORE=File.join(YATT_DIR,Time.now.strftime(DATE_FORMAT))
 
 # still in use?
-ADMIN="yatt"
-ADMIN_DIR="/home/t/hkim"
+#ADMIN="yatt"
+#ADMIN_DIR="/home/t/hkim"
 
 #############
 # FIXME:
@@ -115,7 +115,7 @@ class Trainer
 
     @windows=nil
     @user_config=File.join(YATT_DIR,"config")
-    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
+#    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
     @width=78
     @lines=6
     @textfile=File.join(@lib,YATT_TXT)
@@ -186,17 +186,22 @@ class Trainer
         ['reLoad', proc{menu_reload},2],
         ['My ranking', proc{menu_my_rank},0],
         ['Remove me',proc{menu_remove_me},0],
-        ['show All participant',proc{menu_show_all},5],
+        ['show All',proc{menu_show_all},5],
         '---',
         ['Sticky',proc{menu_sticky},0],
         ['Loose',proc{menu_loose},0],
-        ['Default',proc{menu_default},0],
+#        ['Default',proc{menu_default},0],
         '---',
         ['Percentile graph', proc{menu_percentile},0],
         '---',
         ['Speed Meter',proc{menu_speed_meter},0],
         ['Today\'s scores', proc{menu_todays_score},0],
-        ['former Scores',proc{menu_total_score},6]],
+        ['former Scores',proc{menu_total_score},6],
+        '---',
+        ['global',proc{menu_global}],
+        ['weekly',proc{menu_weekly}],
+        ['(class)',proc{menu_myclass}]
+        ],
       [['Font',0],
         ['courier', proc{menu_setfont('Courier')}],
         ['fixed', proc{menu_setfont('Fixed')}],
@@ -233,12 +238,27 @@ class Trainer
       "version: #{YATT_VERSION}\n"+
       "date: #{DATE}\n"+
       "lib: #{LIB}\n"+
-      "admin: #{ADMIN_DIR}\n"+
+#      "admin: #{ADMIN_DIR}\n"+
       "server: #{@server}\n"+
       "port: #{@port}\n"
     TkDialog.new(:title=>'yatt params',
                  :message=>message,
                  :buttons=>['continue'])
+  end
+
+  def menu_global
+    @scoreboard.global
+    @scoreboard.update
+  end
+  
+  def menu_weekly
+    @scoreboard.weekly
+    @scoreboard.update
+  end
+  
+  def menu_myclass
+    @scoreboard.myclass
+    @scoreboard.update
   end
 
   def menu_new
@@ -258,12 +278,12 @@ class Trainer
     @textarea.loose
   end
 
-  def menu_default
-    @textarea.set_loose(false)
-    @textarea.set_sticky(false)
-  end
+#  def menu_default
+#    @textarea.set_loose(false)
+#    @textarea.set_sticky(false)
+#  end
 
-  # FIXME: complex.
+  # FIXME: too complex.
   def menu_toggle_contest
 #    @contest = @scoreboard.toggle_contest(@myid)
 #    @logger.clear_highscore
@@ -384,9 +404,10 @@ class Trainer
   end
 
   def time_for_train?(now,crit)
-    return false if File.exists?(File.join(ADMIN_DIR,".yatt","do_not_run"))
-    hour,min=crit.split(/:/)
-    now.hour*60+now.min < hour.to_i*60+min.to_i
+    return true
+#    return false if File.exists?(File.join(ADMIN_DIR,".yatt","do_not_run"))
+#    hour,min=crit.split(/:/)
+#    now.hour*60+now.min < hour.to_i*60+min.to_i
   end
 
   # core of yatt.rb
@@ -484,12 +505,20 @@ class Trainer
 
     debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
 
-    if score > @logger.highscore
-      @logger.set_highscore(score)
-      if (@contest and @scoreboard.authenticated)
-        @scoreboard.submit(@myid,score)
-      end
-    end
+    # 2012-04-21,ここ。 最高点数だけ、かつ、authenticated なと気だけ、
+    # scoreboard に点数をサブミットしている。
+    # scoreborad 側に最高点かどうかを判定するルーチンを入れる必要がある。
+    #
+    # if score > @logger.highscore
+    #   @logger.set_highscore(score)
+    #   if (@contest and @scoreboard.authenticated)
+    #     @scoreboard.submit(@myid,score)
+    #   end
+    # end
+    @logger.set_highscore(score) if score > @logger.highscore
+    @scoreboard.submit(@myid,score)
+
+    #
     @scoreboard.update if @contest
     ret=TkDialog.new(:title=>'yet another type trainer',
                      :message=>msg,
@@ -760,10 +789,14 @@ class Scoreboard
 
   WIDTH=30
   HEIGHT=10
-
+  GLOBAL=:global
+  WEEKLY=:weekly
+  MYCLASS=:myclass
+  
   attr_reader :authenticated
 
   def initialize(parent, server, port, stat)
+    @mode=WEEKLY
     @text=TkText.new(parent,
                      :takefocus=>0,
                      :background=>'gray',
@@ -781,6 +814,18 @@ class Scoreboard
     self.start_drb unless @server
   end
 
+  def global
+    @mode=GLOBAL
+  end
+  
+  def weekly
+    @mode=WEEKLY
+  end
+  
+  def myclass
+    @mode=MYCLASS
+  end
+  
   def start_drb
     DRb.start_service
     @remote=DRbObject.new(nil,"druby://#{@server}:#{@port}")
@@ -870,8 +915,21 @@ class Scoreboard
     @text.configure(:state=>'disabled')
   end
 
+  # FIXME:
+  # 3種類の update を作る。
+  # update global
+  # update this week
+  # update my class
+  # これをどう実現するか？
   def update
-    display(@remote.get(RANKER)) unless @remote.nil?
+    case @mode
+    when WEEKLY
+      display(@remote.get(RANKER)) unless @remote.nil?
+    when GLOBAL
+      display(@remote.get_global(RANKER)) unless @remote.nil?
+    when MYCLASS
+      display(@remote.get_myclass(RANKER)) unless @remote.nil?
+    end
   end
 
   def rank(user)
@@ -885,11 +943,14 @@ class Scoreboard
     end
   end
 
-  #2003.06.30
+  # 2003.06.30, 
+  # changed 2012-04-21,
   def submit(myid, score)
     debug "submit: #{myid}, #{score}"
-    month_date=Time.now.strftime("%m/%d %H:%M")
-    @remote.put(myid,score,month_date)  unless @remote.nil?
+    if @remote
+      month_date=Time.now.strftime("%m/%d %H:%M")
+      @remote.put(myid,score,month_date)
+    end
   end
 
   def toggle_contest(uid)

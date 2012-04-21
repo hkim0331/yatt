@@ -8,8 +8,10 @@
 # VERSION: 0.14
 #
 # update 2012-04-02, icome connection.
+# 2012-04-22, rename yatt_server as yatt_monitor.
+#
 
-DEBUG=false
+DEBUG=(RUBY_PLATFORM=~/darwin/)
 
 def debug(s)
   puts s if DEBUG
@@ -71,7 +73,7 @@ class ScoreServer
   def initialize(logfile, db)
     @score=Hash.new(0)
     @logfile=logfile
-    @db=Sequel.sqlite(db)
+    @ds=Sequel.sqlite(db)[:yatt]
   end
 
   def clear
@@ -87,12 +89,13 @@ class ScoreServer
     best(@score.length)
   end
 
+  # changed: 2012-04-21, yatt から最高点以外のデータも送られてくる。その変更に対応すること。
   def put(name,score,time)
     debug ("#{__method__}: #{name}, #{score}, #{time}")
     File.open(@logfile,"a") do |fp|
       fp.puts "#{time} #{name} #{score}"
     end
-    @db[:yatt].insert(:uid=>name,:score=>score,
+    @ds.insert(:uid=>name,:score=>score,
       :updated_at=>Time.now.strftime("%Y-%m-%d %H:%M:%S"))
     if score>@score[name][0]
       @score[name]=[score, time]
@@ -103,6 +106,8 @@ class ScoreServer
     @score.delete(name)
   end
 
+  # is not called from  anywhere in this file.
+  # from outside? 
   def load(fname)
     @score.clear
     File.foreach(fname) do |line|
@@ -129,10 +134,25 @@ class ScoreServer
   # return array
   def get(num)
     debug("#{__method__}: #{num}")
-    debug "#{self.best(num)}"
     self.best(num)
   end
 
+  
+  def get_global(num)
+    ret=Hash.new
+    @ds.each do |r|
+      uid=r[:uid]
+      if ret[uid].nil? or ret[uid][0]<r[:score]
+        ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
+      end
+    end
+    ret.to_a
+  end
+  
+  def get_myclass(num)
+
+  end
+  
   def remove(me)
     self.del(me)
   end
