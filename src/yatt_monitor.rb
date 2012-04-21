@@ -131,13 +131,12 @@ class ScoreServer
     end
   end
 
-  # return array
+  # CHANGED: return array
   def get(num)
     debug("#{__method__}: #{num}")
     self.best(num)
   end
 
-  
   def get_global(num)
     ret=Hash.new
     @ds.each do |r|
@@ -146,11 +145,10 @@ class ScoreServer
         ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
       end
     end
-    ret.to_a.sort{|a,b| a[1][0] <=> b[1][0]}
+    ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
   end
-  
-  def get_myclass(num)
 
+  def get_myclass(num)
   end
   
   def remove(me)
