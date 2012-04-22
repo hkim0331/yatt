@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.15.1
+# VERSION: 0.15.2
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -29,8 +29,8 @@ rescue
   DRB_ENABLED=false
 end
 
-YATT_VERSION='0.15.1'
-DATE='2012-04-21'
+YATT_VERSION='0.15.2'
+DATE='2012-04-22'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -77,11 +77,10 @@ class Trainer
 
   @epilog=false
   def about
-    message="Yet Another Typing Trainer\n"+
-      "programmed by\nHiroshi Kimura,\n"+
-      "version "+YATT_VERSION+", "+DATE+".\n"+
+    message="programmed:Hiroshi Kimura,\n"+
+      "version: #{YATT_VERSION}(#{DATE})\n"+
       "Copyright (C) 2002-2012.\n"
-    TkDialog.new(:title=>'yatt',
+    TkDialog.new(:title=>"Yet Another Typing Trainer",
                  :message=>message,
                  :buttons=>['continue'])
   end
@@ -217,15 +216,14 @@ class Trainer
         ['14', proc{menu_setsize(14)}],
         ['18', proc{menu_setsize(18)}],
         ['24', proc{menu_setsize(24)}],
-        ['34', proc{menu_setsize(34)}]
-#セーブできてからメニューを活かそう。
-#        '---',
-#        ['remember font']
+        ['34', proc{menu_setsize(34)}],
+        '---',
+        ['(remember font)']
       ],
       [['Help',0],
-# 上に同じ。
-#        ['readme', proc{readme},0],
+        ['(readme)'],
         ['about...',proc{about},0],
+        ['(upgrade)'],
         '---',
         ['parameters', proc{show_params},0],
       ]]
@@ -238,7 +236,6 @@ class Trainer
       "version: #{YATT_VERSION}\n"+
       "date: #{DATE}\n"+
       "lib: #{LIB}\n"+
-#      "admin: #{ADMIN_DIR}\n"+
       "server: #{@server}\n"+
       "port: #{@port}\n"
     TkDialog.new(:title=>'yatt params',
@@ -250,12 +247,12 @@ class Trainer
     @scoreboard.global
     @scoreboard.update
   end
-  
+
   def menu_weekly
     @scoreboard.weekly
     @scoreboard.update
   end
-  
+
   def menu_myclass
     @scoreboard.myclass
     @scoreboard.update
