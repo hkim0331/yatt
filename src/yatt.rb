@@ -12,7 +12,7 @@
 # 2012-04-02, server updates.
 # 2012-04-21, feature/database.
 
-DEBUG=(RUBY_PLATFORM=~/darwin/)
+DEBUG=(RUBY_PLATFORM=~/darwin/ && ENV['User']=~/hkim/)
 
 def debug(s)
   puts s if DEBUG
