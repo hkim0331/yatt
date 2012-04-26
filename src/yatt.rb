@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.16
+# VERSION: 0.16.1
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -15,23 +15,32 @@
 
 DEBUG=(RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
 
+require 'tk'
+
+begin
+  require 'drb'
+  DRB_ENABLED=true
+rescue
+  STDERR.puts "you can not join contest without drb."
+  DRB_ENABLED=false
+end
+
 def debug(s)
   puts s if DEBUG
 end
 debug "debug: #{DEBUG}"
 
-require 'tk'
+def usage
+  print <<EOU
+usage:
+  #{$0} [--noserver|--server server] [--port port] [--lib path]
 
-# for standalone use
-begin
-  require 'drb'
-  DRB_ENABLED=true
-rescue
-  STDERR.puts "you can not join contest without drb installed."
-  DRB_ENABLED=false
+EOU
+  exit(1)
 end
 
-YATT_VERSION='0.16'
+
+YATT_VERSION='0.16.1'
 DATE='2012-04-27'
 
 REQ_RUBY="1.9.3"
@@ -40,7 +49,6 @@ raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 GOOD="green"
 BAD="red"
 
-LIB=File.join(ENV['HOME'], "Library/yatt")
 YATT_TXT="yatt.txt"
 YATT_IMG="yatt3.gif"
 
@@ -49,9 +57,11 @@ RANKER=30
 
 if DEBUG
   YATTD="localhost"
+  LIB=File.join(ENV['HOME'], "Library/yatt")
   TIMEOUT=10
 else
   YATTD="vm3.melt.kyutech.ac.jp"
+  LIB="/edu/lib/yatt"
   TIMEOUT=60
 end
 
@@ -60,10 +70,6 @@ Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY=File.join(YATT_DIR,'history')
 DATE_FORMAT="%m-%d"
 TODAYS_SCORE=File.join(YATT_DIR,Time.now.strftime(DATE_FORMAT))
-
-# still in use?
-#ADMIN="yatt"
-#ADMIN_DIR="/home/t/hkim"
 
 #############
 # FIXME:
@@ -814,15 +820,15 @@ class Scoreboard
   def global
     @mode=GLOBAL
   end
-  
+
   def weekly
     @mode=WEEKLY
   end
-  
+
   def myclass
     @mode=MYCLASS
   end
-  
+
   def start_drb
     DRb.start_service
     @remote=DRbObject.new(nil,"druby://#{@server}:#{@port}")
@@ -940,7 +946,7 @@ class Scoreboard
     end
   end
 
-  # 2003.06.30, 
+  # 2003.06.30,
   # changed 2012-04-21,
   def submit(myid, score)
     debug "submit: #{myid}, #{score}"
