@@ -11,6 +11,7 @@
 # 2012-03-24, update for ruby1.9.
 # 2012-04-02, server updates.
 # 2012-04-21, feature/database.
+# 2012-04-26, contest class cmenu.
 
 DEBUG=(RUBY_PLATFORM=~/darwin/ && ENV['User']=~/hkim/)
 
@@ -42,13 +43,14 @@ LIB=File.join(ENV['HOME'], "Library/yatt")
 YATT_TXT="yatt.txt"
 YATT_IMG="yatt3.gif"
 
-YATTD="localhost"
 PORT=23002
 RANKER=30
 
 if DEBUG
+  YATTD="localhost"
   TIMEOUT=10
 else
+  YATTD="vm3.melt.kyutech.ac.jp"
   TIMEOUT=60
 end
 
@@ -109,9 +111,7 @@ class Trainer
   def initialize(server,port,lib)
     @server=server
     @port=port
-
     @lib=lib
-
     @windows=nil
     @user_config=File.join(YATT_DIR,"config")
 #    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
@@ -120,7 +120,6 @@ class Trainer
     @textfile=File.join(@lib,YATT_TXT)
     @splash  =File.join(@lib,YATT_IMG)
     @readme  =File.join(@lib,"yatt.README")
-
     @runnable_before="25:00"
     @contest=false
     @speed_meter_status=true
@@ -199,7 +198,7 @@ class Trainer
         '---',
         ['global',proc{menu_global}],
         ['weekly',proc{menu_weekly}],
-        ['(class)',proc{menu_myclass}]
+        ['class',proc{menu_myclass}]
         ],
       [['Font',0],
         ['courier', proc{menu_setfont('Courier')}],
@@ -225,7 +224,7 @@ class Trainer
         ['about...',proc{about},0],
         ['(upgrade)'],
         '---',
-        ['parameters', proc{show_params},0],
+        ['debug', proc{show_params},0],
       ]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
@@ -925,7 +924,7 @@ class Scoreboard
     when GLOBAL
       display(@remote.get_global(RANKER)) unless @remote.nil?
     when MYCLASS
-      display(@remote.get_myclass(RANKER)) unless @remote.nil?
+      display(@remote.get_myclass(RANKER,@my_id)) unless @remote.nil?
     end
   end
 

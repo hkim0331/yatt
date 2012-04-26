@@ -25,11 +25,17 @@ DATE='2012-04-22'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-HOSTNAME="localhost"
 PORT=23002
 BEST=30
-LOG=File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
-DB="../db/yatt.db"
+if DEBUG
+  HOSTNAME="localhost"
+  LOG=File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
+  DB="../db/yatt.db"
+else
+  HOSTNAME="edu.melt.kyutech.ac.jp"
+  LOG="/usr/local/var/log/yatt.log"
+  DB="/srv/yatt/db/yatt.db"
+end
 
 def usage
   print <<EOF
@@ -148,7 +154,17 @@ class ScoreServer
     ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
   end
 
-  def get_myclass(num)
+  # id の前から4文字マッチを取る
+  def get_myclass(num,me)
+    pat=%r{#{me[0,4]}}
+    ret=Hash.new
+    @ds.each do |r|
+      uid=r[:uid]
+      if uid=~ pat and (ret[uid].nil? or ret[uid][0]<r[:score])
+        ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
+      end
+    end
+    ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
   end
   
   def remove(me)

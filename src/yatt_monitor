@@ -7,6 +7,6 @@
 
 /usr/local/yatt/bin/yatt_monitor.rb \
   --hostname edu.melt.kyutech.ac.jp \
-  --log /usr/local/var/log/yatt.log\
+  --log /usr/local/var/log/yatt.log \
   --db /srv/yatt/db/yatt.db
 
