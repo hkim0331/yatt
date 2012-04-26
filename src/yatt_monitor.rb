@@ -5,7 +5,7 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.15.2
+# VERSION: 0.16
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
@@ -20,8 +20,8 @@ end
 require 'drb'
 require 'sequel'
 
-YATT_VERSION='0.15.2'
-DATE='2012-04-22'
+YATT_VERSION='0.16'
+DATE='2012-04-27'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0

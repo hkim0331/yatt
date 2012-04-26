@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.15.2
+# VERSION: 0.16
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -13,11 +13,12 @@
 # 2012-04-21, feature/database.
 # 2012-04-26, contest class cmenu.
 
-DEBUG=(RUBY_PLATFORM=~/darwin/ && ENV['User']=~/hkim/)
+DEBUG=(RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
 
 def debug(s)
   puts s if DEBUG
 end
+debug "debug: #{DEBUG}"
 
 require 'tk'
 
@@ -30,8 +31,8 @@ rescue
   DRB_ENABLED=false
 end
 
-YATT_VERSION='0.15.2'
-DATE='2012-04-22'
+YATT_VERSION='0.16'
+DATE='2012-04-27'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -924,7 +925,7 @@ class Scoreboard
     when GLOBAL
       display(@remote.get_global(RANKER)) unless @remote.nil?
     when MYCLASS
-      display(@remote.get_myclass(RANKER,@my_id)) unless @remote.nil?
+      display(@remote.get_myclass(RANKER, @my_id)) unless @remote.nil?
     end
   end
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env dash
 #-*- mode: Makefile -*-
-# VERSION: 0.15.2
+# VERSION: 0.16
 
 RUBY=/usr/bin/env ruby
 YATT=${HOME}/bin/yatt.rb

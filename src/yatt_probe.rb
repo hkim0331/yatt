@@ -261,7 +261,3 @@ else
     prompt()
   end
 end
-
-#Local Variables:
-#mode: Ruby
-#End:
