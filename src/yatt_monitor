@@ -4,9 +4,10 @@
 # 2012-04-02, change /bin/sh to /usr/bin/env dash
 #             add --db option.
 # changed db location from /srv/literacy to /srv/yatt.
+# changed log location fro /usr/local/var/log/ to /srv/yatt/log.
 
 /usr/local/yatt/bin/yatt_monitor.rb \
   --hostname edu.melt.kyutech.ac.jp \
-  --log /usr/local/var/log/yatt.log \
-  --db /srv/yatt/db/yatt.db
+  --log /srv/yatt/log/yatt.log \
+  --db  /srv/yatt/db/yatt.db
 

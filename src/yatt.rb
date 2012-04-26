@@ -820,15 +820,15 @@ class Scoreboard
   def global
     @mode=GLOBAL
   end
-  
+
   def weekly
     @mode=WEEKLY
   end
-  
+
   def myclass
     @mode=MYCLASS
   end
-  
+
   def start_drb
     DRb.start_service
     @remote=DRbObject.new(nil,"druby://#{@server}:#{@port}")
@@ -946,7 +946,7 @@ class Scoreboard
     end
   end
 
-  # 2003.06.30, 
+  # 2003.06.30,
   # changed 2012-04-21,
   def submit(myid, score)
     debug "submit: #{myid}, #{score}"

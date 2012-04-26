@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # yatt score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
@@ -113,7 +113,7 @@ class ScoreServer
   end
 
   # is not called from  anywhere in this file.
-  # from outside? 
+  # from outside?
   def load(fname)
     @score.clear
     File.foreach(fname) do |line|
@@ -166,7 +166,7 @@ class ScoreServer
     end
     ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
   end
-  
+
   def remove(me)
     self.del(me)
   end
