@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # yatt score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.16
+# VERSION: 0.16.1
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
@@ -20,7 +20,7 @@ end
 require 'drb'
 require 'sequel'
 
-YATT_VERSION='0.16'
+YATT_VERSION='0.16.1'
 DATE='2012-04-27'
 
 REQ_RUBY="1.9.3"
@@ -113,7 +113,7 @@ class ScoreServer
   end
 
   # is not called from  anywhere in this file.
-  # from outside? 
+  # from outside?
   def load(fname)
     @score.clear
     File.foreach(fname) do |line|
@@ -166,7 +166,7 @@ class ScoreServer
     end
     ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
   end
-  
+
   def remove(me)
     self.del(me)
   end
