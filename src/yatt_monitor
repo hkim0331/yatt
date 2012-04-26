@@ -1,5 +1,5 @@
 #!/usr/bin/env dash
-# VERSION: 0.15.2
+# VERSION: 0.16
 # 2009-04-13, change --log destination.
 # 2012-04-02, change /bin/sh to /usr/bin/env dash
 #             add --db option.
@@ -7,6 +7,6 @@
 
 /usr/local/yatt/bin/yatt_monitor.rb \
   --hostname edu.melt.kyutech.ac.jp \
-  --log /usr/local/var/log/yatt.log\
+  --log /usr/local/var/log/yatt.log \
   --db /srv/yatt/db/yatt.db
 
