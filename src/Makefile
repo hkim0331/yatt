@@ -25,7 +25,7 @@ linux: yatt.linux yatt.rb
 
 server: monitor
 
-monitor: yatt_monitor.rb yatt_monitor
+monitor: yatt_monitor.rb yatt_monitor yatt_at.sh
 	install -m 0755 yatt_monitor yatt_monitor.rb ${YATT_BIN}
 
 clean:
