@@ -5,7 +5,7 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.16.1
+# VERSION: 0.16.2
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
@@ -20,8 +20,8 @@ end
 require 'drb'
 require 'sequel'
 
-YATT_VERSION='0.16.1'
-DATE='2012-04-27'
+YATT_VERSION='0.16.2'
+DATE='2012-05-11'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -76,6 +76,7 @@ end
 class ScoreServer
   attr_reader :score
 
+  # FIXME: sqlite3=>mysql
   def initialize(logfile, db)
     @score=Hash.new(0)
     @logfile=logfile
@@ -95,7 +96,8 @@ class ScoreServer
     best(@score.length)
   end
 
-  # changed: 2012-04-21, yatt から最高点以外のデータも送られてくる。その変更に対応すること。
+  # changed: 2012-04-21, yatt から最高点以外のデータも送られてくる。
+  # その変更に対応すること。
   def put(name,score,time)
     debug ("#{__method__}: #{name}, #{score}, #{time}")
     File.open(@logfile,"a") do |fp|
@@ -143,6 +145,7 @@ class ScoreServer
     self.best(num)
   end
 
+  # 2012-05-09, c-2g で詰まった。原因は sqlite3 か、drb か?
   def get_global(num)
     ret=Hash.new
     @ds.each do |r|

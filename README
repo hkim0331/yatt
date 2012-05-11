@@ -1,10 +1,15 @@
 #-*- mode: outline; coding: utf-8 -*-
 
+* 2012-05-09 contest/global 選択時、c-2g で糞詰まり。sqlite3 問題か。
+  mysql に行ってみるか。
+  その前に、global/reload メニューに sleep(1) をはさんでみる。
+  
 * FIXME: vm3:/etc/rc.local から yatt_server が起動しない。2012-04-16.
   => sequel を見つけていない。/usr/local/bin/ruby を使ってもダメ。
-     /etc/rc.local の制限があるのか?
+     /etc/rc.local の制限があるのか? ライブラリサーチパス?
   
-* ruby 1.9 で動くように。=> 2012-03-** done.
+* ruby 1.9 で動くように。
+  => 2012-03-** done.
 
 * osx で /opt/local/bin/ruby を使うとエラー、
   /opt/local/lib/ruby/1.8/drb/drb.rb:852:in `initialize': getaddrinfo: nodename nor servname provided, or not known (SocketError)

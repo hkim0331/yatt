@@ -1,4 +1,4 @@
-# VERSION: 0.16.1
+# VERSION: 0.16.2
 
 BIN=${HOME}/bin
 YATT_BIN=/usr/local/yatt/bin
@@ -27,6 +27,7 @@ server: monitor
 
 monitor: yatt_monitor.rb yatt_monitor yatt_at.sh
 	install -m 0755 yatt_monitor yatt_monitor.rb ${YATT_BIN}
+	install -m 0755 yatt_at.sh ${YATT_BIN}
 
 clean:
 	${RM} *~ .\#* *.bak

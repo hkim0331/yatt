@@ -1,6 +1,6 @@
 #!/usr/bin/env dash
 #-*- mode: Shell-script; -*-
-# VERSION: 0.16.1
+# VERSION: 0.16.2
 
 RUBY=/edu/bin/ruby
 YATT=/edu/bin/yatt.rb
