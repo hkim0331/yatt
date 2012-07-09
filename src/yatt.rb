@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.16.1
+# VERSION: 0.17
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -34,14 +34,13 @@ def usage
   print <<EOU
 usage:
   #{$0} [--noserver|--server server] [--port port] [--lib path]
-
 EOU
   exit(1)
 end
 
 
-YATT_VERSION='0.16.1'
-DATE='2012-04-27'
+YATT_VERSION='0.17'
+DATE='2012-07-09'
 
 REQ_RUBY="1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -203,9 +202,9 @@ class Trainer
         ['Today\'s scores', proc{menu_todays_score},0],
         ['former Scores',proc{menu_total_score},6],
         '---',
-        ['global',proc{menu_global}],
-        ['weekly',proc{menu_weekly}],
-        ['class',proc{menu_myclass}]
+        ['contest/global',proc{menu_global}],
+        ['contest/weekly',proc{menu_weekly}],
+        ['contest/class',proc{menu_myclass}]
         ],
       [['Font',0],
         ['courier', proc{menu_setfont('Courier')}],
@@ -251,6 +250,7 @@ class Trainer
 
   def menu_global
     @scoreboard.global
+    sleep(1)
     @scoreboard.update
   end
 
@@ -302,6 +302,7 @@ class Trainer
 
   def menu_reload
     @scoreboard.update
+    sleep(1)
   end
 
   def menu_my_rank
@@ -518,8 +519,14 @@ class Trainer
     #     @scoreboard.submit(@myid,score)
     #   end
     # end
-    @logger.set_highscore(score) if score > @logger.highscore
-    @scoreboard.submit(@myid,score)
+
+    # 2012-06-26, 「ハイスコア達成時だけsubmitする」に戻す。
+    #@logger.set_highscore(score) if score > @logger.highscore
+    #@scoreboard.submit(@myid,score)
+    if score > @logger.highscore
+      @logger.set_highscore(score)
+      @scoreboard.submit(@myid,score)
+    end
 
     #
     @scoreboard.update if @contest
@@ -795,7 +802,7 @@ class Scoreboard
   GLOBAL=:global
   WEEKLY=:weekly
   MYCLASS=:myclass
-  
+
   attr_reader :authenticated
 
   def initialize(parent, server, port, stat)
@@ -949,10 +956,9 @@ class Scoreboard
   # 2003.06.30,
   # changed 2012-04-21,
   def submit(myid, score)
-    debug "submit: #{myid}, #{score}"
+    debug "#{__method__}: #{myid}, #{score}"
     if @remote
-      month_date=Time.now.strftime("%m/%d %H:%M")
-      @remote.put(myid,score,month_date)
+      @remote.put(myid,score,Time.now.strftime("%m/%d %H:%M"))
     end
   end
 
@@ -1118,6 +1124,5 @@ while (arg=ARGV.shift)
 end
 
 File.open(TODAYS_SCORE,"a").close
-
 trainer=Trainer.new(server, port, lib)
 Tk.mainloop
