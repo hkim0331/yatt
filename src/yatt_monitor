@@ -1,5 +1,5 @@
 #!/usr/bin/env dash
-# VERSION: 0.16.2
+# VERSION: 0.17
 # 2009-04-13, change --log destination.
 # 2012-04-02, change /bin/sh to /usr/bin/env dash
 #             add --db option.

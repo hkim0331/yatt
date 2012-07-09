@@ -23,7 +23,7 @@ fi
 VERSION=$1
 
 # files to footprint version number.
-FILES="src/*"
+FILES="src/* db/Makefile"
 
 # normally, format of comments are '# VERSION: number'.
 for i in ${FILES}; do
