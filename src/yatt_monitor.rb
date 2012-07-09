@@ -214,6 +214,7 @@ while (arg=ARGV.shift)
     authdir=ARGV.shift
   when /\A--noauth\Z/
     authdir=nil
+  # 2012-07-09, mysql migration. no use.
   when /\A--db/
     db=ARGV.shift
   else
