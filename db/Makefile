@@ -1,4 +1,4 @@
-# VERSION: 0.11
+# VERSION: 0.17
 
 DB=yatt.db
 
@@ -9,11 +9,9 @@ drop:
 	sqlite3 ${DB} < drop.sql
 
 clean:
-	${RM} schema yatt.sqlite3 yatt.mysql *~
+	${RM} schema yatt.sqlite3 yatt.mysql *.bak *~
 
-schema:
-	echo '.schema' | sqlite3 ${DB} > $@
-
+# for migration from sqlite3 to mysql
 yatt.sqlite3:
 	echo '.dump' | sqlite3 ${DB} > yatt.sqlite3
 
