@@ -34,7 +34,6 @@ def usage
   print <<EOU
 usage:
   #{$0} [--noserver|--server server] [--port port] [--lib path]
-
 EOU
   exit(1)
 end
@@ -957,10 +956,9 @@ class Scoreboard
   # 2003.06.30,
   # changed 2012-04-21,
   def submit(myid, score)
-    debug "submit: #{myid}, #{score}"
+    debug "#{__method__}: #{myid}, #{score}"
     if @remote
-      month_date=Time.now.strftime("%m/%d %H:%M")
-      @remote.put(myid,score,month_date)
+      @remote.put(myid,score,Time.now.strftime("%m/%d %H:%M"))
     end
   end
 
