@@ -31,7 +31,6 @@ if DEBUG
   HOSTNAME="localhost"
   LOG=File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
   DS=Sequel.sqlite("../db/yatt.db")[:yatt]
-  # DS=Sequel.connect('mysql2://yatt:yyy@localhost/yatt_test')[:yatt]
 else
   HOSTNAME="edu.melt.kyutech.ac.jp"
   LOG="/usr/local/var/log/yatt.log"
