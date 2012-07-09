@@ -34,7 +34,7 @@ if DEBUG
 else
   HOSTNAME="edu.melt.kyutech.ac.jp"
   LOG="/usr/local/var/log/yatt.log"
-  DS=Seqluel.connect('mysql2://yatt:yyy@localhost/yatt_production')[:yatt]
+  DS=Sequel.connect('mysql2://yatt:yyy@localhost/yatt_production')[:yatt]
 end
 
 def usage
@@ -103,8 +103,10 @@ class ScoreServer
     File.open(@logfile,"a") do |fp|
       fp.puts "#{time} #{name} #{score}"
     end
+    # ここが糞詰まりの原因と思う。
     @ds.insert(:uid=>name,:score=>score,
       :updated_at=>Time.now.strftime("%Y-%m-%d %H:%M:%S"))
+    #
     if score>@score[name][0]
       @score[name]=[score, time]
     end
@@ -140,30 +142,33 @@ class ScoreServer
   end
 
   # CHANGED: return array
+  # 通常の get は DB を引かず、Hash から返す。
   def get(num)
     debug("#{__method__}: #{num}")
     self.best(num)
   end
 
-  # 2012-05-09, c-2g で詰まった。原因は sqlite3 か、drb か?
-  def get_global(num)
-    ret=Hash.new
-    @ds.each do |r|
-      uid=r[:uid]
-      if ret[uid].nil? or ret[uid][0]<r[:score]
-        ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
-      end
-    end
-    ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
-  end
-
-  # id の前から4文字マッチを取る
+  # get_myclass はハッシュから。
+  # id の前から4文字マッチを取る。
   def get_myclass(num,me)
     pat=%r{#{me[0,4]}}
     ret=Hash.new
     @ds.each do |r|
       uid=r[:uid]
       if uid=~ pat and (ret[uid].nil? or ret[uid][0]<r[:score])
+        ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
+      end
+    end
+    ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
+  end
+
+  # get_global のみ、データベースアクセスする。
+  # 2012-05-09, c-2g で詰まった。原因は sqlite3 か、drb か?
+  def get_global(num)
+    ret=Hash.new
+    @ds.each do |r|
+      uid=r[:uid]
+      if ret[uid].nil? or ret[uid][0]<r[:score]
         ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
       end
     end
