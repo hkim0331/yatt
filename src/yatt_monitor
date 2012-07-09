@@ -1,13 +1,13 @@
 #!/usr/bin/env dash
-# VERSION: 0.17
+# VERSION: 0.17.1
 # 2009-04-13, change --log destination.
 # 2012-04-02, change /bin/sh to /usr/bin/env dash
 #             add --db option.
 # changed db location from /srv/literacy to /srv/yatt.
 # changed log location fro /usr/local/var/log/ to /srv/yatt/log.
+# 2012-07-09, migration from sqlite3 to mysql.
 
 /usr/local/yatt/bin/yatt_monitor.rb \
   --hostname edu.melt.kyutech.ac.jp \
-  --log /srv/yatt/log/yatt.log \
-  --db  /srv/yatt/db/yatt.db
+  --log /srv/yatt/log/yatt.log
 
