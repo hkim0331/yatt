@@ -520,8 +520,14 @@ class Trainer
     #     @scoreboard.submit(@myid,score)
     #   end
     # end
-    @logger.set_highscore(score) if score > @logger.highscore
-    @scoreboard.submit(@myid,score)
+
+    # 2012-06-26, 「ハイスコア達成時だけsubmitする」に戻す。
+    #@logger.set_highscore(score) if score > @logger.highscore
+    #@scoreboard.submit(@myid,score)
+    if score > @logger.highscore
+      @logger.set_highscore(score)
+      @scoreboard.submit(@myid,score)
+    end
 
     #
     @scoreboard.update if @contest
