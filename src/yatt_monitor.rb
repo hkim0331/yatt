@@ -30,17 +30,18 @@ BEST=30
 if DEBUG
   HOSTNAME="localhost"
   LOG=File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
-  DB="../db/yatt.db"
+  DS=Sequel.sqlite("../db/yatt.db")[:yatt]
+  # DS=Sequel.connect('mysql2://yatt:yyy@localhost/yatt_test')[:yatt]
 else
   HOSTNAME="edu.melt.kyutech.ac.jp"
   LOG="/usr/local/var/log/yatt.log"
-  DB="/srv/yatt/db/yatt.db"
+  DS=Seqluel.connect('mysql2://yatt:yyy@localhost/yatt_production')[:yatt]
 end
 
 def usage
   print <<EOF
 USAGE
-  yatt_server [OPTION]...
+  #{0} [OPTION]...
 
 OPTIONS(default value)
 
@@ -77,10 +78,10 @@ class ScoreServer
   attr_reader :score
 
   # FIXME: sqlite3=>mysql
-  def initialize(logfile, db)
+  def initialize(logfile)
     @score=Hash.new(0)
     @logfile=logfile
-    @ds=Sequel.sqlite(db)[:yatt]
+    @ds=DS
   end
 
   def clear
@@ -198,7 +199,6 @@ end #ScoreServer
 hostname="localhost"
 port=PORT
 logfile=LOG
-db=DB
 
 while (arg=ARGV.shift)
   case arg
@@ -223,7 +223,7 @@ end
 debug([YATT_VERSION, hostname, port, db].join(", "))
 
 begin
-  score_server=ScoreServer.new(logfile, db)
+  score_server=ScoreServer.new(logfile)
   uri="druby://#{hostname}:#{port}"
   DRb.start_service(uri, score_server)
   puts uri
