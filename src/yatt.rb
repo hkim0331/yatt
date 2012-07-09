@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.17
+# VERSION: 0.17.1
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -39,7 +39,7 @@ EOU
 end
 
 
-YATT_VERSION='0.17'
+YATT_VERSION='0.17.1'
 DATE='2012-07-09'
 
 REQ_RUBY="1.9.3"
