@@ -1,10 +1,11 @@
 #!/usr/bin/env dash
 #-*- mode: Makefile -*-
-# VERSION: 0.17.2
+# VERSION: 0.18
 
-RUBY=/usr/bin/env ruby
+#RUBY=/usr/bin/env ruby
 YATT=${HOME}/bin/yatt.rb
 LIB=${HOME}/lib/yatt
 SERV=edu.melt.kyutech.ac.jp
 
-${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
+#${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
+ruby ${YATT} --server ${SERV} --lib ${LIB}
