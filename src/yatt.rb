@@ -13,7 +13,7 @@
 # 2012-04-21, feature/database.
 # 2012-04-26, contest class cmenu.
 
-DEBUG=(RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
+DEBUG = (RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
 
 require 'tk'
 
@@ -57,9 +57,9 @@ RANKER=30
 if DEBUG
   YATTD="localhost"
   LIB=File.join(ENV['HOME'], "Library/yatt")
-  TIMEOUT=10
+  TIMEOUT=60
 else
-  YATTD="vm3.melt.kyutech.ac.jp"
+  YATTD="app.melt.kyutech.ac.jp"
   LIB="/edu/lib/yatt"
   TIMEOUT=60
 end
@@ -120,7 +120,7 @@ class Trainer
     @lib=lib
     @windows=nil
     @user_config=File.join(YATT_DIR,"config")
-#    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
+    #    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
     @width=78
     @lines=6
     @textfile=File.join(@lib,YATT_TXT)
@@ -182,8 +182,8 @@ class Trainer
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu=[
       [['File',0],
-        ['New', proc{menu_new},0],
-        #       ['Pref'],
+        # ['New', proc{menu_new},0],
+        # ['Pref'],
         ['Quit',proc{menu_quit},0]],
       [['Misc',0],
         ['Contest',proc{menu_toggle_contest},0],
@@ -207,21 +207,15 @@ class Trainer
         ['contest/class',proc{menu_myclass}]
         ],
       [['Font',0],
-        ['courier', proc{menu_setfont('Courier')}],
-        ['fixed', proc{menu_setfont('Fixed')}],
-        ['helvetica', proc{menu_setfont('Helvetica')}],
-        ['menlo', proc{menu_setfont('Menlo')}],
-        ['mincho', proc{menu_setfont('Mincho')}],
-        ['monaco', proc{menu_setfont('Monaco')}],
-        ['sazanami', proc{menu_setfont('Sazanami')}],
-        ['times', proc{menu_setfont('Times')}],
+       ['courier', proc{menu_setfont('Courier')}],
+       ['helvetica', proc{menu_setfont('Helvetica')}],
+       ['Inconsolata', proc{menu_setfont('Inconsolata')}],
+       ['menlo', proc{menu_setfont('Menlo')}],
+       ['monaco', proc{menu_setfont('Monaco')}],
+       ['osaka', proc{menu_setfont('Osaka')}],
         '---',
-        ['10', proc{menu_setsize(10)}],
-        ['12', proc{menu_setsize(12)}],
-        ['14', proc{menu_setsize(14)}],
-        ['18', proc{menu_setsize(18)}],
-        ['24', proc{menu_setsize(24)}],
-        ['34', proc{menu_setsize(34)}],
+        ['smaller', proc{menu_smaller()}],
+        ['bigger', proc{menu_bigger()}],
         '---',
         ['(remember font)']
       ],
@@ -343,12 +337,27 @@ class Trainer
   end
 
   def menu_setfont(name)
-    @font=name
+    @font = name
+    my_set_font()
+  end
+
+  def menu_bigger()
+    @size = (@size.to_i+2).to_s
+    my_set_font()
+  end
+
+  def menu_smaller()
+    size= (@size.to_i)-2
+    @size = if size 10
+              size.to_s
+            else
+              "10"
+            end
     my_set_font()
   end
 
   def menu_setsize(size)
-    @size=size
+    @size = size
     my_set_font()
   end
 
@@ -1105,9 +1114,9 @@ end# SpeedMeter
 #
 # main starts here.
 #
-server=YATTD
-port=PORT
-lib=LIB
+server = YATTD
+port = PORT
+lib = LIB
 while (arg=ARGV.shift)
   case arg
   when /--server/
@@ -1124,5 +1133,5 @@ while (arg=ARGV.shift)
 end
 
 File.open(TODAYS_SCORE,"a").close
-trainer=Trainer.new(server, port, lib)
+trainer = Trainer.new(server, port, lib)
 Tk.mainloop
