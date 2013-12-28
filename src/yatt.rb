@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+# -*- mode: ruby; coding: utf-8 -*-
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
@@ -509,7 +509,7 @@ class Trainer
 
     debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
 
-    # 2012-04-21,ここ。 最高点数だけ、かつ、authenticated なと気だけ、
+    # 2012-04-21 最高点数だけ、かつ、authenticated な時だけ、
     # scoreboard に点数をサブミットしている。
     # scoreborad 側に最高点かどうかを判定するルーチンを入れる必要がある。
     #
@@ -521,8 +521,8 @@ class Trainer
     # end
 
     # 2012-06-26, 「ハイスコア達成時だけsubmitする」に戻す。
-    #@logger.set_highscore(score) if score > @logger.highscore
-    #@scoreboard.submit(@myid,score)
+    # @logger.set_highscore(score) if score > @logger.highscore
+    # @scoreboard.submit(@myid,score)
     if score > @logger.highscore
       @logger.set_highscore(score)
       @scoreboard.submit(@myid,score)
