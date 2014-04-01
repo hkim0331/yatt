@@ -5,7 +5,7 @@
 #RUBY=/usr/local/bin/ruby
 YATT=${HOME}/bin/yatt.rb
 LIB=${HOME}/Library/yatt
-SERV=edu.melt.kyutech.ac.jp
+SERV=localhost
 
 #${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
 ruby ${YATT} --server ${SERV} --lib ${LIB}

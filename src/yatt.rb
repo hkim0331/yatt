@@ -28,7 +28,6 @@ end
 def debug(s)
   puts s if DEBUG
 end
-debug "debug: #{DEBUG}"
 
 def usage
   print <<EOU
@@ -38,37 +37,36 @@ EOU
   exit(1)
 end
 
+YATT_VERSION = '0.18'
+DATE = '2013-12-28'
 
-YATT_VERSION='0.18'
-DATE='2013-12-28'
-
-REQ_RUBY="1.9.3"
+REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
-GOOD="green"
-BAD="red"
+GOOD = "green"
+BAD  = "red"
 
-YATT_TXT="yatt.txt"
-YATT_IMG="yatt3.gif"
+YATT_TXT = "yatt.txt"
+YATT_IMG = "yatt3.gif"
 
-PORT=23002
-RANKER=30
+PORT = 23002
+
+RANKER = 30
 
 if DEBUG
-  YATTD="localhost"
-  LIB=File.join(ENV['HOME'], "Library/yatt")
-  TIMEOUT=60
+  YATTD   = 'localhost'
+  LIB     = File.join(ENV['HOME'], 'Library/yatt')
+   TIMEOUT = 10
 else
-  YATTD="app.melt.kyutech.ac.jp"
-  LIB="/edu/lib/yatt"
-  TIMEOUT=60
+  YATTD   = 'app.melt.kyutech.ac.jp'
+  LIB     = '/edu/lib/yatt'
+  TIMEOUT = 60
 end
 
-YATT_DIR=File.join(ENV['HOME'],'.yatt')
+YATT_DIR = File.join(ENV['HOME'], '.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-HISTORY=File.join(YATT_DIR,'history')
-DATE_FORMAT="%m-%d"
-TODAYS_SCORE=File.join(YATT_DIR,Time.now.strftime(DATE_FORMAT))
+HISTORY = File.join(YATT_DIR, 'history')
+TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 
 #############
 # FIXME:
@@ -85,12 +83,12 @@ class Trainer
 
   @epilog=false
   def about
-    message="programmed:Hiroshi Kimura,\n"+
-      "version: #{YATT_VERSION}(#{DATE})\n"+
-      "Copyright (C) 2002-2012.\n"
-    TkDialog.new(:title=>"Yet Another Typing Trainer",
-                 :message=>message,
-                 :buttons=>['continue'])
+    TkDialog.new(:title => "Yet Another Typing Trainer",
+                 :message =>
+"programmed by Hiroshi Kimura
+version #{YATT_VERSION}(#{DATE})
+Copyright (C) 2002-2014.\n",
+                 :buttons => ['continue'])
   end
 
   def readme
@@ -222,24 +220,22 @@ class Trainer
       [['Help',0],
         ['(readme)'],
         ['about...',proc{about},0],
-        ['(upgrade)'],
         '---',
-        ['debug', proc{show_params},0],
+        ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
       ]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
   def show_params
-    message =
-      "ruby: #{RUBY_VERSION}\n"+
-      "version: #{YATT_VERSION}\n"+
-      "date: #{DATE}\n"+
-      "lib: #{LIB}\n"+
-      "server: #{@server}\n"+
-      "port: #{@port}\n"
-    TkDialog.new(:title=>'yatt params',
-                 :message=>message,
-                 :buttons=>['continue'])
+    TkDialog.new(:title => 'yatt params',
+                 :message =>
+"ruby: #{RUBY_VERSION}
+version: #{YATT_VERSION}
+date: #{DATE}
+lib: #{LIB}
+server: #{@server}
+port: #{@port}\n",
+                 :buttons => ['continue'])
   end
 
   def menu_global

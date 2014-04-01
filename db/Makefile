@@ -1,12 +1,15 @@
 # VERSION: 0.18
 
-DB=yatt.db
+DB = yatt.db
 
 create:
 	sqlite3 ${DB} < create.sql
 
 drop:
 	sqlite3 ${DB} < drop.sql
+
+schema:
+	sqlite3 -line ${DB} '.schema' > $@
 
 clean:
 	${RM} schema yatt.sqlite3 yatt.mysql *.bak *~

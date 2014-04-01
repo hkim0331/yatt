@@ -8,6 +8,7 @@
 # 2012-07-09, migration from sqlite3 to mysql.
 
 /usr/local/yatt/bin/yatt_monitor.rb \
-  --hostname edu.melt.kyutech.ac.jp \
-  --log /srv/yatt/log/yatt.log
+  --hostname localhost \
+  --log /dev/null
+
 
