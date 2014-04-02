@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.18
+# VERSION: 0.20
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -13,22 +13,24 @@
 # 2012-04-21, feature/database.
 # 2012-04-26, contest class cmenu.
 
-DEBUG = (RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
+YATT_VERSION = '0.20'
+DATE = '2014-04-02'
 
 require 'tk'
 
+DEBUG = (RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
+
 begin
   require 'drb'
-  DRB_ENABLED=true
+  DRB_ENABLED = true
 rescue
   STDERR.puts "you can not join contest without drb."
-  DRB_ENABLED=false
+  DRB_ENABLED = false
 end
 
 def debug(s)
   puts s if DEBUG
 end
-debug "debug: #{DEBUG}"
 
 def usage
   print <<EOU
@@ -38,37 +40,33 @@ EOU
   exit(1)
 end
 
-
-YATT_VERSION='0.18'
-DATE='2013-12-28'
-
-REQ_RUBY="1.9.3"
+REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 
-GOOD="green"
-BAD="red"
+GOOD = "green"
+BAD  = "red"
 
-YATT_TXT="yatt.txt"
-YATT_IMG="yatt3.gif"
+YATT_TXT = "yatt.txt"
+YATT_IMG = "yatt3.gif"
 
-PORT=23002
-RANKER=30
+PORT = 23002
+
+RANKER = 30
 
 if DEBUG
-  YATTD="localhost"
-  LIB=File.join(ENV['HOME'], "Library/yatt")
-  TIMEOUT=60
+  YATTD   = 'localhost'
+  LIB     = File.join(ENV['HOME'], 'Library/yatt')
+  TIMEOUT = 10
 else
-  YATTD="app.melt.kyutech.ac.jp"
-  LIB="/edu/lib/yatt"
-  TIMEOUT=60
+  YATTD   = 'edu.melt.kyutech.ac.jp'
+  LIB     = '/edu/lib/yatt'
+  TIMEOUT = 60
 end
 
-YATT_DIR=File.join(ENV['HOME'],'.yatt')
+YATT_DIR = File.join(ENV['HOME'], '.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-HISTORY=File.join(YATT_DIR,'history')
-DATE_FORMAT="%m-%d"
-TODAYS_SCORE=File.join(YATT_DIR,Time.now.strftime(DATE_FORMAT))
+HISTORY = File.join(YATT_DIR, 'history')
+TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 
 #############
 # FIXME:
@@ -83,14 +81,14 @@ end
 class Trainer
   include MyEnv
 
-  @epilog=false
+  @epilog = false
   def about
-    message="programmed:Hiroshi Kimura,\n"+
-      "version: #{YATT_VERSION}(#{DATE})\n"+
-      "Copyright (C) 2002-2012.\n"
-    TkDialog.new(:title=>"Yet Another Typing Trainer",
-                 :message=>message,
-                 :buttons=>['continue'])
+    TkDialog.new(:title => "Yet Another Typing Trainer",
+                 :message =>
+"programmed by Hiroshi Kimura
+version #{YATT_VERSION}(#{DATE})
+Copyright (C) 2002-2014.\n",
+                 :buttons => ['continue'])
   end
 
   def readme
@@ -222,24 +220,22 @@ class Trainer
       [['Help',0],
         ['(readme)'],
         ['about...',proc{about},0],
-        ['(upgrade)'],
         '---',
-        ['debug', proc{show_params},0],
+        ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
       ]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
   def show_params
-    message =
-      "ruby: #{RUBY_VERSION}\n"+
-      "version: #{YATT_VERSION}\n"+
-      "date: #{DATE}\n"+
-      "lib: #{LIB}\n"+
-      "server: #{@server}\n"+
-      "port: #{@port}\n"
-    TkDialog.new(:title=>'yatt params',
-                 :message=>message,
-                 :buttons=>['continue'])
+    TkDialog.new(:title => 'yatt params',
+                 :message =>
+"ruby: #{RUBY_VERSION}
+version: #{YATT_VERSION}
+date: #{DATE}
+lib: #{LIB}
+server: #{@server}
+port: #{@port}\n",
+                 :buttons => ['continue'])
   end
 
   def menu_global
@@ -806,43 +802,43 @@ end # Status
 class Scoreboard
   include MyEnv
 
-  WIDTH=30
-  HEIGHT=10
-  GLOBAL=:global
-  WEEKLY=:weekly
-  MYCLASS=:myclass
+  WIDTH  = 30
+  HEIGHT = 10
+  GLOBAL = :global
+  WEEKLY = :weekly
+  MYCLASS= :myclass
 
   attr_reader :authenticated
 
   def initialize(parent, server, port, stat)
     @mode=WEEKLY
     @text=TkText.new(parent,
-                     :takefocus=>0,
-                     :background=>'gray',
-                     :width=>WIDTH,
-                     :height=>HEIGHT,
-                     :state=>'disabled')
-    @stat=stat
-    @scr=TkScrollbar.new(parent)
+                     :takefocus => 0,
+                     :background => 'gray',
+                     :width => WIDTH,
+                     :height => HEIGHT,
+                     :state => 'disabled')
+    @stat = stat
+    @scr = TkScrollbar.new(parent)
     @text.yscrollbar(@scr)
     highlight("highlight")
-    @server=server
-    @port=port
-    @my_id=my_env('USER')
-    @authenticated=true
+    @server = server
+    @port = port
+    @my_id = my_env('USER')
+    @authenticated = true
     self.start_drb unless @server
   end
 
   def global
-    @mode=GLOBAL
+    @mode = GLOBAL
   end
 
   def weekly
-    @mode=WEEKLY
+    @mode = WEEKLY
   end
 
   def myclass
-    @mode=MYCLASS
+    @mode = MYCLASS
   end
 
   def start_drb
@@ -1120,13 +1116,13 @@ lib = LIB
 while (arg=ARGV.shift)
   case arg
   when /--server/
-    server=ARGV.shift
+    server = ARGV.shift
   when /--port/
-    port=ARGV.shift
+    port = ARGV.shift
   when /--lib/
     lib=ARGV.shift
   when /--noserver/
-    server=nil
+    server = nil
   else
     usage()
   end

@@ -35,9 +35,9 @@ done
 #	common.rb
 DATE=`date +"%Y-%m-%d"`
 for i in src/yatt.rb src/yatt_monitor.rb; do
-    sed -i.bak \
-	-e "s/^YATT_VERSION\s*=.*$/YATT_VERSION='${VERSION}'/" \
-	-e "s/^DATE\s*=.*$/DATE='${DATE}'/" $i
+    gsed -i.bak \
+	-e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
+	-e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
 done
 
 echo ${VERSION} > VERSION

@@ -1,10 +1,11 @@
 #!/bin/sh
+#-*- mode: Shell-script -*-
 # programmed by Hiroshi Kimura, 2012-04-30.
 
 ps ax | grep yatt_monitor | grep -v 'grep' >/dev/null
 
 case $? in
-1) 
+1)
 	/etc/init.d/yatt-monitor start
 	;;
 esac
