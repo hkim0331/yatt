@@ -87,12 +87,12 @@
 
 	* ttbind : functions get/reset/dump/load
 
-	* ttserv : load 
+	* ttserv : load
 
 2002-06-07  Hiroshi Kimura  <hkim@melt.kyutech.ac.jp>
 
 	* yatt.rb (MyText.sticky): stickyモード --タイプミスの場所をしつこ
-	く表示する。 
+	く表示する。
 	create class MyPlot
 	Trainer.submit 毎回 auth
 
@@ -125,13 +125,13 @@
 	オンラインでスコアを集計し、表示するプログラムとの連動。
 	woody ruby-1.6.7-3 の動作がおかしい。
 
-	* タイマーの処理(half done 05.28) 
+	* タイマーの処理(half done 05.28)
 	現バージョンは有無を言わさず exit する。これをきちんと後始末をする
-	ように変える。 
+	ように変える。
 
 	* 細かいプログラムの流れ(05.28)
 	現バージョンは、ウィンドウがオープンすると即、タイマーがカウントを
-	始める。これをさいしょの keypress イベントからに変える。 
+	始める。これをさいしょの keypress イベントからに変える。
 
 	* リトライ(05.28)
 

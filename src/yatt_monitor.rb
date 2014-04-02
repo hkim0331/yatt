@@ -5,11 +5,14 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.18
+# VERSION: 0.20
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
+
+YATT_VERSION = '0.20'
+DATE = '2014-04-02'
 
 DEBUG=(RUBY_PLATFORM=~/darwin/)
 
@@ -20,13 +23,10 @@ end
 require 'drb'
 require 'sequel'
 
-YATT_VERSION='0.18'
-DATE='2013-12-28'
-
-REQ_RUBY="1.9.3"
+REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-PORT=23002
-BEST=30
+PORT = 23002
+BEST = 30
 
 if DEBUG
   HOSTNAME = "localhost"
@@ -77,7 +77,7 @@ end
 class ScoreServer
   attr_reader :score
 
-  # FIXME: sqlite3=>mysql
+  # FIXME: sqlite3 => mysql
   def initialize(logfile)
     @score   = Hash.new(0)
     @logfile = logfile
@@ -110,6 +110,7 @@ class ScoreServer
       :updated_at => Time.now.strftime("%Y-%m-%d %H:%M:%S"))
     #
     debug "inserted"
+    #
     if score > @score[name][0]
       @score[name] = [score, time]
     end
@@ -237,7 +238,7 @@ begin
   puts uri
   DRb.thread.join
 
-rescue =>e
+rescue => e
   puts "#{e.class}:#{e.message}"
 end
 
