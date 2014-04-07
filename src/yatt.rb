@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.20
+# VERSION: 0.21
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -13,8 +13,8 @@
 # 2012-04-21, feature/database.
 # 2012-04-26, contest class cmenu.
 
-YATT_VERSION = '0.20'
-DATE = '2014-04-02'
+YATT_VERSION = '0.21'
+DATE = '2014-04-07'
 
 require 'tk'
 
