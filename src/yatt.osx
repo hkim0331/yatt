@@ -1,10 +1,10 @@
 #!/usr/bin/env dash
 <<<<<<< HEAD
 #-*- mode: Makefile -*-
-# VERSION: 0.18
+# VERSION: 0.21
 =======
 #-*- mode: shell-script -*-
-# VERSION: 0.20
+# VERSION: 0.21
 >>>>>>> release/0.20
 
 YATT=${HOME}/bin/yatt.rb
