@@ -1,4 +1,4 @@
-# VERSION: 0.20
+# VERSION: 0.21
 
 BIN=${HOME}/bin
 YATT_BIN=/usr/local/yatt/bin
@@ -25,9 +25,8 @@ linux: yatt.linux yatt.rb
 
 server: monitor
 
-monitor: yatt_monitor.rb yatt_monitor yatt_at.sh
+monitor: yatt_monitor.rb yatt_monitor
 	install -m 0755 yatt_monitor yatt_monitor.rb ${YATT_BIN}
-	install -m 0755 yatt_at.sh ${YATT_BIN}
 
 clean:
 	${RM} *~ .\#* *.bak
