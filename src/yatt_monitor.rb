@@ -5,16 +5,16 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.21
+# VERSION: 0.20
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
 
-YATT_VERSION = '0.21'
-DATE = '2014-04-07'
+YATT_VERSION = '0.20'
+DATE = '2014-04-02'
 
-DEBUG=(RUBY_PLATFORM=~/darwin/)
+DEBUG = false
 
 def debug(s)
   puts s if DEBUG
@@ -23,19 +23,18 @@ end
 require 'drb'
 require 'sequel'
 
-
 REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
 PORT = 23002
 BEST = 30
 
-if DEBUG
+if false
   HOSTNAME = "localhost"
   LOG      = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
   DS       = Sequel.sqlite("/Users/hkim/Dropbox/yatt/db/yatt.db")[:yatt]
 else
   HOSTNAME = "web.melt.kyutech.ac.jp"
-  LOG      = "/usr/local/var/log/yatt.log"
+  LOG      = "/usr/local/yatt/log/yatt.log"
   DS       = Sequel.connect('mysql2://yatt:yyy@localhost/yatt_production')[:yatt]
 end
 
@@ -109,8 +108,6 @@ class ScoreServer
     end
     DS.insert(:uid => name, :score => score,
       :updated_at => Time.now.strftime("%Y-%m-%d %H:%M:%S"))
-    #
-    debug "inserted"
     #
     if score > @score[name][0]
       @score[name] = [score, time]
@@ -205,18 +202,18 @@ end #ScoreServer
 # main
 #
 
-hostname="localhost"
-port=PORT
-logfile=LOG
+hostname = HOSTNAME
+port     = PORT
+logfile  = LOG
 
-while (arg=ARGV.shift)
+while (arg = ARGV.shift)
   case arg
   when /\A--server\Z/
-    hostname=ARGV.shift
+    hostname = ARGV.shift
   when /\A--port\Z/
-    port=ARGV.shift.to_i
+    port = ARGV.shift.to_i
   when /\A--log\Z/
-    logfile=ARGV.shift
+    logfile = ARGV.shift
   when /\A--(fqdn|hostname|server)\Z/
     hostname=ARGV.shift
   when /\A--authdir\Z/
@@ -233,8 +230,8 @@ end
 debug([RUBY_VERSION, YATT_VERSION, hostname, port].join(", "))
 
 begin
-  score_server=ScoreServer.new(logfile)
-  uri="druby://#{hostname}:#{port}"
+  score_server = ScoreServer.new(logfile)
+  uri = "druby://#{hostname}:#{port}"
   DRb.start_service(uri, score_server)
   puts uri
   DRb.thread.join
