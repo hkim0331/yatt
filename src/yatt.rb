@@ -18,7 +18,7 @@ DATE = '2014-04-07'
 
 require 'tk'
 
-DEBUG = (RUBY_PLATFORM=~/darwin/ && ENV['USER']=~/hkim/)
+DEBUG = false
 
 begin
   require 'drb'
@@ -843,7 +843,7 @@ class Scoreboard
 
   def start_drb
     DRb.start_service
-    @remote=DRbObject.new(nil,"druby://#{@server}:#{@port}")
+    @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
     unless @remote.ping=~/ok/
       raise "@server does not respond."
     end
@@ -963,8 +963,8 @@ class Scoreboard
   def submit(myid, score)
     debug "#{__method__}: #{myid}, #{score}"
     if @remote
-      @remote.put(myid,score,Time.now.strftime("%m/%d %H:%M"))
-    end
+       @remote.put(myid,score,Time.now.strftime("%m/%d %H:%M"))
+     end
   end
 
   def toggle_contest(uid)
