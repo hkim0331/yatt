@@ -1,14 +1,9 @@
 #!/usr/bin/env dash
-<<<<<<< HEAD
-#-*- mode: Makefile -*-
-# VERSION: 0.21
-=======
 #-*- mode: shell-script -*-
-# VERSION: 0.21
->>>>>>> release/0.20
+# VERSION: 0.21.1
 
 YATT=${HOME}/bin/yatt.rb
 LIB=${HOME}/Library/yatt
-SERV=localhost
+SERV=web.melt.kyutech.ac.jp
 
 /usr/bin/env ruby ${YATT} --server ${SERV} --lib ${LIB}
