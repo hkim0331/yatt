@@ -5,16 +5,18 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.21
+# VERSION: 0.21.2
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
 # 2012-04-02, server updates.
 # 2012-04-21, feature/database.
 # 2012-04-26, contest class cmenu.
+# 2014-04-09, fix smaller font bug(typo)
 
-YATT_VERSION = '0.21'
-DATE = '2014-04-07'
+
+YATT_VERSION = '0.21.2'
+DATE = '2014-04-09'
 
 require 'tk'
 
@@ -53,7 +55,7 @@ PORT = 23002
 
 RANKER = 30
 
-if DEBUG
+if File.exists?("/Applications")
   YATTD   = 'localhost'
   LIB     = File.join(ENV['HOME'], 'Library/yatt')
   TIMEOUT = 10
@@ -62,6 +64,7 @@ else
   LIB     = '/edu/lib/yatt'
   TIMEOUT = 60
 end
+README  = File.join(LIB, "README")
 
 YATT_DIR = File.join(ENV['HOME'], '.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
@@ -92,24 +95,20 @@ Copyright (C) 2002-2014.\n",
   end
 
   def readme
-    if RUBY_PLATFORM=~/linux/
-      system("emacs #{README} &")
-    else
-      toplevel=TkToplevel.new{title 'YATT readme'}
-      frame1=TkFrame.new(toplevel)
-      frame1.pack
-      text=TkText.new(frame1)
-      text.configure(:width=>30,
-                     :height=>20)
-      text.pack(:side=>'right')
-      scr=TkScrollbar.new(frame1)
-      scr.pack(:side=>'left',:fill=>'y')
-      text.yscrollbar(scr)
-      File.foreach(README) do |line|
-        text.insert('end',line)
-      end
-      text.configure(:state=>'disabled')
+    toplevel=TkToplevel.new{title 'YATT readme'}
+    frame1=TkFrame.new(toplevel)
+    frame1.pack
+    text=TkText.new(frame1)
+    text.configure(:width=>40,
+                   :height=>30)
+    text.pack(:side=>'right')
+    scr=TkScrollbar.new(frame1)
+    scr.pack(:side=>'left',:fill=>'y')
+    text.yscrollbar(scr)
+    File.foreach(README) do |line|
+      text.insert('end',line)
     end
+    text.configure(:state=>'disabled')
   end
 
   def initialize(server,port,lib)
@@ -123,7 +122,6 @@ Copyright (C) 2002-2014.\n",
     @lines=6
     @textfile=File.join(@lib,YATT_TXT)
     @splash  =File.join(@lib,YATT_IMG)
-    @readme  =File.join(@lib,"yatt.README")
     @runnable_before="25:00"
     @contest=false
     @speed_meter_status=true
@@ -198,7 +196,7 @@ Copyright (C) 2002-2014.\n",
         '---',
         ['Speed Meter',proc{menu_speed_meter},0],
         ['Today\'s scores', proc{menu_todays_score},0],
-        ['former Scores',proc{menu_total_score},6],
+        ['total Scores',proc{menu_total_score},6],
         '---',
         ['contest/global',proc{menu_global}],
         ['contest/weekly',proc{menu_weekly}],
@@ -218,7 +216,7 @@ Copyright (C) 2002-2014.\n",
         ['(remember font)']
       ],
       [['Help',0],
-        ['(readme)'],
+        ['readme',proc{readme},0],
         ['about...',proc{about},0],
         '---',
         ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
@@ -344,7 +342,7 @@ port: #{@port}\n",
 
   def menu_smaller()
     size= (@size.to_i)-2
-    @size = if size 10
+    @size = if size > 10
               size.to_s
             else
               "10"
