@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.21
+# VERSION: 0.21.2
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -13,8 +13,8 @@
 # 2012-04-21, feature/database.
 # 2012-04-26, contest class cmenu.
 
-YATT_VERSION = '0.21'
-DATE = '2014-04-07'
+YATT_VERSION = '0.21.2'
+DATE = '2014-04-09'
 
 require 'tk'
 
@@ -344,7 +344,7 @@ port: #{@port}\n",
 
   def menu_smaller()
     size= (@size.to_i)-2
-    @size = if size 10
+    @size = if size > 10
               size.to_s
             else
               "10"
