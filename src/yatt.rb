@@ -64,12 +64,6 @@ else
   LIB     = '/edu/lib/yatt'
   TIMEOUT = 60
 end
-README  = File.join(LIB, "README")
-
-YATT_DIR = File.join(ENV['HOME'], '.yatt')
-Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-HISTORY = File.join(YATT_DIR, 'history')
-TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 
 #############
 # FIXME:
@@ -99,16 +93,15 @@ Copyright (C) 2002-2014.\n",
     frame1=TkFrame.new(toplevel)
     frame1.pack
     text=TkText.new(frame1)
-    text.configure(:width=>40,
-                   :height=>30)
-    text.pack(:side=>'right')
+    text.configure(:width  => 40,:height => 30)
+    text.pack(:side => 'right')
     scr=TkScrollbar.new(frame1)
-    scr.pack(:side=>'left',:fill=>'y')
+    scr.pack(:side => 'left',:fill => 'y')
     text.yscrollbar(scr)
     File.foreach(README) do |line|
       text.insert('end',line)
     end
-    text.configure(:state=>'disabled')
+    text.configure(:state => 'disabled')
   end
 
   def initialize(server,port,lib)
@@ -1109,8 +1102,9 @@ end# SpeedMeter
 # main starts here.
 #
 server = YATTD
-port = PORT
-lib = LIB
+port   = PORT
+lib    = LIB
+
 while (arg=ARGV.shift)
   case arg
   when /--server/
@@ -1125,6 +1119,12 @@ while (arg=ARGV.shift)
     usage()
   end
 end
+
+README  = File.join(lib, "README")
+YATT_DIR = File.join(ENV['HOME'], '.yatt')
+Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
+HISTORY = File.join(YATT_DIR, 'history')
+TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 
 File.open(TODAYS_SCORE,"a").close
 trainer = Trainer.new(server, port, lib)

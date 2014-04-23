@@ -2,10 +2,9 @@
 #-*- mode: shell-script -*-
 # VERSION: 0.21.3
 
-#RUBY=/usr/bin/env ruby
 YATT=${HOME}/bin/yatt.rb
 LIB=${HOME}/lib/yatt
 SERV=edu.melt.kyutech.ac.jp
 
-#${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
-ruby ${YATT} --server ${SERV} --lib ${LIB}
+/usr/bin/env ruby ${YATT} --server ${SERV} --lib ${LIB}
+
