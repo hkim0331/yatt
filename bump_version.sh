@@ -22,6 +22,13 @@ if [ ! $# = 1 ]; then
 fi
 VERSION=$1
 
+# in Linux, sed = gnu sed, in OSX, sed != gnu sed.
+if [ `uname` = 'Linux' ]; then
+    GSED=/bin/sed
+else
+    GSED=gsed
+fi
+
 # files to footprint version number.
 FILES="src/* db/Makefile"
 
@@ -30,12 +37,10 @@ for i in ${FILES}; do
     sed -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
 done
 
-# special format example.
-#sed -i.bak "s/PBL2011_VERSION=.*$/PBL2011_VERSION=${VERSION}/" \
-#	common.rb
+
 DATE=`date +"%Y-%m-%d"`
 for i in src/yatt.rb src/yatt_monitor.rb; do
-    gsed -i.bak \
+    ${GSED} -i.bak \
 	-e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
 	-e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
 done

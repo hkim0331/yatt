@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.21.2
+# VERSION: 0.21.3
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -15,8 +15,8 @@
 # 2014-04-09, fix smaller font bug(typo)
 
 
-YATT_VERSION = '0.21.2'
-DATE = '2014-04-09'
+YATT_VERSION = '0.21.3'
+DATE = '2014-04-23'
 
 require 'tk'
 
