@@ -1,4 +1,4 @@
-# VERSION: 0.21.2
+# VERSION: 0.22
 
 BIN=${HOME}/bin
 YATT_BIN=/usr/local/yatt/bin
@@ -9,19 +9,32 @@ all:
 	@echo "'make linux' to install on general linuxen."
 	@echo "'make monitor' to install yatt monitor under ${YATT_BIN}."
 
-isc: yatt.isc yatt.rb
-	install -m 0755 yatt.rb /edu/bin/yatt.rb
-	install -m 0755 yatt.isc /edu/bin/yatt
+isc: yatt.rb
+	install -m 0755 yatt.rb /edu/bin/yatt
+	/home/t/hkimura/chsb --sb /edu/bin/ruby /edu/bin/yat
 
-osx: yatt.osx yatt.rb
+osx: yatt.rb
 	mkdir -p ${BIN}
-	install -m 0755 yatt.rb ${BIN}/yatt.rb
-	install -m 0755 yatt.osx ${BIN}/yatt
+	install -m 0755 yatt.rb ${BIN}/yatt
 
-linux: yatt.linux yatt.rb
+linux: yatt.rb
 	mkdir -p ${BIN}
-	install -m 0755 yatt.rb ${BIN}/yatt.rb
-	install -m 0755 yatt.linux ${BIN}/yatt
+	install -m 0755 yatt.rb ${BIN}/yatt
+
+# isc: yatt.isc yatt.rb
+# 	install -m 0755 yatt.rb /edu/bin/yatt.rb
+# 	install -m 0755 yatt.$@ /edu/bin/yatt
+
+# osx: yatt.osx yatt.rb
+# 	mkdir -p ${BIN}
+# 	install -m 0755 yatt.rb ${BIN}/yatt.rb
+# 	install -m 0755 yatt.$@ ${BIN}/yatt
+
+# linux: yatt.linux yatt.rb
+# 	mkdir -p ${BIN}
+# 	install -m 0755 yatt.rb ${BIN}/yatt.rb
+# 	install -m 0755 yatt.$@ ${BIN}/yatt
+
 
 server: monitor
 

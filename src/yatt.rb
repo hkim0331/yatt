@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.21.2
+# VERSION: 0.22
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -14,14 +14,15 @@
 # 2012-04-26, contest class cmenu.
 # 2014-04-09, fix smaller font bug(typo)
 
-
-YATT_VERSION = '0.21.2'
-DATE = '2014-04-09'
-
-require 'tk'
-
 DEBUG = false
 
+YATT_VERSION = '0.22'
+DATE = '2014-04-25'
+
+REQ_RUBY = "1.9.3"
+raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
+
+require 'tk'
 begin
   require 'drb'
   DRB_ENABLED = true
@@ -42,33 +43,55 @@ EOU
   exit(1)
 end
 
-REQ_RUBY = "1.9.3"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-
 GOOD = "green"
 BAD  = "red"
 
 YATT_TXT = "yatt.txt"
 YATT_IMG = "yatt3.gif"
 
-PORT = 23002
+# yatt の記録を保管するサーバ。drb で通信する。
+# druby://edu.melt.kyutech.ac.jp:23002 ではどうか?
+YATTD = 'edu.melt.kyutech.ac.jp'
+PORT  = 23002
+SERVER_URI = 'druby://edu.melt.kyutech.ac.jp:23002'
 
-RANKER = 30
+TIMEOUT = 60
+RANKER  = 30
 
 if File.exists?("/Applications")
-  YATTD   = 'localhost'
-  LIB     = File.join(ENV['HOME'], 'Library/yatt')
-  TIMEOUT = 10
+  LIB = File.join(ENV['HOME'], 'Library/yatt')
+elsif File.exists?("/edu")
+  LIB = '/edu/lib/yatt'
 else
-  YATTD   = 'edu.melt.kyutech.ac.jp'
-  LIB     = '/edu/lib/yatt'
-  TIMEOUT = 60
+  LIB = File.join(ENV['HOME'], 'lib/yatt')
 end
-README  = File.join(LIB, "README")
 
-YATT_DIR = File.join(ENV['HOME'], '.yatt')
+server = YATTD
+port   = PORT
+lib    = LIB
+
+$server_uri = SERVER_URI
+while (arg=ARGV.shift)
+  case arg
+  when /--uri/
+    $server_uri = ARGV.shift
+  when /--server/
+    server = ARGV.shift
+  when /--port/
+    port = ARGV.shift
+  when /--lib/
+    lib=ARGV.shift
+  when /--noserver/
+    server = nil
+  else
+    usage()
+  end
+end
+
+README       = File.join(lib, "README")
+YATT_DIR     = File.join(ENV['HOME'], '.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-HISTORY = File.join(YATT_DIR, 'history')
+HISTORY      = File.join(YATT_DIR, 'history')
 TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 
 #############
@@ -99,36 +122,38 @@ Copyright (C) 2002-2014.\n",
     frame1=TkFrame.new(toplevel)
     frame1.pack
     text=TkText.new(frame1)
-    text.configure(:width=>40,
-                   :height=>30)
-    text.pack(:side=>'right')
+    text.configure(:width  => 40, :height => 30)
+    text.pack(:side => 'right')
     scr=TkScrollbar.new(frame1)
-    scr.pack(:side=>'left',:fill=>'y')
+    scr.pack(:side => 'left', :fill => 'y')
     text.yscrollbar(scr)
     File.foreach(README) do |line|
       text.insert('end',line)
     end
-    text.configure(:state=>'disabled')
+    text.configure(:state => 'disabled')
   end
 
   def initialize(server,port,lib)
     @server=server
-    @port=port
-    @lib=lib
-    @windows=nil
-    @user_config=File.join(YATT_DIR,"config")
+    @port  = port
+    @lib   = lib
+    @myid  = my_env('USER')
+
+    @windows = nil
+    # nouse? 2014-04-25
+    #@runnable_before="25:00"
+    #@user_config=File.join(YATT_DIR,"config")
     #    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
-    @width=78
-    @lines=6
+    @width = 78
+    @lines = 6
     @textfile=File.join(@lib,YATT_TXT)
     @splash  =File.join(@lib,YATT_IMG)
-    @runnable_before="25:00"
-    @contest=false
     @speed_meter_status=true
-    @myid = my_env('USER')
+
+    @contest=false
 
     srand($$)
-    root=TkRoot.new {title 'yet another typing trainer'}
+    root = TkRoot.new {title 'yet another typing trainer'}
     root.bind('KeyPress', proc{|e| key_press(e)},'%N')
     do_menu(root)
     base=TkFrame.new(root, :relief=>'groove', :borderwidth=>2)
@@ -169,7 +194,7 @@ Copyright (C) 2002-2014.\n",
     File.foreach(@textfile) do |line|
       @doclength+=1
     end
-    debug "@doclength=#{@doclength}"
+    debug "@doclength: #{@doclength}"
     insert(@textfile,@lines)
   end
 
@@ -210,8 +235,8 @@ Copyright (C) 2002-2014.\n",
        ['monaco', proc{menu_setfont('Monaco')}],
        ['osaka', proc{menu_setfont('Osaka')}],
         '---',
-        ['smaller', proc{menu_smaller()}],
-        ['bigger', proc{menu_bigger()}],
+        ['smaller(-)', proc{menu_smaller()}],
+        ['bigger (+)', proc{menu_bigger()}],
         '---',
         ['(remember font)']
       ],
@@ -422,9 +447,14 @@ port: #{@port}\n",
   # does not work in ruby19.
   def key_press(key)
     return if @epilog
+    # 2014-04-25
+    menu_smaller if key==45
+    menu_bigger  if key==43
+    #
     key &= 0x00ff
-    # debug key
-    return if (key==0 or key>128) # shift, control or alt. do nothing
+    if (key==0 or key>128) # shift, control or alt. do nothing
+      return
+    end
     if @wait_for_first_key
       @wait_for_first_key=false
       @logger.start
@@ -653,7 +683,7 @@ class Logger
   end
 
   def score
-    debug=false
+    debug = false
     w=0.3
     time=diff_time
     sum_good=sum(@good)
@@ -732,10 +762,10 @@ class MyStatus <TkCanvas
   include MyEnv
   # WIDTH, etc., must be calculated from the width of `text' area.
   # How should I do?
-  WIDTH=420
-  HEIGHT=200
-  C_WIDTH=10
-  C_HEIGHT=20
+  WIDTH   = 420
+  HEIGHT  = 200
+  C_WIDTH = 10
+  C_HEIGHT= 20
 
   def initialize(parent,splash)
     @graph=TkCanvas.new(parent,
@@ -842,30 +872,30 @@ class Scoreboard
   def start_drb
     DRb.start_service
     @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
-    unless @remote.ping=~/ok/
+    unless @remote.ping =~ /ok/
       raise "@server does not respond."
     end
-  rescue =>e
+  rescue => e
     can_not_talk(@server)
   end
 
   def can_not_talk(server)
-    TkDialog.new(:title=>'can not talk to server',
-      :message=>"サーバと通信できません。\n"+
-      "下の continue を押し、"+
-      "次にでてくるOKボタンを押せばyatt の練習はできますが"+
-      "コンテストには参加できません。\n"+
-      "しばらく秘密練習に励んでください。",
-      :buttons=>['continue'])
+    TkDialog.new(:title   => 'can not talk to server',
+                 :message => "サーバと通信できません。
+下の continue を押し、
+次にでてくるOKボタンを押せばyatt の練習はできますが
+コンテストには参加できません。
+しばらく秘密練習に励んでください。",
+                 :buttons => ['continue'])
   end
 
   def pack(param)
-    @scr.pack(:side=>'left',:fill=>'y')
+    @scr.pack(:side=>'left', :fill=>'y')
     @text.pack(param)
   end
 
   def destroy
-    @remote=nil unless @remote.nil?
+    @remote = nil unless @remote.nil?
   end
 
   def highlight(color)
@@ -928,12 +958,7 @@ class Scoreboard
     @text.configure(:state=>'disabled')
   end
 
-  # FIXME:
   # 3種類の update を作る。
-  # update global
-  # update this week
-  # update my class
-  # これをどう実現するか？
   def update
     case @mode
     when WEEKLY
@@ -1055,9 +1080,10 @@ end # MyPlot
 ################
 class SpeedMeter
   include Math
-  WIDTH=50
-  HEIGHT=40
-  MAX=14
+
+  WIDTH  = 50
+  HEIGHT = 40
+  MAX    = 14
 
   def config(stat)
     if (stat)
@@ -1092,9 +1118,10 @@ class SpeedMeter
     clear
     n=min(n,MAX)
     x,y=@xy[n]
-    TkcLine.new(@canvas,@ox,@oy,@ox+x,@oy-y,
-                :width=>2,:fill=>'red')
-    TkcOval.new(@canvas,@ox-2,@oy-2,@ox+2,@oy+2,:fill=>'black')
+    TkcLine.new(@canvas, @ox, @oy, @ox+x, @oy-y,
+                :width => 2, :fill => 'red')
+    TkcOval.new(@canvas, @ox-2, @oy-2, @ox+2, @oy+2,
+                :fill => 'black')
   end
 
   def min(m,n)
@@ -1105,27 +1132,13 @@ class SpeedMeter
     end
   end
 end# SpeedMeter
+
+
 #
 # main starts here.
 #
-server = YATTD
-port = PORT
-lib = LIB
-while (arg=ARGV.shift)
-  case arg
-  when /--server/
-    server = ARGV.shift
-  when /--port/
-    port = ARGV.shift
-  when /--lib/
-    lib=ARGV.shift
-  when /--noserver/
-    server = nil
-  else
-    usage()
-  end
-end
-
-File.open(TODAYS_SCORE,"a").close
+# necessary?
+#File.open(TODAYS_SCORE,"a").close
+#
 trainer = Trainer.new(server, port, lib)
 Tk.mainloop

@@ -1,5 +1,13 @@
 #-*- mode: outline; coding: utf-8 -*-
 
+* todo
+** windows インストーラ、あるいはインストールの説明
+** 自宅練習のための仮想アカウント
+
+
+* 2014-04-25
+  isc で ruby-2.1.1/tk8.5 OK. /edu/bin/ruby で。
+
 * 2014-04-02
   yatt_monitor はデータの授業利用のため、web.melt でサービスしよう。
 
