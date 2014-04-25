@@ -1,6 +1,6 @@
 #!/usr/bin/env dash
 #-*- mode: Shell-script; -*-
-# VERSION: 0.21.3
+# VERSION: 0.22
 
 RUBY=/edu/bin/ruby
 YATT=/edu/bin/yatt.rb
@@ -8,5 +8,5 @@ LIB=/edu/lib/yatt
 
 SERV=edu.melt.kyutech.ac.jp
 
-${RUBY} ${YATT} --server ${SERV} --lib ${LIB}
+/edu/bin/ruby ${YATT} --server ${SERV} --lib ${LIB}
 
