@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.22
+# VERSION: 0.22.1
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -16,7 +16,7 @@
 
 DEBUG = false
 
-YATT_VERSION = '0.22'
+YATT_VERSION = '0.22.1'
 DATE = '2014-04-25'
 
 REQ_RUBY = "1.9.3"
@@ -154,16 +154,18 @@ Copyright (C) 2002-2014.\n",
 
     srand($$)
     root = TkRoot.new {title 'yet another typing trainer'}
-    root.bind('KeyPress', proc{|e| key_press(e)},'%N')
+    # hotfix 0.22.1
+    root.bind('KeyPress', proc{|k,n| key_press(k,n)},'%k','%N')
+    #
     do_menu(root)
-    base=TkFrame.new(root, :relief=>'groove', :borderwidth=>2)
+    base = TkFrame.new(root, :relief => 'groove', :borderwidth =>2)
     base.pack
     @textarea=MyText.new(base,
-      :background=>'white',
-      :width=>@width,
-      :height=>@lines+1)
-    @font="Courier"
-    @size="14"
+      :background => 'white',
+      :width  => @width,
+      :height => @lines+1)
+    @font = "Courier"
+    @size = "14"
     my_set_font()
     @textarea.pack
 
@@ -202,11 +204,11 @@ Copyright (C) 2002-2014.\n",
     menu_frame=TkFrame.new(root,:relief=>'raised',:bd=>1)
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu=[
-      [['File',0],
+      [['File'],
         # ['New', proc{menu_new},0],
         # ['Pref'],
         ['Quit',proc{menu_quit},0]],
-      [['Misc',0],
+      [['Misc'],
         ['Contest',proc{menu_toggle_contest},0],
         ['reLoad', proc{menu_reload},2],
         ['My ranking', proc{menu_my_rank},0],
@@ -442,19 +444,23 @@ port: #{@port}\n",
 #    now.hour*60+now.min < hour.to_i*60+min.to_i
   end
 
+
   # core of yatt.rb
   # rewrite 2002.06.08
-  # does not work in ruby19.
-  def key_press(key)
+  def key_press(kk,key)
     return if @epilog
-    # 2014-04-25
-    menu_smaller if key==45
-    menu_bigger  if key==43
-    #
-    key &= 0x00ff
-    if (key==0 or key>128) # shift, control or alt. do nothing
+    # hotfix 0.22.1
+    if kk==1573041
+      menu_bigger
       return
     end
+    if kk==1777683
+      menu_smaller
+      return
+    end
+    #
+    key &= 0x00ff
+    return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
       @wait_for_first_key=false
       @logger.start

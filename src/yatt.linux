@@ -1,6 +1,6 @@
 #!/usr/bin/env dash
 #-*- mode: shell-script -*-
-# VERSION: 0.22
+# VERSION: 0.22.1
 
 YATT=${HOME}/bin/yatt.rb
 LIB=${HOME}/lib/yatt
