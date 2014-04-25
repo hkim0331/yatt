@@ -1,4 +1,4 @@
-# VERSION: 0.21.3
+# VERSION: 0.22
 
 DB = yatt.db
 

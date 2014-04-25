@@ -1,6 +1,6 @@
 #!/usr/bin/env dash
 #-*- mode:shell-script-*-
-# VERSION: 0.21.3
+# VERSION: 0.22
 
 /usr/bin/env ruby ./yatt.rb --server localhost --lib ../lib
 
