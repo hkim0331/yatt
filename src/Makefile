@@ -11,7 +11,7 @@ all:
 
 isc: yatt.rb
 	install -m 0755 yatt.rb /edu/bin/yatt
-	/home/t/hkimura/chsb --sb /edu/bin/ruby /edu/bin/yat
+	/home/t/hkimura/bin/chsb --sb /edu/bin/ruby /edu/bin/yatt
 
 osx: yatt.rb
 	mkdir -p ${BIN}
