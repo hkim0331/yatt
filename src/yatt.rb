@@ -71,6 +71,7 @@ server = YATTD
 port   = PORT
 lib    = LIB
 
+
 $server_uri = SERVER_URI
 while (arg=ARGV.shift)
   case arg
@@ -198,7 +199,7 @@ Copyright (C) 2002-2014.\n",
       @doclength+=1
     end
     debug "@doclength: #{@doclength}"
-    insert(@textfile,@lines)
+    insert(@textfile, @lines)
   end
 
   def do_menu(root)
@@ -254,8 +255,7 @@ Copyright (C) 2002-2014.\n",
 
   def show_params
     TkDialog.new(:title => 'yatt params',
-                 :message =>
-"ruby: #{RUBY_VERSION}
+                 :message =>"ruby: #{RUBY_VERSION}
 version: #{YATT_VERSION}
 date: #{DATE}
 lib: #{LIB}
@@ -282,7 +282,7 @@ port: #{@port}\n",
 
   def menu_new
     @timer.cancel
-    insert(@textfile,@lines)
+    insert(@textfile, @lines)
   end
 
   def menu_quit
@@ -391,6 +391,7 @@ port: #{@port}\n",
     @stat.percentile
   end
 
+  # file からnum_lines を抽出、
   def insert(file, num_lines)
     if ! time_for_train?(Time.now, @runnable_before)
       STDERR.puts "it's not the time for training.\n"
@@ -404,7 +405,7 @@ port: #{@port}\n",
     @time_remains=TIMEOUT
     @wait_for_first_key=true
 
-    start=rand(@doclength-2*num_lines) # 2 for programming ease.
+    start = rand(@doclength - 2*num_lines) # 2 for programming ease.
     debug "start: #{start}"
     @text=[]
     File.open(file,"r") do |fp|
@@ -524,6 +525,7 @@ port: #{@port}\n",
   end
 
   def epilog
+
     @epilog=true
     while (@timer.running?)
       @timer.stop
@@ -539,11 +541,10 @@ port: #{@port}\n",
                 (((@logger.bads.to_f/@logger.goods.to_f)*1000).floor).to_f/10
               end
     #
-
     msg     = "#{score} points in #{@logger.diff_time} second.\n"+
       "strokes: #{strokes}\n"+
       "errors:  #{errors}%\n"
-    if (errors>3.0)
+    if errors>3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
     end
     if c = @logger.complete?
@@ -563,7 +564,6 @@ port: #{@port}\n",
     @stat.plot(@logger.sum_good,@logger.sum_ng)
 
     #debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
-
     # 2012-04-21 最高点数だけ、かつ、authenticated な時だけ、
     # scoreboard に点数をサブミットしている。
     # scoreborad 側に最高点かどうかを判定するルーチンを入れる必要がある。
@@ -708,11 +708,11 @@ class Logger
   def score
     debug = false
     w=0.3
-    time=diff_time
-    sum_good=sum(@good)
-    sum_ng=sum(@ng)
-    num_keys=sum_good+sum_ng
-    return 0 if num_keys==0
+    time = diff_time()
+    sum_good = sum(@good)
+    sum_ng   = sum(@ng)
+    num_keys = sum_good + sum_ng
+    return 0 if sum_good==0
     score=(w*sum_good*(sum_good.to_f/num_keys)**3*(num_keys/time)).floor
   end
 
