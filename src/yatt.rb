@@ -5,7 +5,8 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.22.1
+# VERSION: 0.22.2
+# short cut keys.
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -16,8 +17,8 @@
 
 DEBUG = false
 
-YATT_VERSION = '0.22.1'
-DATE = '2014-04-25'
+YATT_VERSION = '0.22.2'
+DATE = '2014-04-30'
 
 REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -449,8 +450,15 @@ port: #{@port}\n",
   # rewrite 2002.06.08
   def key_press(kk,key)
     return if @epilog
-    # hotfix 0.22.1
-    if kk==1573041
+
+    # hotfix 0.22.2
+    # kks are differ between linux and osx.
+    # when type 'alt +'  in Linux, returns two key events,
+    # (64, 65513) and (21, 61).
+    # in OSX, returns a single key event.
+    # (1573041, 43).
+    #puts "kk: #{kk}, key: #{key}"
+    if (kk == 1573041 or kk == 1581664)
       menu_bigger
       return
     end
@@ -459,6 +467,7 @@ port: #{@port}\n",
       return
     end
     #
+
     key &= 0x00ff
     return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
@@ -516,29 +525,36 @@ port: #{@port}\n",
 
   def epilog
     @epilog=true
-    # moved here from bottom of this method.
     while (@timer.running?)
       @timer.stop
     end
+
+    score   = @logger.score
+    strokes = @logger.goods + @logger.bads
+
+    # hotfix 0.22.2
+    errors  = if @logger.goods == 0
+                100.0
+              else
+                (((@logger.bads.to_f/@logger.goods.to_f)*1000).floor).to_f/10
+              end
     #
-    score=@logger.score
-    strokes=@logger.goods+@logger.bads
-    errors=(((@logger.bads.to_f/@logger.goods.to_f)*1000).floor).to_f/10
-    msg = "#{score} points in #{@logger.diff_time} second.\n"+
+
+    msg     = "#{score} points in #{@logger.diff_time} second.\n"+
       "strokes: #{strokes}\n"+
       "errors:  #{errors}%\n"
     if (errors>3.0)
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
     end
-    if c=@logger.complete?
+    if c = @logger.complete?
       score +=100
-      msg += "+ bonus complete (100)\n"
+      msg   += "+ bonus complete (100)\n"
       score += (tr=@time_remains*50)
-      msg += "+ bonus time remains (#{tr})\n"
+      msg   += "+ bonus time remains (#{tr})\n"
     end
-    if p=@logger.perfect?
-      score +=300
-      msg += "+ bonus perfect (300)\n"
+    if p     = @logger.perfect?
+      score += 300
+      msg   += "+ bonus perfect (300)\n"
     end
     msg += "becomes #{score}!!!\n" if (c or p)
 
@@ -546,7 +562,7 @@ port: #{@port}\n",
     @logger.accumulate
     @stat.plot(@logger.sum_good,@logger.sum_ng)
 
-    debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
+    #debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
 
     # 2012-04-21 最高点数だけ、かつ、authenticated な時だけ、
     # scoreboard に点数をサブミットしている。
@@ -569,14 +585,15 @@ port: #{@port}\n",
 
     #
     @scoreboard.update if @contest
-    ret=TkDialog.new(:title=>'yet another type trainer',
-                     :message=>msg,
-                     :buttons=>'continue').value
+    ret = TkDialog.new(:title   => 'yet another type trainer',
+                       :message => msg,
+                       :buttons => 'continue').value
     sleep(1)
     insert(@textfile, @lines)
-    @epilog=false
+    @epilog = false
     sleep(1)
   end #epilog
+
 end #Trainer
 
 #####################
