@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.23
+# VERSION: 0.24
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -17,8 +17,8 @@
 
 DEBUG = false
 
-YATT_VERSION = '0.23'
-DATE = '2014-06-16'
+YATT_VERSION = '0.24'
+DATE = '2014-07-03'
 
 REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
