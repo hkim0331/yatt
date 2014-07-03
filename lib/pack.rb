@@ -3,6 +3,6 @@
 # programmed by Hiroshi Kimura, 2012-04-03.
 
 ARGF.each do |line|
-  next if line=~/^\s*$/
+  next if line =~ /^\s*$/
   puts line.strip
 end

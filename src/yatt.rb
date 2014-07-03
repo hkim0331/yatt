@@ -135,6 +135,7 @@ Copyright (C) 2002-2014.\n",
     text.configure(:state => 'disabled')
   end
 
+  # 長すぎ。
   def initialize(server,port,lib)
     @server=server
     @port  = port
@@ -585,9 +586,12 @@ port: #{@port}\n",
 
     #
     @scoreboard.update if @contest
-    ret = TkDialog.new(:title   => 'yet another type trainer',
-                       :message => msg,
-                       :buttons => 'continue').value
+    if errors>3.0
+
+    end
+    ret=TkDialog.new(:title   => 'yet another type trainer',
+                 :message => msg,
+                 :buttons => 'continue').value
     sleep(1)
     insert(@textfile, @lines)
     @epilog = false
@@ -602,8 +606,8 @@ class MyText < TkText
   @@loose=false
   def initialize(parent, params)
     @text=TkText.new(parent,params)
-    @text.tag_configure('good',:background=>GOOD)
-    @text.tag_configure('bad',:background=>BAD)
+    @text.tag_configure('good', background: GOOD)
+    @text.tag_configure('bad',  background: BAD)
   end
 
   def insert(text)
@@ -840,8 +844,8 @@ class MyStatus <TkCanvas
   end
 
   def rect(x,y,good,bad,dx,ry)
-    TkcRectangle.new(@graph,x,y,x+dx,y-good*ry,:fill=>GOOD)
-    TkcRectangle.new(@graph,x,y-good*ry,x+dx,y-(good+bad)*ry,:fill=>BAD)
+    TkcRectangle.new(@graph,x,y,x+dx,y-good*ry, fill: GOOD)
+    TkcRectangle.new(@graph,x,y-good*ry,x+dx,y-(good+bad)*ry, fill: BAD)
   end
 
   def text(x,y,char)
