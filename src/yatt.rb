@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.23
+# VERSION: 0.24
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -17,8 +17,8 @@
 
 DEBUG = false
 
-YATT_VERSION = '0.23'
-DATE = '2014-06-16'
+YATT_VERSION = '0.24'
+DATE = '2014-07-03'
 
 REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -135,6 +135,7 @@ Copyright (C) 2002-2014.\n",
     text.configure(:state => 'disabled')
   end
 
+  # 長すぎ。
   def initialize(server,port,lib)
     @server=server
     @port  = port
@@ -585,9 +586,12 @@ port: #{@port}\n",
 
     #
     @scoreboard.update if @contest
-    ret = TkDialog.new(:title   => 'yet another type trainer',
-                       :message => msg,
-                       :buttons => 'continue').value
+    if errors>3.0
+
+    end
+    ret=TkDialog.new(:title   => 'yet another type trainer',
+                 :message => msg,
+                 :buttons => 'continue').value
     sleep(1)
     insert(@textfile, @lines)
     @epilog = false
@@ -602,8 +606,8 @@ class MyText < TkText
   @@loose=false
   def initialize(parent, params)
     @text=TkText.new(parent,params)
-    @text.tag_configure('good',:background=>GOOD)
-    @text.tag_configure('bad',:background=>BAD)
+    @text.tag_configure('good', background: GOOD)
+    @text.tag_configure('bad',  background: BAD)
   end
 
   def insert(text)
@@ -840,8 +844,8 @@ class MyStatus <TkCanvas
   end
 
   def rect(x,y,good,bad,dx,ry)
-    TkcRectangle.new(@graph,x,y,x+dx,y-good*ry,:fill=>GOOD)
-    TkcRectangle.new(@graph,x,y-good*ry,x+dx,y-(good+bad)*ry,:fill=>BAD)
+    TkcRectangle.new(@graph,x,y,x+dx,y-good*ry, fill: GOOD)
+    TkcRectangle.new(@graph,x,y-good*ry,x+dx,y-(good+bad)*ry, fill: BAD)
   end
 
   def text(x,y,char)

@@ -1,5 +1,5 @@
-yatt.txt: constitution.txt GNU_COPYING.txt
-	ruby pack.rb $^ > $@
+yatt.txt: constitution.txt GNU_COPYING.txt moby-dick.txt
+	ruby pack.rb $?  > $@
 
 isc: yatt.txt yatt.gif
 	if [ ! -d /edu/lib/yatt ]; then \
