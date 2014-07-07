@@ -5,14 +5,14 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.24
+# VERSION: 0.25
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
 
-YATT_VERSION = '0.24'
-DATE = '2014-07-03'
+YATT_VERSION = '0.25'
+DATE = '2014-07-07'
 
 DEBUG = false
 
