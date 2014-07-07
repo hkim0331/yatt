@@ -1,4 +1,4 @@
-# VERSION: 0.24
+# VERSION: 0.25
 
 BIN=${HOME}/bin
 YATT_BIN=/usr/local/yatt/bin
@@ -34,7 +34,6 @@ linux: yatt.rb
 # 	mkdir -p ${BIN}
 # 	install -m 0755 yatt.rb ${BIN}/yatt.rb
 # 	install -m 0755 yatt.$@ ${BIN}/yatt
-
 
 server: monitor
 
