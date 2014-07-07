@@ -48,7 +48,7 @@ GOOD = "green"
 BAD  = "red"
 
 YATT_TXT = "yatt.txt"
-YATT_IMG = "yatt3.gif"
+YATT_IMG = "yatt4.gif" # was "yatt3.gif"
 
 # yatt の記録を保管するサーバ。drb で通信する。
 # druby://edu.melt.kyutech.ac.jp:23002 ではどうか?
@@ -547,6 +547,11 @@ port: #{@port}\n",
       "errors:  #{errors}%\n"
     if errors>3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
+    else
+        if score >100
+          msg += "\nError-rate < 3.0%. Bonus 30.\n"
+          score += 30
+        end
     end
     if c = @logger.complete?
       score +=100
@@ -586,16 +591,14 @@ port: #{@port}\n",
 
     #
     @scoreboard.update if @contest
-    if errors>3.0
-
-    end
+    sleep(1)
     ret=TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
     sleep(1)
     insert(@textfile, @lines)
     @epilog = false
-    sleep(1)
+#    sleep(1)
   end #epilog
 
 end #Trainer
@@ -941,8 +944,8 @@ class Scoreboard
                  "= Realtime Typing Contest =\n\n"+
                  "choose contest from \n"+
                  "Misc menu to join.\n\n"+
-                 "fix '-' key bug, 2014-06-16.\n\n"+
-                 "last modified:\n" + DATE)
+                 "2014-07-07, bonus + 30 if error < 3.0.\n"+
+                 "2014-06-16, fix '-' key bug.\n")
     @text.configure(:state=>'disabled')
   end
 
