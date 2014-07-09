@@ -548,8 +548,8 @@ port: #{@port}\n",
     if errors>3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
     else
-        if score >100
-          msg += "\nError-rate < 3.0%. Bonus 30.\n"
+        if score >70
+          msg += "\nyour error-rate < 3.0%.\nBonus 30.\n"
           score += 30
         end
     end
@@ -944,7 +944,7 @@ class Scoreboard
                  "= Realtime Typing Contest =\n\n"+
                  "choose contest from \n"+
                  "Misc menu to join.\n\n"+
-                 "2014-07-07, bonus + 30 if error < 3.0.\n"+
+                 "2014-07-07, bonus +30 if error < 3.0.\n\n"+
                  "2014-06-16, fix '-' key bug.\n")
     @text.configure(:state=>'disabled')
   end
