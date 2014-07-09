@@ -1,9 +1,0 @@
-#!/usr/bin/env dash
-#-*- mode: shell-script -*-
-# VERSION: 0.25
-
-YATT=${HOME}/bin/yatt.rb
-LIB=${HOME}/lib/yatt
-SERV=edu.melt.kyutech.ac.jp
-
-/usr/bin/env ruby ${YATT} --server ${SERV} --lib ${LIB}
