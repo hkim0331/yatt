@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.25
+# VERSION: 0.25.1
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -17,8 +17,8 @@
 
 DEBUG = false
 
-YATT_VERSION = '0.25'
-DATE = '2014-07-07'
+YATT_VERSION = '0.25.1'
+DATE = '2014-07-09'
 
 REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
@@ -548,8 +548,8 @@ port: #{@port}\n",
     if errors>3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
     else
-        if score >100
-          msg += "\nError-rate < 3.0%. Bonus 30.\n"
+        if score >70
+          msg += "\nyour error-rate < 3.0%.\nBonus 30.\n"
           score += 30
         end
     end
@@ -942,9 +942,9 @@ class Scoreboard
     @text.delete('1.0','end')
     @text.insert('end',
                  "= Realtime Typing Contest =\n\n"+
-                 "choose contest from \n"+
-                 "Misc menu to join.\n\n"+
-                 "2014-07-07, bonus + 30 if error < 3.0.\n"+
+                 "To join the realtime contest,\n"+
+                 "choose contest from Misc menu.\n\n"+
+                 "2014-07-07, bonus +30 if error rate < 3.0%.\n\n"+
                  "2014-06-16, fix '-' key bug.\n")
     @text.configure(:state=>'disabled')
   end
