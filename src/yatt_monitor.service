@@ -1,0 +1,36 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          yatt_monitor
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: yatt-monitor
+# Description:       yatt database proxy.
+### END INIT INFO
+#
+# Author: Hiroshi Kimura <hiroshi.kimura.0331@gmail.com>
+#
+
+usage() {
+	echo "Usage: $0 {start|stop|status}"
+}
+
+case "$1" in
+    start)
+	    if [ -x /usr/local/yatt/bin/yatt_monitor ]; then
+	       /usr/local/yatt/bin/yatt_monitor
+	    fi
+	    ;;
+    stop)
+	    kill `pidof yatt_monitor`
+	    ;;
+    status)
+      pidof btsync
+      ;;
+    *)
+	    usage
+	    ;;
+esac
+
+:
