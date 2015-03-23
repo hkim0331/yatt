@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.31
+# VERSION: 0.31.1
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -15,7 +15,7 @@
 # 2012-04-26, contest class cmenu.
 # 2014-04-09, fix smaller font bug(typo)
 
-DEBUG = false
+DEBUG = true
 
 require 'tk'
 begin
@@ -26,7 +26,7 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.31'
+YATT_VERSION = '0.31.1'
 DATE = '2015-03-23'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
@@ -43,6 +43,8 @@ YATT_TXT = "yatt.txt"
 YATT_IMG = "yatt4.gif" # was "yatt3.gif"
 
 # yatt の記録を保管するサーバ。drb で通信する。
+# さらにそのサーバは mariadb と 3306/tcp で通信する。
+# YATTD はプロキシーサーバと言っていいか？
 YATTD = 'yatt.melt.kyutech.ac.jp'
 PORT  = 23002
 

@@ -1,4 +1,4 @@
-# VERSION: 0.31
+# VERSION: 0.31.1
 
 BIN=${HOME}/bin
 YATT_BIN=/usr/local/yatt/bin
