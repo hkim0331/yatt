@@ -7,7 +7,7 @@ ps ax | grep yatt_monitor.rb | grep -v 'grep' >/dev/null
 case $? in
 1)
 	/usr/local/yatt/bin/yatt_monitor.rb --hostname yatt.melt.kyutech.ac.jp \
-	    --log /dev/null
+	    --log /usr/local/yatt/log/yatt.log
 	;;
 esac
 

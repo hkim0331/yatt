@@ -23,9 +23,10 @@ case "$1" in
 	      fi
 	      ;;
     stop)
-        kill `pidof yatt_monitor`
+        kill `ps ax | grep yatt_monitor | grep '/bin/sh' |awk '{print $1}'`
 	      ;;
     status)
+        ps ax | grep yatt_monitor
         ;;
     *)
 	      usage
