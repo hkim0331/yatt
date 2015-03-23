@@ -14,7 +14,7 @@
 YATT_VERSION = '0.25.1'
 DATE = '2014-07-09'
 
-DEBUG = false
+DEBUG = true
 
 def debug(s)
   puts s if DEBUG
@@ -25,18 +25,18 @@ require 'sequel'
 
 REQ_RUBY = "1.9.3"
 raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-PORT = 23002
-BEST = 30
 
-if false
+if DEBUG
   HOSTNAME = "localhost"
   LOG      = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
-  DS       = Sequel.sqlite("/Users/hkim/Dropbox/yatt/db/yatt.db")[:yatt]
+  DS       = Sequel.sqlite("../db/yatt.db")[:yatt]
 else
-  HOSTNAME = "web.melt.kyutech.ac.jp"
+  HOSTNAME = "edu.melt.kyutech.ac.jp"
   LOG      = "/usr/local/yatt/log/yatt.log"
   DS       = Sequel.connect('mysql2://yatt:yyy@localhost/yatt_production')[:yatt]
 end
+PORT = 23002
+BEST = 30
 
 def usage
   print <<EOF

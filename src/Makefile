@@ -11,7 +11,7 @@ all:
 
 isc: yatt.rb
 	install -m 0755 yatt.rb /edu/bin/yatt
-	/home/t/hkimura/bin/chsb --sb /edu/bin/ruby /edu/bin/yatt
+	./chsb --sb /edu/bin/ruby /edu/bin/yatt
 
 osx: yatt.rb
 	mkdir -p ${BIN}
@@ -21,24 +21,12 @@ linux: yatt.rb
 	mkdir -p ${BIN}
 	install -m 0755 yatt.rb ${BIN}/yatt
 
-# isc: yatt.isc yatt.rb
-# 	install -m 0755 yatt.rb /edu/bin/yatt.rb
-# 	install -m 0755 yatt.$@ /edu/bin/yatt
-
-# osx: yatt.osx yatt.rb
-# 	mkdir -p ${BIN}
-# 	install -m 0755 yatt.rb ${BIN}/yatt.rb
-# 	install -m 0755 yatt.$@ ${BIN}/yatt
-
-# linux: yatt.linux yatt.rb
-# 	mkdir -p ${BIN}
-# 	install -m 0755 yatt.rb ${BIN}/yatt.rb
-# 	install -m 0755 yatt.$@ ${BIN}/yatt
-
 server: monitor
 
 monitor: yatt_monitor.rb yatt_monitor
+	mkdir -p ${YATT_BIN}
 	install -m 0755 yatt_monitor yatt_monitor.rb ${YATT_BIN}
+	echo do not forget to open monitor port(default 23002/tcp).
 
 clean:
 	${RM} *~ .\#* *.bak
