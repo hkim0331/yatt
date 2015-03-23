@@ -21,12 +21,15 @@ linux: yatt.rb
 	mkdir -p ${BIN}
 	install -m 0755 yatt.rb ${BIN}/yatt
 
-server: monitor
+server: monitor gems
 
 monitor: yatt_monitor.rb yatt_monitor
 	mkdir -p ${YATT_BIN}
 	install -m 0755 yatt_monitor yatt_monitor.rb ${YATT_BIN}
-	echo do not forget to open monitor port(default 23002/tcp).
+	@echo 'do not forget to open monitor port(default 23002/tcp).'
+
+gems:
+	gem install sequel mysql2
 
 clean:
 	${RM} *~ .\#* *.bak
