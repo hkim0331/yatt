@@ -233,7 +233,7 @@ begin
   score_server = ScoreServer.new(logfile)
   uri = "druby://#{hostname}:#{port}"
   DRb.start_service(uri, score_server)
-  puts uri
+#  puts uri
   DRb.thread.join
 
 rescue => e
