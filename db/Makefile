@@ -1,12 +1,12 @@
-# VERSION: 0.25.1
+# VERSION: 0.30
 
 DB = yatt.db
 
 create:
-	sqlite3 ${DB} < create.sql
+	sqlite3 ${DB} < create.sqlite3
 
 drop:
-	sqlite3 ${DB} < drop.sql
+	sqlite3 ${DB} < drop.sqlite3
 
 schema:
 	sqlite3 -line ${DB} '.schema' > $@

@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.25.1
+# VERSION: 0.30
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -17,19 +17,49 @@
 
 DEBUG = false
 
-YATT_VERSION = '0.25.1'
-DATE = '2014-07-09'
-
-REQ_RUBY = "1.9.3"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
-
 require 'tk'
 begin
   require 'drb'
   DRB_ENABLED = true
 rescue
-  STDERR.puts "you can not join contest without drb."
+  STDERR.puts "you can not join contest without drb installed."
   DRB_ENABLED = false
+end
+
+YATT_VERSION = '0.30'
+DATE = '2015-03-23'
+
+COPYRIGHT= "programmed by Hiroshi Kimura
+version #{YATT_VERSION}(#{DATE})
+Copyright (C) 2002-2015.\n"
+
+REQ_RUBY = "1.9.3"
+raise "require ruby >= "+REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) <0
+
+GOOD = "green"
+BAD  = "red"
+
+YATT_TXT = "yatt.txt"
+YATT_IMG = "yatt4.gif" # was "yatt3.gif"
+
+# yatt の記録を保管するサーバ。drb で通信する。
+YATTD = 'yatt.melt.kyutech.ac.jp'
+PORT  = 23002
+
+if DEBUG
+  TIMEOUT = 10
+else
+  TIMEOUT = 60
+end
+
+RANKER  = 30
+
+if File.exists?("/Applications")
+  LIB = File.join(ENV['HOME'], 'Library/yatt')
+elsif File.exists?("/edu")
+  LIB = '/edu/lib/yatt'
+else
+  LIB = File.join(ENV['HOME'], 'lib/yatt')
 end
 
 def debug(s)
@@ -44,39 +74,13 @@ EOU
   exit(1)
 end
 
-GOOD = "green"
-BAD  = "red"
-
-YATT_TXT = "yatt.txt"
-YATT_IMG = "yatt4.gif" # was "yatt3.gif"
-
-# yatt の記録を保管するサーバ。drb で通信する。
-# druby://edu.melt.kyutech.ac.jp:23002 ではどうか?
-YATTD = 'edu.melt.kyutech.ac.jp'
-PORT  = 23002
-SERVER_URI = 'druby://edu.melt.kyutech.ac.jp:23002'
-
-TIMEOUT = 60
-RANKER  = 30
-
-if File.exists?("/Applications")
-  LIB = File.join(ENV['HOME'], 'Library/yatt')
-elsif File.exists?("/edu")
-  LIB = '/edu/lib/yatt'
-else
-  LIB = File.join(ENV['HOME'], 'lib/yatt')
-end
-
 server = YATTD
 port   = PORT
 lib    = LIB
 
-
-$server_uri = SERVER_URI
+#$server_uri = SERVER_URI
 while (arg=ARGV.shift)
   case arg
-  when /--uri/
-    $server_uri = ARGV.shift
   when /--server/
     server = ARGV.shift
   when /--port/
@@ -112,10 +116,7 @@ class Trainer
   @epilog = false
   def about
     TkDialog.new(:title => "Yet Another Typing Trainer",
-                 :message =>
-"programmed by Hiroshi Kimura
-version #{YATT_VERSION}(#{DATE})
-Copyright (C) 2002-2014.\n",
+                 :message =>COPYRIGHT,
                  :buttons => ['continue'])
   end
 
@@ -143,10 +144,6 @@ Copyright (C) 2002-2014.\n",
     @myid  = my_env('USER')
 
     @windows = nil
-    # nouse? 2014-04-25
-    #@runnable_before="25:00"
-    #@user_config=File.join(YATT_DIR,"config")
-    #    @admin_config=File.join(ADMIN_DIR,".yatt","admin")
     @width = 78
     @lines = 6
     @textfile=File.join(@lib,YATT_TXT)
@@ -178,11 +175,11 @@ Copyright (C) 2002-2014.\n",
     @speed_meter.pack(:side=>'left')
 
     @scale=TkScale.new(meter_frame,
-      :orient=>'horizontal',
-      :length=>600,
-      :from=>0,
-      :to=>TIMEOUT,
-      :tickinterval=>TIMEOUT/2)
+      :orient => 'horizontal',
+      :length => 600,
+      :from   => 0,
+      :to     => TIMEOUT,
+      :tickinterval => TIMEOUT/2)
     @scale.pack(:fill=>'x')
 
     graph_frame=TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
@@ -297,11 +294,6 @@ port: #{@port}\n",
   def menu_loose
     @textarea.loose
   end
-
-#  def menu_default
-#    @textarea.set_loose(false)
-#    @textarea.set_sticky(false)
-#  end
 
   # FIXME: too complex.
   def menu_toggle_contest
@@ -464,7 +456,7 @@ port: #{@port}\n",
       menu_bigger
       return
     end
-    if kk==1777683
+    if kk == 1777683
       menu_smaller
       return
     end
@@ -526,15 +518,12 @@ port: #{@port}\n",
   end
 
   def epilog
-
     @epilog=true
     while (@timer.running?)
       @timer.stop
     end
-
     score   = @logger.score
     strokes = @logger.goods + @logger.bads
-
     # hotfix 0.22.2
     errors  = if @logger.goods == 0
                 100.0
@@ -605,8 +594,9 @@ end #Trainer
 
 #####################
 class MyText < TkText
-  @@sticky=false
-  @@loose=false
+  @@sticky = false
+  @@loose  = false
+
   def initialize(parent, params)
     @text=TkText.new(parent,params)
     @text.tag_configure('good', background: GOOD)
@@ -663,20 +653,20 @@ end #MyText
 ############
 class Logger
   include MyEnv
+  attr_reader :good, :ng, :start_time, :finish_time, :complete
+  attr_writer :complete
 
-  @@sum_good=Hash.new(0)
-  @@sum_ng=Hash.new(0)
+  @@sum_good = Hash.new(0)
+  @@sum_ng   = Hash.new(0)
   @@highscore=0
 
   def sum_good
     @@sum_good
   end
+
   def sum_ng
     @@sum_ng
   end
-
-  attr_reader :good, :ng, :start_time, :finish_time, :complete
-  attr_writer :complete
 
   def initialize
     @good=Hash.new(0)
@@ -714,12 +704,12 @@ class Logger
 
   def score
     debug = false
-    w=0.3
+    w = 0.3
     time = diff_time()
     sum_good = sum(@good)
     sum_ng   = sum(@ng)
     num_keys = sum_good + sum_ng
-    return 0 if sum_good==0
+    return 0 if sum_good == 0
     score=(w*sum_good*(sum_good.to_f/num_keys)**3*(num_keys/time)).floor
   end
 
