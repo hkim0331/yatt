@@ -1,0 +1,11 @@
+use yatt;
+drop table if exists yatt;
+create table yatt (
+    id       int auto_increment,
+    uid      varchar(8) not null,
+    score    int not null default 0,
+    updated_at timestamp not null default CURRENT_TIMESTAMP,
+
+    primary key(id)
+);
+
