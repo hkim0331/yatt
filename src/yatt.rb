@@ -43,10 +43,8 @@ YATT_TXT = "yatt.txt"
 YATT_IMG = "yatt4.gif" # was "yatt3.gif"
 
 # yatt の記録を保管するサーバ。drb で通信する。
-# druby://edu.melt.kyutech.ac.jp:23002 ではどうか?
-YATTD = 'edu.melt.kyutech.ac.jp'
+YATTD = 'yatt.melt.kyutech.ac.jp'
 PORT  = 23002
-#SERVER_URI = 'druby://edu.melt.kyutech.ac.jp:23002'
 
 if DEBUG
   TIMEOUT = 10
@@ -80,12 +78,9 @@ server = YATTD
 port   = PORT
 lib    = LIB
 
-
 #$server_uri = SERVER_URI
 while (arg=ARGV.shift)
   case arg
-#  when /--uri/
-#    $server_uri = ARGV.shift
   when /--server/
     server = ARGV.shift
   when /--port/

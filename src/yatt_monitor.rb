@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 #
-# yatt score server version 2
+# yatt (proxy) score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
@@ -14,7 +14,7 @@
 YATT_VERSION = '0.25.1'
 DATE = '2014-07-09'
 
-DEBUG = true
+DEBUG = false
 
 def debug(s)
   puts s if DEBUG
@@ -24,16 +24,14 @@ require 'drb'
 require 'sequel'
 
 REQ_RUBY = "1.9.3"
-raise "require ruby>="+REQ_RUBY if (RUBY_VERSION<=>REQ_RUBY)<0
+raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
 if DEBUG
-  HOSTNAME = "localhost"
-  LOG      = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
-  DS       = Sequel.sqlite("../db/yatt.db")[:yatt]
+  DS   = Sequel.sqlite("../db/yatt.db")[:yatt]
+  LOG  = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
 else
-  HOSTNAME = "edu.melt.kyutech.ac.jp"
-  LOG      = "/usr/local/yatt/log/yatt.log"
-  DS       = Sequel.connect('mysql2://yatt:yyy@localhost/yatt_production')[:yatt]
+  DS   = Sequel.connect('mysql2://yatt:yyy@db.melt.kyutech.ac.jp/yatt')[:yatt]
+  LOG  = "/usr/local/yatt/log/yatt.log"
 end
 PORT = 23002
 BEST = 30
