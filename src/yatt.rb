@@ -15,7 +15,7 @@
 # 2012-04-26, contest class cmenu.
 # 2014-04-09, fix smaller font bug(typo)
 
-DEBUG = false
+DEBUG = true
 
 require 'tk'
 begin
@@ -43,6 +43,8 @@ YATT_TXT = "yatt.txt"
 YATT_IMG = "yatt4.gif" # was "yatt3.gif"
 
 # yatt の記録を保管するサーバ。drb で通信する。
+# さらにそのサーバは mariadb と 3306/tcp で通信する。
+# YATTD はプロキシーサーバと言っていいか？
 YATTD = 'yatt.melt.kyutech.ac.jp'
 PORT  = 23002
 
