@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.30
+# VERSION: 0.30.1
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -26,7 +26,7 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.30'
+YATT_VERSION = '0.30.1'
 DATE = '2015-03-23'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
