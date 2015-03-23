@@ -27,6 +27,7 @@ REQ_RUBY = "1.9.3"
 raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
 HOSTNAME = "yatt.melt.kyutech.ac.jp"
+
 if DEBUG
   DS   = Sequel.sqlite("../db/yatt.db")[:yatt]
   LOG  = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
