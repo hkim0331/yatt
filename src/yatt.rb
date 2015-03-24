@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.32
+# VERSION: 0.33
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -15,7 +15,7 @@
 # 2012-04-26, contest class cmenu.
 # 2014-04-09, fix smaller font bug(typo)
 
-DEBUG = true
+DEBUG = false
 
 require 'tk'
 begin
@@ -26,8 +26,8 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.32'
-DATE = '2015-03-23'
+YATT_VERSION = '0.33'
+DATE = '2015-03-24'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
@@ -101,6 +101,8 @@ YATT_DIR     = File.join(ENV['HOME'], '.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY      = File.join(YATT_DIR, 'history')
 TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
+ACCURACY     = File.join(YATT_DIR, 'accuracy')
+MY_FONT      = File.join(YATT_DIR, 'font')
 
 #############
 # FIXME:
@@ -116,20 +118,21 @@ class Trainer
   include MyEnv
 
   @epilog = false
+
   def about
     TkDialog.new(:title => "Yet Another Typing Trainer",
-                 :message =>COPYRIGHT,
+                 :message => COPYRIGHT,
                  :buttons => ['continue'])
   end
 
   def readme
-    toplevel=TkToplevel.new{title 'YATT readme'}
-    frame1=TkFrame.new(toplevel)
+    toplevel = TkToplevel.new{title 'YATT readme'}
+    frame1 = TkFrame.new(toplevel)
     frame1.pack
-    text=TkText.new(frame1)
+    text = TkText.new(frame1)
     text.configure(:width  => 40, :height => 30)
     text.pack(:side => 'right')
-    scr=TkScrollbar.new(frame1)
+    scr = TkScrollbar.new(frame1)
     scr.pack(:side => 'left', :fill => 'y')
     text.yscrollbar(scr)
     File.foreach(README) do |line|
@@ -146,13 +149,15 @@ class Trainer
     @myid  = my_env('USER')
 
     @windows = nil
-    @width = 78
-    @lines = 6
+    @width   = 78
+    @lines   = 6
     @textfile=File.join(@lib,YATT_TXT)
     @splash  =File.join(@lib,YATT_IMG)
-    @speed_meter_status=true
+    @speed_meter_status = true
 
-    @contest=false
+    # FIXME
+    # これを true にても立ち上がり時につなぎに行かない。
+    @contest = false
 
     srand($$)
     root = TkRoot.new {title 'yet another typing trainer'}
@@ -168,12 +173,17 @@ class Trainer
       :height => @lines+1)
     @font = "Courier"
     @size = "14"
+    if File.exists?(MY_FONT)
+      File.foreach(MY_FONT) do |line|
+        @font,@size=line.chomp.split
+      end
+    end
     my_set_font()
     @textarea.pack
 
-    meter_frame=TkFrame.new(root)
+    meter_frame = TkFrame.new(root)
     meter_frame.pack
-    @speed_meter=SpeedMeter.new(meter_frame)
+    @speed_meter = SpeedMeter.new(meter_frame)
     @speed_meter.pack(:side=>'left')
 
     @scale=TkScale.new(meter_frame,
@@ -184,53 +194,53 @@ class Trainer
       :tickinterval => TIMEOUT/2)
     @scale.pack(:fill=>'x')
 
-    graph_frame=TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
+    graph_frame = TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
     graph_frame.pack
-    @stat=MyStatus.new(graph_frame,@splash)
+    @stat = MyStatus.new(graph_frame,@splash)
     @stat.pack(:side=>'left')
 
-    @scoreboard=Scoreboard.new(graph_frame,@server,@port, @contest)
+    @scoreboard = Scoreboard.new(graph_frame,@server,@port, @contest)
     @scoreboard.pack(:expand=>1,:fill=>'both')
     @scoreboard.splash
 
     raise "#{@textfile} does not exist " unless File.file?(@textfile)
-    @doclength=0
+    @doclength = 0
     File.foreach(@textfile) do |line|
-      @doclength+=1
+      @doclength += 1
     end
     debug "@doclength: #{@doclength}"
     insert(@textfile, @lines)
   end
 
   def do_menu(root)
-    menu_frame=TkFrame.new(root,:relief=>'raised',:bd=>1)
+    menu_frame = TkFrame.new(root,:relief=>'raised',:bd=>1)
     menu_frame.pack(:side=>'top',:fill=>'x')
-    menu=[
+    menu = [
       [['File'],
         # ['New', proc{menu_new},0],
         # ['Pref'],
-        ['Quit',proc{menu_quit},0]],
+       ['Quit',proc{menu_quit},0]],
       [['Misc'],
-        ['Contest',proc{menu_toggle_contest},0],
-        ['reLoad', proc{menu_reload},2],
-        ['My ranking', proc{menu_my_rank},0],
-        ['Remove me',proc{menu_remove_me},0],
-        ['show All',proc{menu_show_all},5],
-        '---',
-        ['Sticky',proc{menu_sticky},0],
-        ['Loose',proc{menu_loose},0],
-#        ['Default',proc{menu_default},0],
-        '---',
-        ['Percentile graph', proc{menu_percentile},0],
-        '---',
-        ['Speed Meter',proc{menu_speed_meter},0],
-        ['Today\'s scores', proc{menu_todays_score},0],
-        ['total Scores',proc{menu_total_score},6],
-        '---',
-        ['contest/global',proc{menu_global}],
-        ['contest/weekly',proc{menu_weekly}],
-        ['contest/class',proc{menu_myclass}]
-        ],
+       ['Contest',proc{menu_toggle_contest},0],
+       ['reLoad', proc{menu_reload},2],
+       ['My ranking', proc{menu_my_rank},0],
+       ['Remove me',proc{menu_remove_me},0],
+       ['show All',proc{menu_show_all},5],
+       '---',
+       ['Sticky',proc{menu_sticky},0],
+       ['Loose',proc{menu_loose},0],
+       '---',
+       ['Percentile graph', proc{menu_percentile},0],
+       '---',
+       ['Speed Meter',proc{menu_speed_meter},0],
+       '---',
+       ['Today\'s scores', proc{menu_todays_score},0],
+       ['total Scores',proc{menu_total_score},6],
+       ['errors',proc{menu_errors},0],
+       '---',
+       ['contest/global',proc{menu_global}],
+       ['contest/weekly',proc{menu_weekly}],
+       ['contest/class',proc{menu_myclass}]],
       [['Font',0],
        ['courier', proc{menu_setfont('Courier')}],
        ['helvetica', proc{menu_setfont('Helvetica')}],
@@ -238,18 +248,17 @@ class Trainer
        ['menlo', proc{menu_setfont('Menlo')}],
        ['monaco', proc{menu_setfont('Monaco')}],
        ['osaka', proc{menu_setfont('Osaka')}],
-        '---',
-        ['smaller(-)', proc{menu_smaller()}],
-        ['bigger (+)', proc{menu_bigger()}],
-        '---',
-        ['(remember font)']
-      ],
+       '---',
+       ['smaller(-)', proc{menu_smaller()}],
+       ['bigger (+)', proc{menu_bigger()}],
+       '---',
+       ['remember font', proc{menu_save_font()}],
+       ['reset font', proc{menu_reset_font()}]],
       [['Help',0],
-        ['readme',proc{readme},0],
-        ['about...',proc{about},0],
-        '---',
-        ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
-      ]]
+       ['readme',proc{readme},0],
+       ['about...',proc{about},0],
+       '---',
+       ['debug', proc{show_params},0]]] # FIXME: debug on/off ができるように。
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
@@ -299,15 +308,13 @@ port: #{@port}\n",
 
   # FIXME: too complex.
   def menu_toggle_contest
-#    @contest = @scoreboard.toggle_contest(@myid)
-#    @logger.clear_highscore
     if @scoreboard.auth(@myid)
       @contest = @scoreboard.toggle_contest(@myid)
       @logger.clear_highscore
     else
-      TkDialog.new(:title=>'yatt server',
-                   :message=>"FAIL:\n#{@myid} does not belong to this class.",
-                   :buttons=>'continue')
+      TkDialog.new(:title   => "yatt server",
+                   :message => "FAIL:\n#{@myid} does not belong to this class.",
+                   :buttons => "continue")
     end
   end
 
@@ -332,25 +339,46 @@ port: #{@port}\n",
     @speed_meter.config(@speed_meter_status = ! @speed_meter_status)
   end
 
+  def menu_score(data, title)
+    myplot = MyPlot.new(title)
+    myplot.clear
+    myplot.plot(data)
+  end
+
   def menu_todays_score
-    lst=[]
+    lst = []
     File.foreach(TODAYS_SCORE) do |line|
       lst.push(line.chomp.to_i)
     end
-    @todays=MyPlot.new(Time.now.strftime("%Y-%m-%d"))
-    @todays.clear
-    @todays.plot(lst)
+    menu_score(lst,Time.now.strftime("%Y-%m-%d"))
   end
 
+  # def menu_todays_score
+  #   lst = []
+  #   today = Time.now.to_s.split[0]
+  #   File.foreach(HISTORY) do |line|
+  #     point, date = line.split(/\s+/)
+  #     lst.push(point.to_i) if date == today # ここが違うだけ。
+  #   end
+  #   menu_score(lst, "total")
+  # end
+
   def menu_total_score
-    lst=[]
+    lst = []
     File.foreach(HISTORY) do |line|
-      point, rest=line.split(/\s+/)
+      point, date = line.split(/\s+/)
       lst.push(point.to_i)
     end
-    @total=MyPlot.new("total")
-    @total.clear
-    @total.plot(lst)
+    menu_score(lst, "total")
+  end
+
+  def menu_errors
+    lst = []
+    File.foreach(ACCURACY) do |line|
+      point, date = line.split(/\s+/)
+      lst.push(point.to_i)
+    end
+    menu_score(lst, "errors(%)")
   end
 
   def menu_setfont(name)
@@ -376,6 +404,20 @@ port: #{@port}\n",
   def menu_setsize(size)
     @size = size
     my_set_font()
+  end
+
+  # 2015-03-24
+  def menu_save_font()
+    File.open(MY_FONT,"w") do |fp|
+      fp.puts "#{@font} #{@size}"
+    end
+  end
+
+  def menu_reset_font()
+    @font='Courier'
+    @size=14
+    my_set_font()
+#    menu_save_font()
   end
 
   def my_set_font()
@@ -557,13 +599,14 @@ port: #{@port}\n",
     msg += "becomes #{score}!!!\n" if (c or p)
 
     @logger.save(score)
+    @logger.save_errors(errors)
     @logger.accumulate
     @stat.plot(@logger.sum_good,@logger.sum_ng)
 
     #debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
     # 2012-04-21 最高点数だけ、かつ、authenticated な時だけ、
     # scoreboard に点数をサブミットしている。
-    # scoreborad 側に最高点かどうかを判定するルーチンを入れる必要がある。
+    # scoreboard 側に最高点かどうかを判定するルーチンを入れる必要がある。
     #
     # if score > @logger.highscore
     #   @logger.set_highscore(score)
@@ -720,12 +763,12 @@ class Logger
   end
 
   def set_highscore(score)
-    @@highscore=score
+    @@highscore = score
     save_highscore(score)
   end
 
   def clear_highscore
-    @@highscore=0
+    @@highscore = 0
   end
 
   def goods
@@ -760,15 +803,24 @@ class Logger
     end
   end
 
+  # 2015-03-24
+  def save_errors(errors)
+    File.open(ACCURACY, "a") do |fp|
+      fp.puts "#{errors}\t#{Time.now}"
+    end
+  end
+  #
+
   def save(score)
-    File.open(TODAYS_SCORE,"a") do |fp|
+    File.open(TODAYS_SCORE, "a") do |fp|
       fp.puts(score)
     end
   end
 
   def save_highscore(score)
     File.open(HISTORY,"a") do |fp|
-      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
+#      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
+      fp.puts "#{@@highscore}\t#{Time.now}"
     end
   end
 
@@ -895,14 +947,12 @@ class Scoreboard
     DRb.start_service
     @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
     unless @remote.ping =~ /ok/
-      raise "@server does not respond."
+      can_not_talk(@server)
     end
-  rescue => e
-    can_not_talk(@server)
   end
 
   def can_not_talk(server)
-    TkDialog.new(:title   => 'can not talk to server',
+    TkDialog.new(:title   => "can not talk to server",
                  :message => "サーバと通信できません。
 下の continue を押し、
 次にでてくるOKボタンを押せばyatt の練習はできますが
@@ -930,7 +980,7 @@ class Scoreboard
   end
 
   def splash
-    @text.configure(:state=>'normal')
+    @text.configure(:state => 'normal')
     @text.delete('1.0','end')
     @text.insert('end',
                  "= Realtime Typing Contest =\n\n"+
@@ -938,7 +988,7 @@ class Scoreboard
                  "choose contest from Misc menu.\n\n"+
                  "2014-07-07, bonus +30 if error rate < 3.0%.\n\n"+
                  "2014-06-16, fix '-' key bug.\n")
-    @text.configure(:state=>'disabled')
+    @text.configure(:state => 'disabled')
   end
 
   # changed: rankers is an array. [[hkim, [65, "2012-04-02"]]]
@@ -946,31 +996,31 @@ class Scoreboard
     debug "#{__method__}: rankers=#{rankers}"
     if (rankers.empty?)
       debug "rankers emty."
-      @text.configure(:state=>'normal')
+      @text.configure(:state => 'normal')
       @text.delete('1.0','end')
       @text.insert('end',"no entry.")
-      @text.configure(:state=>'disabled')
+      @text.configure(:state => 'disabled')
     else
-      line=1
-      my_entry=0
-      ranking=""
+      line = 1
+      my_entry = 0
+      ranking = ""
       rankers.each do |data|
         debug "#{data}"
-        ranker,point_date=data
-        point,date=point_date
-        ranking<< "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
-        "%5s" % date+"\n"
-        my_entry=line if @my_id=~/#{ranker}/
-        line+=1
+        ranker,point_date = data
+        point,date = point_date
+        ranking << "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
+        "%5s" % date + "\n"
+        my_entry=line if @my_id =~ /#{ranker}/
+        line += 1
       end
       @text.configure(:state=>'normal')
       @text.delete('1.0','end')
       @text.insert('end',ranking)
 
-      # hilight his entry
-      @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end") unless
-      my_entry==0
-
+      # hilight his/her entry
+      unless my_entry == 0
+        @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end")
+      end
       @text.configure(:state=>'disabled')
     end
   end
@@ -1035,24 +1085,18 @@ class Scoreboard
     debug "#{__method__}: #{uid}"
     start_drb unless @remote
     true
-    # changed: 2012-04-15.
-#    @authenticated=if (! @remote.nil?)
-#                      @remote.auth(uid)
-#                   else
-#                     drb=self.start_drb and self.auth(uid)
-#                   end
   end
 
 end # Scoreboard
 
 ############
 class MyPlot
-  WIDTH=300
-  HEIGHT=200
-  SHRINK=0.86
-  MX=30
-  MY=10
-  R=5
+  WIDTH  = 300
+  HEIGHT = 200
+  SHRINK = 0.86
+  MX = 30
+  MY = 10
+  R  = 5
 
   def initialize(title)
     @toplevel=TkToplevel.new(:title=>title)
