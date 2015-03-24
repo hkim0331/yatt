@@ -102,6 +102,7 @@ Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY      = File.join(YATT_DIR, 'history')
 TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 ACCURACY     = File.join(YATT_DIR, 'accuracy')
+MY_FONT      = File.join(YATT_DIR, 'font')
 
 #############
 # FIXME:
@@ -172,6 +173,11 @@ class Trainer
       :height => @lines+1)
     @font = "Courier"
     @size = "14"
+    if File.exists?(MY_FONT)
+      File.foreach(MY_FONT) do |line|
+        @font,@size=line.chomp.split
+      end
+    end
     my_set_font()
     @textarea.pack
 
@@ -213,29 +219,28 @@ class Trainer
       [['File'],
         # ['New', proc{menu_new},0],
         # ['Pref'],
-        ['Quit',proc{menu_quit},0]],
+       ['Quit',proc{menu_quit},0]],
       [['Misc'],
-        ['Contest',proc{menu_toggle_contest},0],
-        ['reLoad', proc{menu_reload},2],
-        ['My ranking', proc{menu_my_rank},0],
-        ['Remove me',proc{menu_remove_me},0],
-        ['show All',proc{menu_show_all},5],
-        '---',
-        ['Sticky',proc{menu_sticky},0],
-        ['Loose',proc{menu_loose},0],
-        '---',
-        ['Percentile graph', proc{menu_percentile},0],
-        '---',
-        ['Speed Meter',proc{menu_speed_meter},0],
-        '---',
-        ['Today\'s scores', proc{menu_todays_score},0],
-        ['total Scores',proc{menu_total_score},6],
-        ['errors',proc{menu_errors},0],
-        '---',
-        ['contest/global',proc{menu_global}],
-        ['contest/weekly',proc{menu_weekly}],
-        ['contest/class',proc{menu_myclass}]
-        ],
+       ['Contest',proc{menu_toggle_contest},0],
+       ['reLoad', proc{menu_reload},2],
+       ['My ranking', proc{menu_my_rank},0],
+       ['Remove me',proc{menu_remove_me},0],
+       ['show All',proc{menu_show_all},5],
+       '---',
+       ['Sticky',proc{menu_sticky},0],
+       ['Loose',proc{menu_loose},0],
+       '---',
+       ['Percentile graph', proc{menu_percentile},0],
+       '---',
+       ['Speed Meter',proc{menu_speed_meter},0],
+       '---',
+       ['Today\'s scores', proc{menu_todays_score},0],
+       ['total Scores',proc{menu_total_score},6],
+       ['errors',proc{menu_errors},0],
+       '---',
+       ['contest/global',proc{menu_global}],
+       ['contest/weekly',proc{menu_weekly}],
+       ['contest/class',proc{menu_myclass}]],
       [['Font',0],
        ['courier', proc{menu_setfont('Courier')}],
        ['helvetica', proc{menu_setfont('Helvetica')}],
@@ -243,18 +248,17 @@ class Trainer
        ['menlo', proc{menu_setfont('Menlo')}],
        ['monaco', proc{menu_setfont('Monaco')}],
        ['osaka', proc{menu_setfont('Osaka')}],
-        '---',
-        ['smaller(-)', proc{menu_smaller()}],
-        ['bigger (+)', proc{menu_bigger()}],
-        '---',
-        ['(remember font)']
-      ],
+       '---',
+       ['smaller(-)', proc{menu_smaller()}],
+       ['bigger (+)', proc{menu_bigger()}],
+       '---',
+       ['remember font', proc{menu_save_font()}],
+       ['reset font', proc{menu_reset_font()}]],
       [['Help',0],
-        ['readme',proc{readme},0],
-        ['about...',proc{about},0],
-        '---',
-        ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
-      ]]
+       ['readme',proc{readme},0],
+       ['about...',proc{about},0],
+       '---',
+       ['debug', proc{show_params},0]]] # FIXME: debug on/off ができるように。
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
@@ -400,6 +404,20 @@ port: #{@port}\n",
   def menu_setsize(size)
     @size = size
     my_set_font()
+  end
+
+  # 2015-03-24
+  def menu_save_font()
+    File.open(MY_FONT,"w") do |fp|
+      fp.puts "#{@font} #{@size}"
+    end
+  end
+
+  def menu_reset_font()
+    @font='Courier'
+    @size=14
+    my_set_font()
+#    menu_save_font()
   end
 
   def my_set_font()
