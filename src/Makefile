@@ -28,7 +28,7 @@ monitor: yatt_monitor.rb yatt_monitor
 	install -m 0755 yatt_monitor yatt_monitor.rb ${YATT_BIN}
 	@echo 'do not forget to open monitor port(default 23002/tcp).'
 	install -m 0755 yatt_monitor.service /etc/init.d/yatt_monitor
-	update-rc.d yatt_monitor default
+	update-rc.d yatt_monitor defaults
 
 gems:
 	gem install sequel mysql2
