@@ -101,6 +101,7 @@ YATT_DIR     = File.join(ENV['HOME'], '.yatt')
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY      = File.join(YATT_DIR, 'history')
 TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
+ACCURACY     = File.join(YATT_DIR, 'accuracy')
 
 #############
 # FIXME:
@@ -229,6 +230,7 @@ class Trainer
         ['Speed Meter',proc{menu_speed_meter},0],
         ['Today\'s scores', proc{menu_todays_score},0],
         ['total Scores',proc{menu_total_score},6],
+        ['errors',proc{menu_errors},0],
         '---',
         ['contest/global',proc{menu_global}],
         ['contest/weekly',proc{menu_weekly}],
@@ -306,9 +308,9 @@ port: #{@port}\n",
       @contest = @scoreboard.toggle_contest(@myid)
       @logger.clear_highscore
     else
-      TkDialog.new(:title=>'yatt server',
-                   :message=>"FAIL:\n#{@myid} does not belong to this class.",
-                   :buttons=>'continue')
+      TkDialog.new(:title   => "yatt server",
+                   :message => "FAIL:\n#{@myid} does not belong to this class.",
+                   :buttons => "continue")
     end
   end
 
@@ -333,25 +335,46 @@ port: #{@port}\n",
     @speed_meter.config(@speed_meter_status = ! @speed_meter_status)
   end
 
+  def menu_score(data, title)
+    myplot = MyPlot.new(title)
+    myplot.clear
+    myplot.plot(data)
+  end
+
   def menu_todays_score
-    lst=[]
+    lst = []
     File.foreach(TODAYS_SCORE) do |line|
       lst.push(line.chomp.to_i)
     end
-    @todays=MyPlot.new(Time.now.strftime("%Y-%m-%d"))
-    @todays.clear
-    @todays.plot(lst)
+    menu_score(lst,Time.now.strftime("%Y-%m-%d"))
   end
 
+  # def menu_todays_score
+  #   lst = []
+  #   today = Time.now.to_s.split[0]
+  #   File.foreach(HISTORY) do |line|
+  #     point, date = line.split(/\s+/)
+  #     lst.push(point.to_i) if date == today # ここが違うだけ。
+  #   end
+  #   menu_score(lst, "total")
+  # end
+
   def menu_total_score
-    lst=[]
+    lst = []
     File.foreach(HISTORY) do |line|
-      point, rest=line.split(/\s+/)
+      point, date = line.split(/\s+/)
       lst.push(point.to_i)
     end
-    @total=MyPlot.new("total")
-    @total.clear
-    @total.plot(lst)
+    menu_score(lst, "total")
+  end
+
+  def menu_errors
+    lst = []
+    File.foreach(ACCURACY) do |line|
+      point, date = line.split(/\s+/)
+      lst.push(point.to_i)
+    end
+    menu_score(lst, "errors(%)")
   end
 
   def menu_setfont(name)
@@ -558,6 +581,7 @@ port: #{@port}\n",
     msg += "becomes #{score}!!!\n" if (c or p)
 
     @logger.save(score)
+    @logger.save_errors(errors)
     @logger.accumulate
     @stat.plot(@logger.sum_good,@logger.sum_ng)
 
@@ -721,12 +745,12 @@ class Logger
   end
 
   def set_highscore(score)
-    @@highscore=score
+    @@highscore = score
     save_highscore(score)
   end
 
   def clear_highscore
-    @@highscore=0
+    @@highscore = 0
   end
 
   def goods
@@ -761,15 +785,24 @@ class Logger
     end
   end
 
+  # 2015-03-24
+  def save_errors(errors)
+    File.open(ACCURACY, "a") do |fp|
+      fp.puts "#{errors}\t#{Time.now}"
+    end
+  end
+  #
+
   def save(score)
-    File.open(TODAYS_SCORE,"a") do |fp|
+    File.open(TODAYS_SCORE, "a") do |fp|
       fp.puts(score)
     end
   end
 
   def save_highscore(score)
     File.open(HISTORY,"a") do |fp|
-      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
+#      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
+      fp.puts "#{@@highscore}\t#{Time.now}"
     end
   end
 
