@@ -5,20 +5,16 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.33
+# VERSION: 0.33.1
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
 
-YATT_VERSION = '0.33'
+$debug = false
+
+YATT_VERSION = '0.33.1'
 DATE = '2015-03-24'
-
-DEBUG = false
-
-def debug(s)
-  puts s if DEBUG
-end
 
 require 'drb'
 require 'sequel'
@@ -26,17 +22,9 @@ require 'sequel'
 REQ_RUBY = "1.9.3"
 raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
-HOSTNAME = "yatt.melt.kyutech.ac.jp"
-
-if DEBUG
-  DS   = Sequel.sqlite("../db/yatt.db")[:yatt]
-  LOG  = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
-else
-  DS   = Sequel.connect('mysql2://yatt:yyy@db.melt.kyutech.ac.jp/yatt')[:yatt]
-  LOG  = "/usr/local/yatt/log/yatt.log"
+def debug(s)
+  puts s if $debug
 end
-PORT = 23002
-BEST = 30
 
 def usage
   print <<EOF
@@ -101,7 +89,7 @@ class ScoreServer
   def put(name, score, time)
     debug ("#{__method__}: #{name}, #{score}, #{time}")
     debug "DS: #{DS}"
-    if DEBUG
+    if $debug
       File.open(@logfile,"a") do |fp|
         fp.puts "#{time} #{name} #{score}"
       end
@@ -202,20 +190,25 @@ end #ScoreServer
 # main
 #
 
-hostname = HOSTNAME
+DRB_SERVER = "yatt.melt.kyutech.ac.jp"
+LOG  = "/opt/yatt/log/yatt.log"
+PORT = 23002
+BEST = 30
+
+hostname = DRB_SERVER
 port     = PORT
 logfile  = LOG
 
 while (arg = ARGV.shift)
   case arg
-  when /\A--server\Z/
+#  when /\A--server\Z/
+#    hostname = ARGV.shift
+  when /\A--(fqdn)|(hostname)|(server)\Z/
     hostname = ARGV.shift
   when /\A--port\Z/
     port = ARGV.shift.to_i
   when /\A--log\Z/
     logfile = ARGV.shift
-  when /\A--(fqdn|hostname|server)\Z/
-    hostname=ARGV.shift
   when /\A--authdir\Z/
     authdir=ARGV.shift
   when /\A--noauth\Z/
@@ -223,17 +216,29 @@ while (arg = ARGV.shift)
   # 2012-07-09, mysql migration. no use.
   when /\A--db/
     db = ARGV.shift
+  when /\A--debug/
+    $debug = true
+    hostname = "localhost"
+    logfile  = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
   else
     usage
   end
 end
+
+# bugfix.
+if $debug
+  DS   = Sequel.sqlite("../db/yatt.db")[:yatt]
+else
+  DS   = Sequel.connect('mysql2://yatt:yyy@db.melt.kyutech.ac.jp/yatt')[:yatt]
+end
+
 debug([RUBY_VERSION, YATT_VERSION, hostname, port].join(", "))
 
 begin
   score_server = ScoreServer.new(logfile)
   uri = "druby://#{hostname}:#{port}"
   DRb.start_service(uri, score_server)
-#  puts uri
+  puts uri if $debug
   DRb.thread.join
 
 rescue => e
