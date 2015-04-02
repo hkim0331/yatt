@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.33
+# VERSION: 0.33.1
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -15,7 +15,7 @@
 # 2012-04-26, contest class cmenu.
 # 2014-04-09, fix smaller font bug(typo)
 
-DEBUG = false
+$debug = false
 
 require 'tk'
 begin
@@ -26,7 +26,7 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.33'
+YATT_VERSION = '0.33.1'
 DATE = '2015-03-24'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
@@ -44,16 +44,9 @@ YATT_IMG = "yatt4.gif" # was "yatt3.gif"
 
 # yatt の記録を保管するサーバ。drb で通信する。
 # さらにそのサーバは mariadb と 3306/tcp で通信する。
-# YATTD はプロキシーサーバと言っていいか？
-YATTD = 'yatt.melt.kyutech.ac.jp'
+# DRB_SERVER はプロキシーサーバと言っていいか？
+DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
 PORT  = 23002
-
-if DEBUG
-  TIMEOUT = 10
-else
-  TIMEOUT = 60
-end
-
 RANKER  = 30
 
 if File.exists?("/Applications")
@@ -64,24 +57,25 @@ else
   LIB = File.join(ENV['HOME'], 'lib/yatt')
 end
 
+server = DRB_SERVER
+port   = PORT
+lib    = LIB
+
 def debug(s)
-  puts s if DEBUG
+  puts s if $debug
 end
 
-def usage
+def usage(s)
   print <<EOU
+unknown arg: #{s}
 usage:
   #{$0} [--noserver|--server server] [--port port] [--lib path]
 EOU
   exit(1)
 end
 
-server = YATTD
-port   = PORT
-lib    = LIB
-
 #$server_uri = SERVER_URI
-while (arg=ARGV.shift)
+while (arg = ARGV.shift)
   case arg
   when /--server/
     server = ARGV.shift
@@ -91,10 +85,21 @@ while (arg=ARGV.shift)
     lib=ARGV.shift
   when /--noserver/
     server = nil
+  when /--debug/
+    $debug = true
+#    server = "localhost"
   else
-    usage()
+    usage(arg)
   end
 end
+
+if $debug
+  TIMEOUT = 10
+else
+  TIMEOUT = 60
+end
+
+puts "druby://#{server}:#{port}, #{lib}"
 
 README       = File.join(lib, "README")
 YATT_DIR     = File.join(ENV['HOME'], '.yatt')
@@ -1204,8 +1209,6 @@ end# SpeedMeter
 #
 # main starts here.
 #
-# necessary?
-#File.open(TODAYS_SCORE,"a").close
-#
+
 trainer = Trainer.new(server, port, lib)
 Tk.mainloop
