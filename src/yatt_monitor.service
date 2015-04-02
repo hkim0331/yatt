@@ -18,12 +18,12 @@ usage() {
 
 case "$1" in
     start)
-        if [ -x /opt/yatt/bin/yatt_monitor ]; then
-            /opt/yatt/bin/yatt_monitor &
+        if [ -x /opt/yatt/bin/yatt_monitor.rb ]; then
+            /usr/bin/ruby /opt/yatt/bin/yatt_monitor &
 	      fi
 	      ;;
     stop)
-        kill `ps ax | grep yatt_monitor | grep '/bin/sh' |awk '{print $1}'`
+        kill `ps ax | grep yatt_monitor | awk '{print $1}'`
 	      ;;
     status)
         ps ax | grep yatt_monitor
