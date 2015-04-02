@@ -13,23 +13,23 @@
 #
 
 usage() {
-	echo "Usage: $0 {start|stop|status}"
+    echo "Usage: $0 {start|stop|status}"
 }
 
 case "$1" in
     start)
         if [ -x /opt/yatt/bin/yatt_monitor.rb ]; then
-            /usr/bin/ruby /opt/yatt/bin/yatt_monitor &
-	      fi
-	      ;;
+            /usr/bin/ruby /opt/yatt/bin/yatt_monitor.rb &
+        fi
+        ;;
     stop)
-        kill `ps ax | grep yatt_monitor | awk '{print $1}'`
-	      ;;
+        kill `ps ax | grep [y]att_monitor.rb | awk '{print $1}'`
+        ;;
     status)
-        ps ax | grep yatt_monitor
+        ps ax | grep [y]att_monitor
         ;;
     *)
-	      usage
+        usage()
         ;;
 esac
 
