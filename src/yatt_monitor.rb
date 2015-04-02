@@ -5,20 +5,17 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.33.1
+# VERSION: 0.34
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
 
-$debug = false
-
-YATT_VERSION = '0.33.1'
-DATE = '2015-03-24'
-
 require 'drb'
 require 'sequel'
 
+YATT_VERSION = '0.34'
+DATE = '2015-04-02'
 REQ_RUBY = "1.9.3"
 raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
@@ -39,18 +36,6 @@ OPTIONS(default value)
   --port num
         use num/tcp as yatt score server port(23002).
 
-  --authdir dir
-  (no work. remain compatibility only.)
-        use dir to authenticate yatt users.
-        the dir must contain files whose name is equal
-        to user id. only permit uses can join contest.
-        authdir's default value is yatt_server's working dir.
-
-  --noauth
-  (no work. remain compatibility only.)
-        do not authenticate.
-        in other words, return true for all queries.
-
   --log file
         log yatt/yatt_server communication into file.
         file must be gives as an absolute path(../log/yyyy-mm-dd.log).
@@ -62,12 +47,13 @@ EOF
   exit 1
 end
 
-class ScoreServer
+class Monitor
   attr_reader :score
 
   # FIXME: sqlite3 => mysql
-  def initialize(logfile)
+  def initialize(ds, logfile)
     @score   = Hash.new(0)
+    @ds = ds
     @logfile = logfile
   end
 
@@ -88,15 +74,12 @@ class ScoreServer
   # その変更に対応すること。
   def put(name, score, time)
     debug ("#{__method__}: #{name}, #{score}, #{time}")
-    debug "DS: #{DS}"
-    if $debug
-      File.open(@logfile,"a") do |fp|
-        fp.puts "#{time} #{name} #{score}"
-      end
+    File.open(@logfile,"a") do |fp|
+      fp.puts "#{time} #{name} #{score}"
     end
-    DS.insert(:uid => name, :score => score,
-      :updated_at => Time.now.strftime("%Y-%m-%d %H:%M:%S"))
-    #
+    @ds.insert(:uid => name,
+               :score => score,
+               :updated_at => Time.now.strftime("%Y-%m-%d %H:%M:%S"))
     if score > @score[name][0]
       @score[name] = [score, time]
     end
@@ -141,12 +124,12 @@ class ScoreServer
   # get_myclass はハッシュから。
   # id の前から4文字マッチを取る。
   def get_myclass(num,me)
-    pat=%r{#{me[0,4]}}
-    ret=Hash.new
-    DS.each do |r|
-      uid=r[:uid]
-      if uid=~ pat and (ret[uid].nil? or ret[uid][0]<r[:score])
-        ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
+    pat = %r{#{me[0,4]}}
+    ret = Hash.new
+    @ds.each do |r|
+      uid = r[:uid]
+      if uid =~ pat and (ret[uid].nil? or ret[uid][0]<r[:score])
+        ret[uid] = [r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
       end
     end
     ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
@@ -155,11 +138,11 @@ class ScoreServer
   # get_global のみ、データベースアクセスする。
   # 2012-05-09, c-2g で詰まった。原因は sqlite3 か、drb か?
   def get_global(num)
-    ret=Hash.new
-    DS.each do |r|
-      uid=r[:uid]
+    ret = Hash.new
+    @ds.each do |r|
+      uid = r[:uid]
       if ret[uid].nil? or ret[uid][0]<r[:score]
-        ret[uid]=[r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
+        ret[uid] = [r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
       end
     end
     ret.to_a.sort{|a,b| b[1][0] <=> a[1][0]}
@@ -167,9 +150,6 @@ class ScoreServer
 
   def remove(me)
     self.del(me)
-  end
-
-  def reload
   end
 
   def my_rank(me)
@@ -180,65 +160,54 @@ class ScoreServer
     "ok"
   end
 
-  def auth(id)
-    true
-  end
-
-end #ScoreServer
+end
 
 #
 # main
 #
 
-DRB_SERVER = "yatt.melt.kyutech.ac.jp"
+MONITOR = "yatt.melt.kyutech.ac.jp"
 LOG  = "/opt/yatt/log/yatt.log"
 PORT = 23002
 BEST = 30
+DB = "mariadb.melt.kyutech.ac.jp"
 
-hostname = DRB_SERVER
+hostname = MONITOR
 port     = PORT
 logfile  = LOG
 
+$sqlite = false
 while (arg = ARGV.shift)
   case arg
-#  when /\A--server\Z/
-#    hostname = ARGV.shift
   when /\A--(fqdn)|(hostname)|(server)\Z/
     hostname = ARGV.shift
   when /\A--port\Z/
     port = ARGV.shift.to_i
   when /\A--log\Z/
     logfile = ARGV.shift
-  when /\A--authdir\Z/
-    authdir=ARGV.shift
-  when /\A--noauth\Z/
-    authdir=nil
-  # 2012-07-09, mysql migration. no use.
-  when /\A--db/
-    db = ARGV.shift
+  when /\A--sqlite/
+    $sqite = true
   when /\A--debug/
     $debug = true
-    hostname = "localhost"
-    logfile  = File.join("../log",Time.now.strftime("%Y-%m-%d.log"))
   else
     usage
   end
 end
 
 # 2015-04-02, db.melt => mariadb.melt
-if $debug
-  DS   = Sequel.sqlite("../db/yatt.db")[:yatt]
+if $sqlite
+  ds = Sequel.sqlite("../db/yatt.db")[:yatt]
 else
-  DS   = Sequel.connect('mysql2://yatt:yyy@mariadb.melt.kyutech.ac.jp/yatt')[:yatt]
+  ds = Sequel.connect("mysql2://yatt:yyy@#{DB}/yatt")[:yatt]
 end
 
 debug([RUBY_VERSION, YATT_VERSION, hostname, port].join(", "))
 
 begin
-  score_server = ScoreServer.new(logfile)
+  monitor = Monitor.new(ds, logfile)
   uri = "druby://#{hostname}:#{port}"
-  DRb.start_service(uri, score_server)
   puts uri if $debug
+  DRb.start_service(uri, monitor)
   DRb.thread.join
 
 rescue => e
