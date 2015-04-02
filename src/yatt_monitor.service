@@ -18,18 +18,19 @@ usage() {
 
 case "$1" in
     start)
+        # これだと二つ以上立ちあげちゃうか？
         if [ -x /opt/yatt/bin/yatt_monitor.rb ]; then
             /usr/bin/ruby /opt/yatt/bin/yatt_monitor &
-	      fi
-	      ;;
+	    fi
+	    ;;
     stop)
         kill `ps ax | grep yatt_monitor | awk '{print $1}'`
-	      ;;
+	    ;;
     status)
         ps ax | grep yatt_monitor
         ;;
     *)
-	      usage
+	    usage
         ;;
 esac
 
