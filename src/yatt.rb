@@ -87,7 +87,7 @@ while (arg = ARGV.shift)
     server = nil
   when /--debug/
     $debug = true
-    server = "localhost"
+#    server = "localhost"
   else
     usage(arg)
   end
@@ -99,7 +99,7 @@ else
   TIMEOUT = 60
 end
 
-debug("druby://#{server}:#{port}, #{lib}")
+puts "druby://#{server}:#{port}, #{lib}"
 
 README       = File.join(lib, "README")
 YATT_DIR     = File.join(ENV['HOME'], '.yatt')

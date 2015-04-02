@@ -225,11 +225,11 @@ while (arg = ARGV.shift)
   end
 end
 
-# bugfix.
+# 2015-04-02, db.melt => mariadb.melt
 if $debug
   DS   = Sequel.sqlite("../db/yatt.db")[:yatt]
 else
-  DS   = Sequel.connect('mysql2://yatt:yyy@db.melt.kyutech.ac.jp/yatt')[:yatt]
+  DS   = Sequel.connect('mysql2://yatt:yyy@mariadb.melt.kyutech.ac.jp/yatt')[:yatt]
 end
 
 debug([RUBY_VERSION, YATT_VERSION, hostname, port].join(", "))
