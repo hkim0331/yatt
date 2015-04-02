@@ -18,8 +18,8 @@ usage() {
 
 case "$1" in
     start)
-        if [ -x /usr/local/yatt/bin/yatt_monitor ]; then
-            /usr/local/yatt/bin/yatt_monitor &
+        if [ -x /opt/yatt/bin/yatt_monitor ]; then
+            /opt/yatt/bin/yatt_monitor &
 	      fi
 	      ;;
     stop)
@@ -30,7 +30,7 @@ case "$1" in
         ;;
     *)
 	      usage
-	      ;;
+        ;;
 esac
 
 :

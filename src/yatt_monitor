@@ -7,14 +7,15 @@
 # if not, restart it.
 #
 
+DEST=/opt/local
 
 ps ax | grep yatt_monitor.rb | grep -v 'grep' >/dev/null
 
 case $? in
-1)
-	/usr/local/yatt/bin/yatt_monitor.rb --hostname yatt.melt.kyutech.ac.jp \
-	    --log /usr/local/yatt/log/yatt.log
+    1)
+	      ${DEST}/bin/yatt_monitor.rb --hostname yatt.melt.kyutech.ac.jp \
+	    --log ${DEST}/log/yatt.log
 	;;
 esac
 
-at -f /usr/local/yatt/bin/yatt_monitor now + 1 minutes
+at -f ${DEST}/bin/yatt_monitor now + 1 minutes
