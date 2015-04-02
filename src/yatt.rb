@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.34
+# VERSION: 0.35
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -26,7 +26,7 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.34'
+YATT_VERSION = '0.35'
 DATE = '2015-04-02'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
@@ -87,7 +87,6 @@ while (arg = ARGV.shift)
     server = nil
   when /--debug/
     $debug = true
-#    server = "localhost"
   else
     usage(arg)
   end
@@ -99,7 +98,7 @@ else
   TIMEOUT = 60
 end
 
-puts "druby://#{server}:#{port}, #{lib}"
+debug "druby://#{server}:#{port}, #{lib}"
 
 README       = File.join(lib, "README")
 YATT_DIR     = File.join(ENV['HOME'], '.yatt')
