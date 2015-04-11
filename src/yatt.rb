@@ -6,7 +6,6 @@
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
 # VERSION: 0.36
-# short cut keys.
 #
 # 2009-04-13, config changed.
 # 2012-03-24, update for ruby1.9.
@@ -434,16 +433,11 @@ port: #{@port}\n",
 
   # file からnum_lines を抽出、
   def insert(file, num_lines)
-    if ! time_for_train?(Time.now, @runnable_before)
-      STDERR.puts "it's not the time for training.\n"
-      exit
-    end
-
     # reset session parameters
     @line=0
     @char=0
     @epilog=false
-    @time_remains=TIMEOUT
+    @time_remains = TIMEOUT
     @wait_for_first_key=true
 
     start = rand(@doclength - 2*num_lines) # 2 for programming ease.
@@ -463,30 +457,27 @@ port: #{@port}\n",
     @textarea.insert(@text.join)
     @textarea.highlight("good",@line,@char)
     @scale.set(TIMEOUT)
-    @logger=Logger.new
-    @num_chars=0
-    tick=1000
+    @logger = Logger.new
+    @num_chars = 0
+    tick = 1000
     interval=tick/1000 # interval==1
-    @timer=TkAfter.new(tick, #msec
+    @timer = TkAfter.new(tick, #msec
       -1,    #forever
       proc{
-        if (@time_remains<0 or self.finished?)
+        if (@time_remains < 0 or self.finished?)
           @timer.cancel
         elsif (! @wait_for_first_key)
-          @scale.set(@time_remains-=interval)
+          @time_remains -= interval
+          # left to right
+          # @scale.set(TIMEOUT - @time_remains)
+          # right to left
+          @scale.set(@time_remains)
+          #
           @speed_meter.plot(@num_chars) if @speed_meter_status
-          @num_chars=0
+          @num_chars = 0
         end
       }).start
   end
-
-  def time_for_train?(now,crit)
-    return true
-#    return false if File.exists?(File.join(ADMIN_DIR,".yatt","do_not_run"))
-#    hour,min=crit.split(/:/)
-#    now.hour*60+now.min < hour.to_i*60+min.to_i
-  end
-
 
   # core of yatt.rb
   # rewrite 2002.06.08
@@ -1165,15 +1156,15 @@ class SpeedMeter
   end
 
   def initialize(parent)
-    @canvas=TkCanvas.new(parent,
-                         :width=>WIDTH,
-                         :height=>HEIGHT,
-                         :takefocus=>0)
-    r=(WIDTH/2)*0.8
-    pi=3.14
-    @xy=(0..MAX).map{|n| [r*cos(pi-n*pi/MAX), r*sin(pi-n*pi/MAX)]}
-    @ox=WIDTH/2
-    @oy=HEIGHT*0.8
+    @canvas = TkCanvas.new(parent,
+                           :width => WIDTH,
+                           :height => HEIGHT,
+                           :takefocus => 0)
+    r = (WIDTH/2)*0.8
+    pi = 3.14
+    @xy = (0..MAX).map{|n| [r*cos(pi-n*pi/MAX), r*sin(pi-n*pi/MAX)]}
+    @ox = WIDTH/2
+    @oy = HEIGHT*0.8
     plot(0)
   end
 
@@ -1187,8 +1178,8 @@ class SpeedMeter
 
   def plot(n)
     clear
-    n=min(n,MAX)
-    x,y=@xy[n]
+    n = min(n,MAX)
+    x,y = @xy[n]
     TkcLine.new(@canvas, @ox, @oy, @ox+x, @oy-y,
                 :width => 2, :fill => 'red')
     TkcOval.new(@canvas, @ox-2, @oy-2, @ox+2, @oy+2,
