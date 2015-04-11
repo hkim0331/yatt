@@ -220,7 +220,11 @@ class Trainer
     menu_frame = TkFrame.new(root,:relief=>'raised',:bd=>1)
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu = [
-      [['File'],
+      [['Yatt'],
+       ['about...',proc{about},0],
+       ['readme',proc{readme},0],
+       ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
+       '---',
         # ['New', proc{menu_new},0],
         # ['Pref'],
        ['Quit',proc{menu_quit},0]],
@@ -235,17 +239,17 @@ class Trainer
        ['contest/global',proc{menu_global}],
        ['contest/weekly',proc{menu_weekly}],
        ['contest/class',proc{menu_myclass}]],
-      [['Graph'],
+      [['Mode'],
        ['Sticky',proc{menu_sticky},0],
        ['Loose',proc{menu_loose},0],
        '---',
+       ['Speed Meter',proc{menu_speed_meter},0]],
+      [['Graph'],
        ['Percentile graph', proc{menu_percentile},0],
        '---',
-       ['Speed Meter',proc{menu_speed_meter},0],
-       '---',
        ['Today\'s scores', proc{menu_todays_score},0],
-       ['total Scores',proc{menu_total_score},6],
-       ['errors',proc{menu_errors},0]],
+       ['Tootal Scores',proc{menu_total_score},6],
+       ['Errors',proc{menu_errors},0]],
       [['Font'],
        ['courier', proc{menu_setfont('Courier')}],
        ['helvetica', proc{menu_setfont('Helvetica')}],
@@ -258,12 +262,7 @@ class Trainer
        ['bigger (+)', proc{menu_bigger()}],
        '---',
        ['remember font', proc{menu_save_font()}],
-       ['reset font', proc{menu_reset_font()}]],
-      [['Help',0],
-       ['readme',proc{readme},0],
-       ['about...',proc{about},0],
-       '---',
-       ['debug', proc{show_params},0]]] # FIXME: debug on/off ができるように。
+       ['reset font', proc{menu_reset_font()}]]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
