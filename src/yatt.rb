@@ -5,7 +5,7 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2012 Hiroshi Kimura.
 #
-# VERSION: 0.35
+# VERSION: 0.36
 # short cut keys.
 #
 # 2009-04-13, config changed.
@@ -26,8 +26,8 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.35'
-DATE = '2015-04-02'
+YATT_VERSION = '0.36'
+DATE = '2015-04-11'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
@@ -220,32 +220,37 @@ class Trainer
     menu_frame = TkFrame.new(root,:relief=>'raised',:bd=>1)
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu = [
-      [['File'],
+      [['Yatt'],
+       ['about...',proc{about},0],
+       ['readme',proc{readme},0],
+       ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
+       '---',
         # ['New', proc{menu_new},0],
         # ['Pref'],
        ['Quit',proc{menu_quit},0]],
-      [['Misc'],
-       ['Contest',proc{menu_toggle_contest},0],
-       ['reLoad', proc{menu_reload},2],
-       ['My ranking', proc{menu_my_rank},0],
+      [['Contest'],
+       ['On/off',proc{menu_toggle_contest},0],
+       '---',
+       ['reload', proc{menu_reload},2],
+       ['My status', proc{menu_my_rank},0],
        ['Remove me',proc{menu_remove_me},0],
        ['show All',proc{menu_show_all},5],
-       '---',
-       ['Sticky',proc{menu_sticky},0],
-       ['Loose',proc{menu_loose},0],
-       '---',
-       ['Percentile graph', proc{menu_percentile},0],
-       '---',
-       ['Speed Meter',proc{menu_speed_meter},0],
-       '---',
-       ['Today\'s scores', proc{menu_todays_score},0],
-       ['total Scores',proc{menu_total_score},6],
-       ['errors',proc{menu_errors},0],
        '---',
        ['contest/global',proc{menu_global}],
        ['contest/weekly',proc{menu_weekly}],
        ['contest/class',proc{menu_myclass}]],
-      [['Font',0],
+      [['Mode'],
+       ['Sticky',proc{menu_sticky},0],
+       ['Loose',proc{menu_loose},0],
+       '---',
+       ['Speed Meter',proc{menu_speed_meter},0]],
+      [['Graph'],
+       ['Percentile graph', proc{menu_percentile},0],
+       '---',
+       ['Today\'s scores', proc{menu_todays_score},0],
+       ['Tootal Scores',proc{menu_total_score},6],
+       ['Errors',proc{menu_errors},0]],
+      [['Font'],
        ['courier', proc{menu_setfont('Courier')}],
        ['helvetica', proc{menu_setfont('Helvetica')}],
        ['Inconsolata', proc{menu_setfont('Inconsolata')}],
@@ -257,12 +262,7 @@ class Trainer
        ['bigger (+)', proc{menu_bigger()}],
        '---',
        ['remember font', proc{menu_save_font()}],
-       ['reset font', proc{menu_reset_font()}]],
-      [['Help',0],
-       ['readme',proc{readme},0],
-       ['about...',proc{about},0],
-       '---',
-       ['debug', proc{show_params},0]]] # FIXME: debug on/off ができるように。
+       ['reset font', proc{menu_reset_font()}]]]
     TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
   end
 
