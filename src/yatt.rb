@@ -5,16 +5,13 @@
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
 # Copyright (C) 2002-2015 Hiroshi Kimura.
 #
-# 2009-04-13, config changed.
-# 2012-03-24, update for ruby1.9.
-# 2012-04-02, server updates.
-# 2012-04-21, feature/database.
-# 2012-04-26, contest class cmenu.
-# 2014-04-09, fix smaller font bug(typo)
 
 $debug = false
+YATT_VERSION = '0.38'
+DATE = '2015-04-20'
 
 require 'tk'
+
 begin
   require 'drb'
   DRB_ENABLED = true
@@ -22,9 +19,6 @@ rescue
   STDERR.puts "you can not join contest without drb installed."
   DRB_ENABLED = false
 end
-
-YATT_VERSION = '0.38'
-DATE = '2015-04-20'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
@@ -36,16 +30,13 @@ raise "require ruby >= "+REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) <0
 GOOD = "green"
 BAD  = "red"
 
-YATT_TXT = "yatt.txt"
-YATT_IMG = "yatt4.gif" # was "yatt3.gif"
-
-# yatt の記録を保管するサーバ。drb で通信する。
-# さらにそのサーバは mariadb と 3306/tcp で通信する。
-# DRB_SERVER はプロキシーサーバと言っていいか？
+YATT_TXT   = "yatt.txt"
+YATT_IMG   = "yatt4.gif"
 DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
-PORT  = 23002
-RANKER  = 30
+PORT       = 23002
+RANKER     = 30
 
+# FIXME: Windows では ENV を取れない。
 if File.exists?("/Applications")
   LIB = File.join(ENV['HOME'], 'Library/yatt')
 elsif File.exists?("/edu")
@@ -59,7 +50,7 @@ port   = PORT
 lib    = LIB
 
 def debug(s)
-  puts s if $debug
+  STDERR.puts s if $debug
 end
 
 def usage(s)
@@ -71,7 +62,6 @@ EOU
   exit(1)
 end
 
-#$server_uri = SERVER_URI
 while (arg = ARGV.shift)
   case arg
   when /--server/
@@ -106,17 +96,7 @@ ACCURACY     = File.join(YATT_DIR, 'accuracy')
 MY_FONT      = File.join(YATT_DIR, 'font')
 
 #############
-# FIXME:
-# for windows version. Windows lacks ENV[].
-module MyEnv
-  def my_env(var)
-    ENV[var]
-  end
-end
-
-#############
 class Trainer
-  include MyEnv
 
   @epilog = false
 
@@ -130,9 +110,11 @@ class Trainer
     toplevel = TkToplevel.new{title 'YATT readme'}
     frame1 = TkFrame.new(toplevel)
     frame1.pack
+
     text = TkText.new(frame1)
     text.configure(:width  => 40, :height => 30)
     text.pack(:side => 'right')
+
     scr = TkScrollbar.new(frame1)
     scr.pack(:side => 'left', :fill => 'y')
     text.yscrollbar(scr)
@@ -147,7 +129,7 @@ class Trainer
     @server=server
     @port  = port
     @lib   = lib
-    @myid  = my_env('USER')
+    @myid  = ENV['USER']
 
     @windows = nil
     @width   = 78
@@ -426,11 +408,11 @@ port: #{@port}\n",
   # file からnum_lines を抽出、
   def insert(file, num_lines)
     # reset session parameters
-    @line=0
-    @char=0
-    @epilog=false
+    @line = 0
+    @char = 0
+    @epilog = false
     @time_remains = TIMEOUT
-    @wait_for_first_key=true
+    @wait_for_first_key = true
 
     start = rand(@doclength - 2*num_lines) # 2 for programming ease.
     debug "start: #{start}"
@@ -594,13 +576,13 @@ port: #{@port}\n",
     end
     if c = @logger.complete?
       score +=100
-      msg   += "+ bonus complete (100)\n"
+      msg += "+ bonus complete (100)\n"
       score += (tr=@time_remains*50)
-      msg   += "+ bonus time remains (#{tr})\n"
+      msg += "+ bonus time remains (#{tr})\n"
     end
-    if p     = @logger.perfect?
+    if p = @logger.perfect?
       score += 300
-      msg   += "+ bonus perfect (300)\n"
+      msg += "+ bonus perfect (300)\n"
     end
     msg += "becomes #{score}!!!\n" if (c or p)
 
@@ -632,13 +614,12 @@ port: #{@port}\n",
     #
     @scoreboard.update if @contest
     sleep(1)
-    ret=TkDialog.new(:title   => 'yet another type trainer',
+    ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
     sleep(1)
     insert(@textfile, @lines)
     @epilog = false
-#    sleep(1)
   end #epilog
 
 end #Trainer
@@ -666,12 +647,12 @@ class MyText < TkText
   end
 
   def highlight(stat,line,char)
-    pos=(line+1).to_s+"."+char.to_s
+    pos = (line+1).to_s+"."+char.to_s
     @text.tag_add(stat,pos)
   end
 
   def unlight(line,char)
-    pos=(line+1).to_s+"."+char.to_s
+    pos = (line+1).to_s+"."+char.to_s
     @text.tag_remove('good',pos)
     @text.tag_remove('bad',pos) unless @@sticky
   end
@@ -689,11 +670,11 @@ class MyText < TkText
   end
 
   def set_sticky(value)
-    @@sticky=value
+    @@sticky = value
   end
 
   def set_loose(value)
-    @@loose=value
+    @@loose = value
   end
 
   def configure(param)
@@ -703,13 +684,12 @@ end #MyText
 
 ############
 class Logger
-  include MyEnv
   attr_reader :good, :ng, :start_time, :finish_time, :complete
   attr_writer :complete
 
-  @@sum_good = Hash.new(0)
-  @@sum_ng   = Hash.new(0)
-  @@highscore=0
+  @@sum_good  = Hash.new(0)
+  @@sum_ng    = Hash.new(0)
+  @@highscore = 0
 
   def sum_good
     @@sum_good
@@ -720,25 +700,25 @@ class Logger
   end
 
   def initialize
-    @good=Hash.new(0)
-    @ng=Hash.new(0)
+    @good = Hash.new(0)
+    @ng   = Hash.new(0)
   end
 
   def start
-    @start_time=Time.now
-    @complete=false
+    @start_time = Time.now
+    @complete   = false
   end
 
   def finish
-    @finish_time=Time.now
+    @finish_time = Time.now
   end
 
   def add_ng(target,key)
-    @ng[target]+=1
+    @ng[target] += 1
   end
 
   def add_good(target)
-    @good[target]+=1
+    @good[target] += 1
   end
 
   def diff_time
@@ -795,10 +775,10 @@ class Logger
 
   def accumulate
     @good.each do |key,value|
-      @@sum_good[key]+=value
+      @@sum_good[key] += value
     end
     @ng.each do |key,value|
-      @@sum_ng[key]+=value
+      @@sum_ng[key] += value
     end
   end
 
@@ -825,7 +805,6 @@ class Logger
 
   def save_highscore(score)
     File.open(HISTORY,"a") do |fp|
-#      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
       fp.puts "#{@@highscore}\t#{Time.now}"
     end
   end
@@ -839,7 +818,6 @@ end #Logger
 
 ########################
 class MyStatus <TkCanvas
-  include MyEnv
   # WIDTH, etc., must be calculated from the width of `text' area.
   # How should I do?
   WIDTH   = 420
@@ -848,15 +826,15 @@ class MyStatus <TkCanvas
   C_HEIGHT= 20
 
   def initialize(parent,splash)
-    @graph=TkCanvas.new(parent,
-                        :width=>WIDTH,
-                        :height=>HEIGHT,
-                        :background=>'white')
+    @graph = TkCanvas.new(parent,
+                          :width => WIDTH,
+                          :height => HEIGHT,
+                          :background => 'white')
     if FileTest.exists?(splash)
-      img=TkPhotoImage.new(:file=>splash)
+      img = TkPhotoImage.new(:file=>splash)
       TkcImage.new(@graph,WIDTH/2,130,:image=>img)
     end
-    @percentile=false
+    @percentile = false
   end
 
   def percentile
@@ -871,28 +849,28 @@ class MyStatus <TkCanvas
     @graph.delete("all")
     keys = (good.keys | bad.keys).sort
     return if keys.length<2
-    dx=(WIDTH-2*C_WIDTH).to_f/(keys.length-1) # -1 for ' '
-    max=0
+    dx = (WIDTH-2*C_WIDTH).to_f/(keys.length-1) # -1 for ' '
+    max = 0
     keys.each do |key|
-      next if key.chr==' '      # do not display ' '
-      n=good[key]+bad[key]
-      max=n if n>max
+      next if key.chr == ' '      # do not display ' '
+      n = good[key]+bad[key]
+      max = n if n>max
     end
-    ratio=(HEIGHT-C_HEIGHT*2).to_f/max
-    ox=C_WIDTH
-    oy=HEIGHT-C_HEIGHT
-    half_x=dx/2
-    base_y=HEIGHT-C_HEIGHT/2
+    ratio = (HEIGHT-C_HEIGHT*2).to_f/max
+    ox = C_WIDTH
+    oy = HEIGHT-C_HEIGHT
+    half_x = dx/2
+    base_y = HEIGHT-C_HEIGHT/2
     while (key=keys.shift)
-      next if key.chr==' '      # do not display ' '
+      next if key.chr == ' '      # do not display ' '
       if (@percentile)
-        n=good[key]+bad[key]
+        n = good[key]+bad[key]
         rect(ox,oy,good[key].to_f*max/n,bad[key].to_f*max/n,dx,ratio)
       else
         rect(ox,oy,good[key],bad[key],dx,ratio)
       end
       text(ox+half_x,base_y,key)
-      ox+=dx
+      ox += dx
     end
   end
 
@@ -908,7 +886,6 @@ end # Status
 
 ################
 class Scoreboard
-  include MyEnv
 
   WIDTH  = 30
   HEIGHT = 10
@@ -932,7 +909,7 @@ class Scoreboard
     highlight("highlight")
     @server = server
     @port = port
-    @my_id = my_env('USER')
+    @my_id = ENV['USER']
     @authenticated = true
     self.start_drb unless @server
   end
@@ -1019,7 +996,7 @@ class Scoreboard
         my_entry=line if @my_id =~ /#{ranker}/
         line += 1
       end
-      @text.configure(:state=>'normal')
+      @text.configure(:state => 'normal')
       @text.delete('1.0','end')
       @text.insert('end',ranking)
 
@@ -1027,14 +1004,14 @@ class Scoreboard
       unless my_entry == 0
         @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end")
       end
-      @text.configure(:state=>'disabled')
+      @text.configure(:state => 'disabled')
     end
   end
 
   def bgcolor(color)
-    @text.configure(:state=>'normal')
-    @text.configure(:background=>color)
-    @text.configure(:state=>'disabled')
+    @text.configure(:state => 'normal')
+    @text.configure(:background => color)
+    @text.configure(:state => 'disabled')
   end
 
   # 3種類の update を作る。
@@ -1051,10 +1028,10 @@ class Scoreboard
 
   def rank(user)
     return if (@remote.nil?)
-    if (ans=@remote.my_rank(user))
-      TkDialog.new(:title=>'your ranking',
-                   :message=>"#{user}: #{ans}",
-                   :buttons=>['continue'])
+    if (ans = @remote.my_rank(user))
+      TkDialog.new(:title => 'your ranking',
+                   :message => "#{user}: #{ans}",
+                   :buttons => ['continue'])
     else
       self.can_not_talk(@server)
     end
@@ -1105,10 +1082,10 @@ class MyPlot
   R  = 5
 
   def initialize(title)
-    @toplevel=TkToplevel.new(:title=>title)
-    @graph=TkCanvas.new(@toplevel,
-                        :width=>WIDTH,
-                        :height=>HEIGHT)
+    @toplevel = TkToplevel.new(:title => title)
+    @graph = TkCanvas.new(@toplevel,
+                        :width => WIDTH,
+                        :height => HEIGHT)
     @graph.pack
   end
 
@@ -1122,10 +1099,10 @@ class MyPlot
     ratio=SHRINK*(HEIGHT-MY).to_f/max
     x_axes(WIDTH-MX)
     y_axes(max, ratio)
-    lst=lst.map {|y| (HEIGHT-MY)-y*ratio}
-    x=MX
-    while (y=lst.shift)
-      TkcOval.new(@graph,x,y,x+R,y-R,:outline=>'red',:fill=>'red')
+    lst = lst.map {|y| (HEIGHT-MY)-y*ratio}
+    x = MX
+    while (y = lst.shift)
+      TkcOval.new(@graph,x,y,x+R,y-R,:outline => 'red',:fill => 'red')
       x+=dx
     end
   end
@@ -1136,8 +1113,8 @@ class MyPlot
 
   def y_axes(max,ratio)
     TkcLine.new(@graph,MX,HEIGHT-MY,MX,MY)
-    TkcText.new(@graph,MX/2,HEIGHT-max*ratio,:text=>max.to_s)
-    TkcText.new(@graph,MX/2,HEIGHT-MY, :text=>'0')
+    TkcText.new(@graph,MX/2,HEIGHT-max*ratio,:text => max.to_s)
+    TkcText.new(@graph,MX/2,HEIGHT-MY, :text => '0')
   end
 
   def clear
@@ -1204,7 +1181,7 @@ class SpeedMeter
       n
     end
   end
-end# SpeedMeter
+end # SpeedMeter
 
 
 #
