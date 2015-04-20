@@ -17,8 +17,8 @@
 
 
 if [ ! $# = 1 ]; then
-	echo usage: $0 VERSION
-	exit
+    echo usage: $0 VERSION
+    exit
 fi
 VERSION=$1
 
@@ -30,7 +30,7 @@ else
 fi
 
 # files to footprint version number.
-FILES="src/* db/Makefile"
+FILES="db/Makefile"
 
 # normally, format of comments are '# VERSION: number'.
 for i in ${FILES}; do
@@ -39,10 +39,10 @@ done
 
 
 DATE=`date +"%Y-%m-%d"`
-for i in src/yatt.rb src/yatt_monitor.rb; do
+for i in src/*; do
     ${GSED} -i.bak \
-	-e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
-	-e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
+            -e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
+            -e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
 done
 
 echo ${VERSION} > VERSION
