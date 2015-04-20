@@ -3,30 +3,16 @@
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
-# Copyright (C) 2002-2012 Hiroshi Kimura.
+# Copyright (C) 2002-2015 Hiroshi Kimura.
 #
-# VERSION: 0.36
-#
-# 2009-04-13, config changed.
-# 2012-03-24, update for ruby1.9.
-# 2012-04-02, server updates.
-# 2012-04-21, feature/database.
-# 2012-04-26, contest class cmenu.
-# 2014-04-09, fix smaller font bug(typo)
 
-$debug = false
+$debug = true
+
+YATT_VERSION = '0.39'
+DATE = '2015-04-20'
 
 require 'tk'
-begin
-  require 'drb'
-  DRB_ENABLED = true
-rescue
-  STDERR.puts "you can not join contest without drb installed."
-  DRB_ENABLED = false
-end
-
-YATT_VERSION = '0.38'
-DATE = '2015-04-20'
+require 'drb'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
@@ -38,16 +24,19 @@ raise "require ruby >= "+REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) <0
 GOOD = "green"
 BAD  = "red"
 
-YATT_TXT = "yatt.txt"
-YATT_IMG = "yatt4.gif" # was "yatt3.gif"
-
-# yatt の記録を保管するサーバ。drb で通信する。
-# さらにそのサーバは mariadb と 3306/tcp で通信する。
-# DRB_SERVER はプロキシーサーバと言っていいか？
+YATT_TXT   = "yatt.txt"
+YATT_IMG   = "yatt4.gif"
 DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
-PORT  = 23002
-RANKER  = 30
+PORT       = 23002
+RANKER     = 30
 
+if $debug
+  TIMEOUT = 10
+else
+  TIMEOUT = 60
+end
+
+# FIXME: Windows では ENV を取れない。
 if File.exists?("/Applications")
   LIB = File.join(ENV['HOME'], 'Library/yatt')
 elsif File.exists?("/edu")
@@ -56,12 +45,16 @@ else
   LIB = File.join(ENV['HOME'], 'lib/yatt')
 end
 
-server = DRB_SERVER
-port   = PORT
-lib    = LIB
+README       = File.join(LIB, "README")
+YATT_DIR     = File.join(ENV['HOME'], '.yatt')
+Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
+HISTORY      = File.join(YATT_DIR, 'history')
+TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
+ACCURACY     = File.join(YATT_DIR, 'accuracy')
+MY_FONT      = File.join(YATT_DIR, 'font')
 
 def debug(s)
-  puts s if $debug
+  STDERR.puts s if $debug
 end
 
 def usage(s)
@@ -73,52 +66,8 @@ EOU
   exit(1)
 end
 
-#$server_uri = SERVER_URI
-while (arg = ARGV.shift)
-  case arg
-  when /--server/
-    server = ARGV.shift
-  when /--port/
-    port = ARGV.shift
-  when /--lib/
-    lib=ARGV.shift
-  when /--noserver/
-    server = nil
-  when /--debug/
-    $debug = true
-  else
-    usage(arg)
-  end
-end
-
-if $debug
-  TIMEOUT = 10
-else
-  TIMEOUT = 60
-end
-
-debug "druby://#{server}:#{port}, #{lib}"
-
-README       = File.join(lib, "README")
-YATT_DIR     = File.join(ENV['HOME'], '.yatt')
-Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-HISTORY      = File.join(YATT_DIR, 'history')
-TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
-ACCURACY     = File.join(YATT_DIR, 'accuracy')
-MY_FONT      = File.join(YATT_DIR, 'font')
-
-#############
-# FIXME:
-# for windows version. Windows lacks ENV[].
-module MyEnv
-  def my_env(var)
-    ENV[var]
-  end
-end
-
 #############
 class Trainer
-  include MyEnv
 
   @epilog = false
 
@@ -132,9 +81,11 @@ class Trainer
     toplevel = TkToplevel.new{title 'YATT readme'}
     frame1 = TkFrame.new(toplevel)
     frame1.pack
+
     text = TkText.new(frame1)
     text.configure(:width  => 40, :height => 30)
     text.pack(:side => 'right')
+
     scr = TkScrollbar.new(frame1)
     scr.pack(:side => 'left', :fill => 'y')
     text.yscrollbar(scr)
@@ -149,7 +100,7 @@ class Trainer
     @server=server
     @port  = port
     @lib   = lib
-    @myid  = my_env('USER')
+    @myid  = ENV['USER']
 
     @windows = nil
     @width   = 78
@@ -173,7 +124,7 @@ class Trainer
     @textarea=MyText.new(base,
       :background => 'white',
       :width  => @width,
-      :height => @lines+1)
+      :height => @lines + 1)
     @font = "Courier"
     @size = "14"
     if File.exists?(MY_FONT)
@@ -187,7 +138,7 @@ class Trainer
     meter_frame = TkFrame.new(root)
     meter_frame.pack
     @speed_meter = SpeedMeter.new(meter_frame)
-    @speed_meter.pack(:side=>'left')
+    @speed_meter.pack(:side => 'left')
 
     @scale=TkScale.new(meter_frame,
       :orient => 'horizontal',
@@ -195,15 +146,15 @@ class Trainer
       :from   => 0,
       :to     => TIMEOUT,
       :tickinterval => TIMEOUT/2)
-    @scale.pack(:fill=>'x')
+    @scale.pack(:fill =>'x')
 
-    graph_frame = TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
+    graph_frame = TkFrame.new(root,:relief => 'groove',:borderwidth => 2)
     graph_frame.pack
-    @stat = MyStatus.new(graph_frame,@splash)
-    @stat.pack(:side=>'left')
+    @stat = MyStatus.new(graph_frame, @splash)
+    @stat.pack(:side => 'left')
 
     @scoreboard = Scoreboard.new(graph_frame,@server,@port, @contest)
-    @scoreboard.pack(:expand=>1,:fill=>'both')
+    @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
 
     raise "#{@textfile} does not exist " unless File.file?(@textfile)
@@ -213,6 +164,12 @@ class Trainer
     end
     debug "@doclength: #{@doclength}"
     insert(@textfile, @lines)
+
+    TkDialog.new(:title => "contest",
+                 :message => '秘密練習以外は contest on にすること。',
+                 :buttons => ['start'])
+    menu_toggle_contest()
+
   end
 
   def do_menu(root)
@@ -311,14 +268,9 @@ port: #{@port}\n",
 
   # FIXME: too complex.
   def menu_toggle_contest
-    if @scoreboard.auth(@myid)
-      @contest = @scoreboard.toggle_contest(@myid)
-      @logger.clear_highscore
-    else
-      TkDialog.new(:title   => "yatt server",
-                   :message => "FAIL:\n#{@myid} does not belong to this class.",
-                   :buttons => "continue")
-    end
+    #   3if true@scoreboard.start
+    @contest = @scoreboard.toggle_contest(@myid)
+    @logger.clear_highscore
   end
 
   def menu_reload
@@ -424,16 +376,15 @@ port: #{@port}\n",
   # file からnum_lines を抽出、
   def insert(file, num_lines)
     # reset session parameters
-    @line=0
-    @char=0
-    @epilog=false
+    @line = 0
+    @char = 0
+    @epilog = false
     @time_remains = TIMEOUT
-    @wait_for_first_key=true
+    @wait_for_first_key = true
 
     start = rand(@doclength - 2*num_lines) # 2 for programming ease.
-    debug "start: #{start}"
 
-    # FIXME. 配列で持つのは非効率ではないか？
+    # @text は配列でなければならない。行と列でテキストに色付けする。
     @text=[]
     File.open(file,"r") do |fp|
       # read off 'start' lines
@@ -507,7 +458,7 @@ port: #{@port}\n",
     key &= 0x00ff
     return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
-      @wait_for_first_key=false
+      @wait_for_first_key = false
       @logger.start
     end
     @num_chars+=1
@@ -516,17 +467,17 @@ port: #{@port}\n",
       epilog
       return
     end
-    c=key.chr
-    case target=@text[@line][@char]
+    c = key.chr
+    case target = @text[@line][@char]
     when "\n"
-      if (key==0x0d) #match
+      if (key == 0x0d) #match
         @logger.add_good(target)
         @textarea.unlight(@line,@char)
-        @line+=1
-        @char=0
+        @line += 1
+        @char = 0
         if finished?
           @logger.finish
-          @logger.complete=true
+          @logger.complete = true
           epilog
           return
         end
@@ -536,7 +487,7 @@ port: #{@port}\n",
         @textarea.highlight("bad",@line,@char)
         if @textarea.value_loose
           @line += 1
-          @char=0
+          @char = 0
           @textarea.highlight("good",@line,@char)
         end
       end# when "\n"
@@ -592,13 +543,13 @@ port: #{@port}\n",
     end
     if c = @logger.complete?
       score +=100
-      msg   += "+ bonus complete (100)\n"
+      msg += "+ bonus complete (100)\n"
       score += (tr=@time_remains*50)
-      msg   += "+ bonus time remains (#{tr})\n"
+      msg += "+ bonus time remains (#{tr})\n"
     end
-    if p     = @logger.perfect?
+    if p = @logger.perfect?
       score += 300
-      msg   += "+ bonus perfect (300)\n"
+      msg += "+ bonus perfect (300)\n"
     end
     msg += "becomes #{score}!!!\n" if (c or p)
 
@@ -606,18 +557,6 @@ port: #{@port}\n",
     @logger.save_errors(errors)
     @logger.accumulate
     @stat.plot(@logger.sum_good,@logger.sum_ng)
-
-    #debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
-    # 2012-04-21 最高点数だけ、かつ、authenticated な時だけ、
-    # scoreboard に点数をサブミットしている。
-    # scoreboard 側に最高点かどうかを判定するルーチンを入れる必要がある。
-    #
-    # if score > @logger.highscore
-    #   @logger.set_highscore(score)
-    #   if (@contest and @scoreboard.authenticated)
-    #     @scoreboard.submit(@myid,score)
-    #   end
-    # end
 
     # 2012-06-26, 「ハイスコア達成時だけsubmitする」に戻す。
     # @logger.set_highscore(score) if score > @logger.highscore
@@ -630,13 +569,12 @@ port: #{@port}\n",
     #
     @scoreboard.update if @contest
     sleep(1)
-    ret=TkDialog.new(:title   => 'yet another type trainer',
+    ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
     sleep(1)
     insert(@textfile, @lines)
     @epilog = false
-#    sleep(1)
   end #epilog
 
 end #Trainer
@@ -664,12 +602,12 @@ class MyText < TkText
   end
 
   def highlight(stat,line,char)
-    pos=(line+1).to_s+"."+char.to_s
+    pos = (line+1).to_s+"."+char.to_s
     @text.tag_add(stat,pos)
   end
 
   def unlight(line,char)
-    pos=(line+1).to_s+"."+char.to_s
+    pos = (line+1).to_s+"."+char.to_s
     @text.tag_remove('good',pos)
     @text.tag_remove('bad',pos) unless @@sticky
   end
@@ -687,11 +625,11 @@ class MyText < TkText
   end
 
   def set_sticky(value)
-    @@sticky=value
+    @@sticky = value
   end
 
   def set_loose(value)
-    @@loose=value
+    @@loose = value
   end
 
   def configure(param)
@@ -701,13 +639,12 @@ end #MyText
 
 ############
 class Logger
-  include MyEnv
   attr_reader :good, :ng, :start_time, :finish_time, :complete
   attr_writer :complete
 
-  @@sum_good = Hash.new(0)
-  @@sum_ng   = Hash.new(0)
-  @@highscore=0
+  @@sum_good  = Hash.new(0)
+  @@sum_ng    = Hash.new(0)
+  @@highscore = 0
 
   def sum_good
     @@sum_good
@@ -718,25 +655,25 @@ class Logger
   end
 
   def initialize
-    @good=Hash.new(0)
-    @ng=Hash.new(0)
+    @good = Hash.new(0)
+    @ng   = Hash.new(0)
   end
 
   def start
-    @start_time=Time.now
-    @complete=false
+    @start_time = Time.now
+    @complete   = false
   end
 
   def finish
-    @finish_time=Time.now
+    @finish_time = Time.now
   end
 
   def add_ng(target,key)
-    @ng[target]+=1
+    @ng[target] += 1
   end
 
   def add_good(target)
-    @good[target]+=1
+    @good[target] += 1
   end
 
   def diff_time
@@ -793,10 +730,10 @@ class Logger
 
   def accumulate
     @good.each do |key,value|
-      @@sum_good[key]+=value
+      @@sum_good[key] += value
     end
     @ng.each do |key,value|
-      @@sum_ng[key]+=value
+      @@sum_ng[key] += value
     end
   end
 
@@ -823,7 +760,6 @@ class Logger
 
   def save_highscore(score)
     File.open(HISTORY,"a") do |fp|
-#      fp.puts "#{@@highscore}\t#{Time.now.asctime}"
       fp.puts "#{@@highscore}\t#{Time.now}"
     end
   end
@@ -837,7 +773,6 @@ end #Logger
 
 ########################
 class MyStatus <TkCanvas
-  include MyEnv
   # WIDTH, etc., must be calculated from the width of `text' area.
   # How should I do?
   WIDTH   = 420
@@ -846,15 +781,15 @@ class MyStatus <TkCanvas
   C_HEIGHT= 20
 
   def initialize(parent,splash)
-    @graph=TkCanvas.new(parent,
-                        :width=>WIDTH,
-                        :height=>HEIGHT,
-                        :background=>'white')
+    @graph = TkCanvas.new(parent,
+                          :width => WIDTH,
+                          :height => HEIGHT,
+                          :background => 'white')
     if FileTest.exists?(splash)
-      img=TkPhotoImage.new(:file=>splash)
+      img = TkPhotoImage.new(:file=>splash)
       TkcImage.new(@graph,WIDTH/2,130,:image=>img)
     end
-    @percentile=false
+    @percentile = false
   end
 
   def percentile
@@ -869,28 +804,28 @@ class MyStatus <TkCanvas
     @graph.delete("all")
     keys = (good.keys | bad.keys).sort
     return if keys.length<2
-    dx=(WIDTH-2*C_WIDTH).to_f/(keys.length-1) # -1 for ' '
-    max=0
+    dx = (WIDTH-2*C_WIDTH).to_f/(keys.length-1) # -1 for ' '
+    max = 0
     keys.each do |key|
-      next if key.chr==' '      # do not display ' '
-      n=good[key]+bad[key]
-      max=n if n>max
+      next if key.chr == ' '      # do not display ' '
+      n = good[key]+bad[key]
+      max = n if n>max
     end
-    ratio=(HEIGHT-C_HEIGHT*2).to_f/max
-    ox=C_WIDTH
-    oy=HEIGHT-C_HEIGHT
-    half_x=dx/2
-    base_y=HEIGHT-C_HEIGHT/2
+    ratio = (HEIGHT-C_HEIGHT*2).to_f/max
+    ox = C_WIDTH
+    oy = HEIGHT-C_HEIGHT
+    half_x = dx/2
+    base_y = HEIGHT-C_HEIGHT/2
     while (key=keys.shift)
-      next if key.chr==' '      # do not display ' '
+      next if key.chr == ' '      # do not display ' '
       if (@percentile)
-        n=good[key]+bad[key]
+        n = good[key]+bad[key]
         rect(ox,oy,good[key].to_f*max/n,bad[key].to_f*max/n,dx,ratio)
       else
         rect(ox,oy,good[key],bad[key],dx,ratio)
       end
       text(ox+half_x,base_y,key)
-      ox+=dx
+      ox += dx
     end
   end
 
@@ -906,7 +841,6 @@ end # Status
 
 ################
 class Scoreboard
-  include MyEnv
 
   WIDTH  = 30
   HEIGHT = 10
@@ -914,11 +848,9 @@ class Scoreboard
   WEEKLY = :weekly
   MYCLASS= :myclass
 
-  attr_reader :authenticated
-
   def initialize(parent, server, port, stat)
-    @mode=WEEKLY
-    @text=TkText.new(parent,
+    @mode = WEEKLY
+    @text = TkText.new(parent,
                      :takefocus => 0,
                      :background => 'gray',
                      :width => WIDTH,
@@ -930,9 +862,13 @@ class Scoreboard
     highlight("highlight")
     @server = server
     @port = port
-    @my_id = my_env('USER')
-    @authenticated = true
-    self.start_drb unless @server
+    @my_id = ENV['USER']
+
+    DRb.start_service
+    @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
+    unless @remote.ping =~ /ok/
+      can_not_talk(@server)
+    end
   end
 
   def global
@@ -947,19 +883,11 @@ class Scoreboard
     @mode = MYCLASS
   end
 
-  def start_drb
-    DRb.start_service
-    @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
-    unless @remote.ping =~ /ok/
-      can_not_talk(@server)
-    end
-  end
-
   def can_not_talk(server)
     TkDialog.new(:title   => "can not talk to server",
                  :message => "サーバと通信できません。
 下の continue を押し、
-次にでてくるOKボタンを押せばyatt の練習はできますが
+次に出てくる OK ボタンを押せば yatt の練習はできますが
 コンテストには参加できません。
 しばらく秘密練習に励んでください。",
                  :buttons => ['continue'])
@@ -1017,7 +945,7 @@ class Scoreboard
         my_entry=line if @my_id =~ /#{ranker}/
         line += 1
       end
-      @text.configure(:state=>'normal')
+      @text.configure(:state => 'normal')
       @text.delete('1.0','end')
       @text.insert('end',ranking)
 
@@ -1025,14 +953,14 @@ class Scoreboard
       unless my_entry == 0
         @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end")
       end
-      @text.configure(:state=>'disabled')
+      @text.configure(:state => 'disabled')
     end
   end
 
   def bgcolor(color)
-    @text.configure(:state=>'normal')
-    @text.configure(:background=>color)
-    @text.configure(:state=>'disabled')
+    @text.configure(:state => 'normal')
+    @text.configure(:background => color)
+    @text.configure(:state => 'disabled')
   end
 
   # 3種類の update を作る。
@@ -1049,10 +977,10 @@ class Scoreboard
 
   def rank(user)
     return if (@remote.nil?)
-    if (ans=@remote.my_rank(user))
-      TkDialog.new(:title=>'your ranking',
-                   :message=>"#{user}: #{ans}",
-                   :buttons=>['continue'])
+    if (ans = @remote.my_rank(user))
+      TkDialog.new(:title => 'your ranking',
+                   :message => "#{user}: #{ans}",
+                   :buttons => ['continue'])
     else
       self.can_not_talk(@server)
     end
@@ -1085,11 +1013,10 @@ class Scoreboard
     display(@remote.all) unless @remote.nil?
   end
 
-  def auth(uid)
-    debug "#{__method__}: #{uid}"
-    start_drb unless @remote
-    true
-  end
+#   def toggle
+#    start_drb unless @remote
+#    true
+#  end
 
 end # Scoreboard
 
@@ -1103,10 +1030,10 @@ class MyPlot
   R  = 5
 
   def initialize(title)
-    @toplevel=TkToplevel.new(:title=>title)
-    @graph=TkCanvas.new(@toplevel,
-                        :width=>WIDTH,
-                        :height=>HEIGHT)
+    @toplevel = TkToplevel.new(:title => title)
+    @graph = TkCanvas.new(@toplevel,
+                        :width => WIDTH,
+                        :height => HEIGHT)
     @graph.pack
   end
 
@@ -1120,10 +1047,10 @@ class MyPlot
     ratio=SHRINK*(HEIGHT-MY).to_f/max
     x_axes(WIDTH-MX)
     y_axes(max, ratio)
-    lst=lst.map {|y| (HEIGHT-MY)-y*ratio}
-    x=MX
-    while (y=lst.shift)
-      TkcOval.new(@graph,x,y,x+R,y-R,:outline=>'red',:fill=>'red')
+    lst = lst.map {|y| (HEIGHT-MY)-y*ratio}
+    x = MX
+    while (y = lst.shift)
+      TkcOval.new(@graph,x,y,x+R,y-R,:outline => 'red',:fill => 'red')
       x+=dx
     end
   end
@@ -1134,8 +1061,8 @@ class MyPlot
 
   def y_axes(max,ratio)
     TkcLine.new(@graph,MX,HEIGHT-MY,MX,MY)
-    TkcText.new(@graph,MX/2,HEIGHT-max*ratio,:text=>max.to_s)
-    TkcText.new(@graph,MX/2,HEIGHT-MY, :text=>'0')
+    TkcText.new(@graph,MX/2,HEIGHT-max*ratio,:text => max.to_s)
+    TkcText.new(@graph,MX/2,HEIGHT-MY, :text => '0')
   end
 
   def clear
@@ -1202,12 +1129,33 @@ class SpeedMeter
       n
     end
   end
-end# SpeedMeter
+end # SpeedMeter
 
 
 #
 # main starts here.
 #
+
+server = DRB_SERVER
+port   = PORT
+lib    = LIB
+
+while (arg = ARGV.shift)
+  case arg
+  when /--server/
+    server = ARGV.shift
+  when /--port/
+    port = ARGV.shift
+  when /--lib/
+    lib = ARGV.shift
+  when /--noserver/
+    server = nil
+  when /--debug/
+    $debug = true
+  else
+    usage(arg)
+  end
+end
 
 trainer = Trainer.new(server, port, lib)
 Tk.mainloop
