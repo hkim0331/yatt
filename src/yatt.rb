@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- mode: ruby; coding: utf-8 -*-
+# coding: utf-8
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
@@ -356,16 +356,6 @@ port: #{@port}\n",
     menu_score(lst,Time.now.strftime("%Y-%m-%d"))
   end
 
-  # def menu_todays_score
-  #   lst = []
-  #   today = Time.now.to_s.split[0]
-  #   File.foreach(HISTORY) do |line|
-  #     point, date = line.split(/\s+/)
-  #     lst.push(point.to_i) if date == today # ここが違うだけ。
-  #   end
-  #   menu_score(lst, "total")
-  # end
-
   def menu_total_score
     lst = []
     File.foreach(HISTORY) do |line|
@@ -442,19 +432,32 @@ port: #{@port}\n",
 
     start = rand(@doclength - 2*num_lines) # 2 for programming ease.
     debug "start: #{start}"
+
+    # FIXME. 配列で持つのは非効率ではないか？
     @text=[]
     File.open(file,"r") do |fp|
       # read off 'start' lines
       start.times do
         fp.gets
       end
-      # readin 'num_lines'
+
+      # read in 'num_lines'
       num_lines.times do
         @text.push fp.gets
       end
     end
 
+    # for 0.38, count non-space chars
+    debug "@text.length: #{@text.join.length}"
+    if (@text.join.length < 350)
+      self.insert(file, num_lines)
+      return
+    end
+    #
+
     @textarea.insert(@text.join)
+    #@textarea.insert(@text)
+
     @textarea.highlight("good",@line,@char)
     @scale.set(TIMEOUT)
     @logger = Logger.new
@@ -576,10 +579,16 @@ port: #{@port}\n",
     if errors>3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
     else
-        if score >70
-          msg += "\nyour error-rate < 3.0%.\nBonus 30.\n"
+      if score >70
+        # 0.38
+        if errors < 1.0
+          msg += "\nyour error-rate < 1.0%.\nBonus 30.\n"
           score += 30
+        else
+          msg += "\nyour error-rate < 3.0%.\nBonus 10.\n"
+          score += 10
         end
+      end
     end
     if c = @logger.complete?
       score +=100
