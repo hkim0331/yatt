@@ -213,6 +213,10 @@ class Trainer
     end
     debug "@doclength: #{@doclength}"
     insert(@textfile, @lines)
+    TkDialog.new(:title => "contest",
+                 :message => '秘密練習以外は contest on にすること。',
+                 :buttons => ['start'])
+
   end
 
   def do_menu(root)
