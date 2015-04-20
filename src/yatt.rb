@@ -6,19 +6,13 @@
 # Copyright (C) 2002-2015 Hiroshi Kimura.
 #
 
-$debug = false
+$debug = true
+
 YATT_VERSION = '0.38'
 DATE = '2015-04-20'
 
 require 'tk'
-
-begin
-  require 'drb'
-  DRB_ENABLED = true
-rescue
-  STDERR.puts "you can not join contest without drb installed."
-  DRB_ENABLED = false
-end
+require 'drb'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
@@ -36,6 +30,12 @@ DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
 PORT       = 23002
 RANKER     = 30
 
+if $debug
+  TIMEOUT = 10
+else
+  TIMEOUT = 60
+end
+
 # FIXME: Windows では ENV を取れない。
 if File.exists?("/Applications")
   LIB = File.join(ENV['HOME'], 'Library/yatt')
@@ -45,9 +45,13 @@ else
   LIB = File.join(ENV['HOME'], 'lib/yatt')
 end
 
-server = DRB_SERVER
-port   = PORT
-lib    = LIB
+README       = File.join(LIB, "README")
+YATT_DIR     = File.join(ENV['HOME'], '.yatt')
+Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
+HISTORY      = File.join(YATT_DIR, 'history')
+TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
+ACCURACY     = File.join(YATT_DIR, 'accuracy')
+MY_FONT      = File.join(YATT_DIR, 'font')
 
 def debug(s)
   STDERR.puts s if $debug
@@ -61,39 +65,6 @@ usage:
 EOU
   exit(1)
 end
-
-while (arg = ARGV.shift)
-  case arg
-  when /--server/
-    server = ARGV.shift
-  when /--port/
-    port = ARGV.shift
-  when /--lib/
-    lib=ARGV.shift
-  when /--noserver/
-    server = nil
-  when /--debug/
-    $debug = true
-  else
-    usage(arg)
-  end
-end
-
-if $debug
-  TIMEOUT = 10
-else
-  TIMEOUT = 60
-end
-
-debug "druby://#{server}:#{port}, #{lib}"
-
-README       = File.join(lib, "README")
-YATT_DIR     = File.join(ENV['HOME'], '.yatt')
-Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-HISTORY      = File.join(YATT_DIR, 'history')
-TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
-ACCURACY     = File.join(YATT_DIR, 'accuracy')
-MY_FONT      = File.join(YATT_DIR, 'font')
 
 #############
 class Trainer
@@ -153,7 +124,7 @@ class Trainer
     @textarea=MyText.new(base,
       :background => 'white',
       :width  => @width,
-      :height => @lines+1)
+      :height => @lines + 1)
     @font = "Courier"
     @size = "14"
     if File.exists?(MY_FONT)
@@ -167,7 +138,7 @@ class Trainer
     meter_frame = TkFrame.new(root)
     meter_frame.pack
     @speed_meter = SpeedMeter.new(meter_frame)
-    @speed_meter.pack(:side=>'left')
+    @speed_meter.pack(:side => 'left')
 
     @scale=TkScale.new(meter_frame,
       :orient => 'horizontal',
@@ -175,15 +146,15 @@ class Trainer
       :from   => 0,
       :to     => TIMEOUT,
       :tickinterval => TIMEOUT/2)
-    @scale.pack(:fill=>'x')
+    @scale.pack(:fill =>'x')
 
-    graph_frame = TkFrame.new(root,:relief=>'groove',:borderwidth=>2)
+    graph_frame = TkFrame.new(root,:relief => 'groove',:borderwidth => 2)
     graph_frame.pack
-    @stat = MyStatus.new(graph_frame,@splash)
-    @stat.pack(:side=>'left')
+    @stat = MyStatus.new(graph_frame, @splash)
+    @stat.pack(:side => 'left')
 
     @scoreboard = Scoreboard.new(graph_frame,@server,@port, @contest)
-    @scoreboard.pack(:expand=>1,:fill=>'both')
+    @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
 
     raise "#{@textfile} does not exist " unless File.file?(@textfile)
@@ -193,9 +164,11 @@ class Trainer
     end
     debug "@doclength: #{@doclength}"
     insert(@textfile, @lines)
+
     TkDialog.new(:title => "contest",
                  :message => '秘密練習以外は contest on にすること。',
                  :buttons => ['start'])
+    menu_toggle_contest()
 
   end
 
@@ -295,14 +268,9 @@ port: #{@port}\n",
 
   # FIXME: too complex.
   def menu_toggle_contest
-    if @scoreboard.auth(@myid)
-      @contest = @scoreboard.toggle_contest(@myid)
-      @logger.clear_highscore
-    else
-      TkDialog.new(:title   => "yatt server",
-                   :message => "FAIL:\n#{@myid} does not belong to this class.",
-                   :buttons => "continue")
-    end
+    #   3if true@scoreboard.start
+    @contest = @scoreboard.toggle_contest(@myid)
+    @logger.clear_highscore
   end
 
   def menu_reload
@@ -415,9 +383,8 @@ port: #{@port}\n",
     @wait_for_first_key = true
 
     start = rand(@doclength - 2*num_lines) # 2 for programming ease.
-    debug "start: #{start}"
 
-    # FIXME. 配列で持つのは非効率ではないか？
+    # @text は配列でなければならない。行と列でテキストに色付けする。
     @text=[]
     File.open(file,"r") do |fp|
       # read off 'start' lines
@@ -491,7 +458,7 @@ port: #{@port}\n",
     key &= 0x00ff
     return if (key==0 or key>128) # shift, control or alt. do nothing
     if @wait_for_first_key
-      @wait_for_first_key=false
+      @wait_for_first_key = false
       @logger.start
     end
     @num_chars+=1
@@ -500,17 +467,17 @@ port: #{@port}\n",
       epilog
       return
     end
-    c=key.chr
-    case target=@text[@line][@char]
+    c = key.chr
+    case target = @text[@line][@char]
     when "\n"
-      if (key==0x0d) #match
+      if (key == 0x0d) #match
         @logger.add_good(target)
         @textarea.unlight(@line,@char)
-        @line+=1
-        @char=0
+        @line += 1
+        @char = 0
         if finished?
           @logger.finish
-          @logger.complete=true
+          @logger.complete = true
           epilog
           return
         end
@@ -520,7 +487,7 @@ port: #{@port}\n",
         @textarea.highlight("bad",@line,@char)
         if @textarea.value_loose
           @line += 1
-          @char=0
+          @char = 0
           @textarea.highlight("good",@line,@char)
         end
       end# when "\n"
@@ -590,18 +557,6 @@ port: #{@port}\n",
     @logger.save_errors(errors)
     @logger.accumulate
     @stat.plot(@logger.sum_good,@logger.sum_ng)
-
-    #debug "contest:#{@contest}, auth:#{@scoreboard.authenticated}"
-    # 2012-04-21 最高点数だけ、かつ、authenticated な時だけ、
-    # scoreboard に点数をサブミットしている。
-    # scoreboard 側に最高点かどうかを判定するルーチンを入れる必要がある。
-    #
-    # if score > @logger.highscore
-    #   @logger.set_highscore(score)
-    #   if (@contest and @scoreboard.authenticated)
-    #     @scoreboard.submit(@myid,score)
-    #   end
-    # end
 
     # 2012-06-26, 「ハイスコア達成時だけsubmitする」に戻す。
     # @logger.set_highscore(score) if score > @logger.highscore
@@ -893,11 +848,9 @@ class Scoreboard
   WEEKLY = :weekly
   MYCLASS= :myclass
 
-  attr_reader :authenticated
-
   def initialize(parent, server, port, stat)
-    @mode=WEEKLY
-    @text=TkText.new(parent,
+    @mode = WEEKLY
+    @text = TkText.new(parent,
                      :takefocus => 0,
                      :background => 'gray',
                      :width => WIDTH,
@@ -910,8 +863,12 @@ class Scoreboard
     @server = server
     @port = port
     @my_id = ENV['USER']
-    @authenticated = true
-    self.start_drb unless @server
+
+    DRb.start_service
+    @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
+    unless @remote.ping =~ /ok/
+      can_not_talk(@server)
+    end
   end
 
   def global
@@ -926,19 +883,11 @@ class Scoreboard
     @mode = MYCLASS
   end
 
-  def start_drb
-    DRb.start_service
-    @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
-    unless @remote.ping =~ /ok/
-      can_not_talk(@server)
-    end
-  end
-
   def can_not_talk(server)
     TkDialog.new(:title   => "can not talk to server",
                  :message => "サーバと通信できません。
 下の continue を押し、
-次にでてくるOKボタンを押せばyatt の練習はできますが
+次に出てくる OK ボタンを押せば yatt の練習はできますが
 コンテストには参加できません。
 しばらく秘密練習に励んでください。",
                  :buttons => ['continue'])
@@ -1064,11 +1013,10 @@ class Scoreboard
     display(@remote.all) unless @remote.nil?
   end
 
-  def auth(uid)
-    debug "#{__method__}: #{uid}"
-    start_drb unless @remote
-    true
-  end
+#   def toggle
+#    start_drb unless @remote
+#    true
+#  end
 
 end # Scoreboard
 
@@ -1187,6 +1135,27 @@ end # SpeedMeter
 #
 # main starts here.
 #
+
+server = DRB_SERVER
+port   = PORT
+lib    = LIB
+
+while (arg = ARGV.shift)
+  case arg
+  when /--server/
+    server = ARGV.shift
+  when /--port/
+    port = ARGV.shift
+  when /--lib/
+    lib = ARGV.shift
+  when /--noserver/
+    server = nil
+  when /--debug/
+    $debug = true
+  else
+    usage(arg)
+  end
+end
 
 trainer = Trainer.new(server, port, lib)
 Tk.mainloop
