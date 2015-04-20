@@ -25,8 +25,8 @@ rescue
   DRB_ENABLED = false
 end
 
-YATT_VERSION = '0.36'
-DATE = '2015-04-11'
+YATT_VERSION = '0.38'
+DATE = '2015-04-20'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
