@@ -163,10 +163,23 @@ class Trainer
     insert(@textfile, @lines)
 
     TkDialog.new(:title => "contest",
-                 :message => '秘密練習以外は contest on にすること。',
+                 :message => "秘密練習以外は contest on にすること。\n
+これまでに #{trials()} 回、練習しました。",
                  :buttons => ['start'])
     menu_toggle_contest()
 
+  end
+
+  def lines(fname)
+    count = 0
+    File.foreach(fname) do |line|
+      count += 1
+    end
+    count
+  end
+
+  def trials()
+    Dir.glob("#{YATT_DIR}/??-??").map{|x| lines(x)}.inject(:+)
   end
 
   def do_menu(root)
