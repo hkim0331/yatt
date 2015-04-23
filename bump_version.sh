@@ -13,8 +13,8 @@
 #
 # == updats
 # 2012-01-15, updated.
-# 2021-01-28, add comments.
-
+# 2012-01-28, add comments.
+# 2015-04-23, stop backup *.bak files. (under constrution)
 
 if [ ! $# = 1 ]; then
     echo usage: $0 VERSION
@@ -24,25 +24,25 @@ VERSION=$1
 
 # in Linux, sed = gnu sed, in OSX, sed != gnu sed.
 if [ `uname` = 'Linux' ]; then
-    GSED=/bin/sed
+    SED=/bin/sed
 else
-    GSED=gsed
+    SED=/usr/local/bin/gsed
 fi
 
 # files to footprint version number.
-FILES="db/Makefile"
+FILES="db/Makefile src/Makefile"
 
 # normally, format of comments are '# VERSION: number'.
 for i in ${FILES}; do
-    sed -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
+    ${SED} -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
 done
 
-
 DATE=`date +"%Y-%m-%d"`
+# FIXME: must skip *.bak files.
 for i in src/*; do
-    ${GSED} -i.bak \
-            -e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
-            -e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
+    ${SED} -i.bak \
+           -e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
+           -e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
 done
 
 echo ${VERSION} > VERSION
