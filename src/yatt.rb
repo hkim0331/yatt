@@ -8,8 +8,8 @@
 
 $debug = false
 
-YATT_VERSION = '0.39'
-DATE = '2015-04-20'
+YATT_VERSION = '0.40'
+DATE = '2015-04-23'
 
 require 'tk'
 require 'drb'

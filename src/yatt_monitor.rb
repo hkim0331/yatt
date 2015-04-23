@@ -14,8 +14,8 @@
 require 'drb'
 require 'sequel'
 
-YATT_VERSION = '0.39'
-DATE = '2015-04-20'
+YATT_VERSION = '0.40'
+DATE = '2015-04-23'
 REQ_RUBY = "1.9.3"
 raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
