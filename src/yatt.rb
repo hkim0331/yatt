@@ -6,7 +6,7 @@
 # Copyright (C) 2002-2015 Hiroshi Kimura.
 #
 
-$debug = true
+$debug = false
 
 YATT_VERSION = '0.39'
 DATE = '2015-04-20'
@@ -108,9 +108,6 @@ class Trainer
     @textfile=File.join(@lib,YATT_TXT)
     @splash  =File.join(@lib,YATT_IMG)
     @speed_meter_status = true
-
-    # FIXME
-    # これを true にても立ち上がり時につなぎに行かない。
     @contest = false
 
     srand($$)
@@ -266,9 +263,7 @@ port: #{@port}\n",
     @textarea.loose
   end
 
-  # FIXME: too complex.
   def menu_toggle_contest
-    #   3if true@scoreboard.start
     @contest = @scoreboard.toggle_contest(@myid)
     @logger.clear_highscore
   end
@@ -407,8 +402,6 @@ port: #{@port}\n",
     #
 
     @textarea.insert(@text.join)
-    #@textarea.insert(@text)
-
     @textarea.highlight("good",@line,@char)
     @scale.set(TIMEOUT)
     @logger = Logger.new
@@ -490,11 +483,11 @@ port: #{@port}\n",
           @char = 0
           @textarea.highlight("good",@line,@char)
         end
-      end# when "\n"
+      end # when "\n"
     when c    # match
       @logger.add_good(target)
       @textarea.unlight(@line,@char)
-      @char+=1
+      @char += 1
       @textarea.highlight("good",@line,@char)
     else # not match
       @logger.add_ng(target,key)
@@ -504,14 +497,14 @@ port: #{@port}\n",
         @textarea.highlight("good",@line,@char)
       end
     end
-  end#key_press
+  end #key_press
 
   def finished?
-    @line==@lines
+    @line == @lines
   end
 
   def epilog
-    @epilog=true
+    @epilog = true
     while (@timer.running?)
       @timer.stop
     end
