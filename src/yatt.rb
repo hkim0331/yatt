@@ -8,7 +8,7 @@
 
 $debug = false
 
-YATT_VERSION = '0.40'
+YATT_VERSION = '0.41'
 DATE = '2015-04-23'
 
 require 'tk'
