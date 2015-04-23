@@ -5,8 +5,6 @@
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C)2002-2012, Hiroshi Kimura.
 #
-# VERSION: 0.36
-#
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
@@ -14,13 +12,13 @@
 require 'drb'
 require 'sequel'
 
-YATT_VERSION = '0.40'
+YATT_VERSION = '0.41'
 DATE = '2015-04-23'
 REQ_RUBY = "1.9.3"
 raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
 def debug(s)
-  puts s if $debug
+  STDERR.puts "debug: " + s if $debug
 end
 
 def usage
@@ -47,10 +45,12 @@ EOF
   exit 1
 end
 
+# @score は monitor の立ち上がり時にリセットされる。
+# これが weekly の実態だ。
+# global（つまりリモートのデータベース）に記録されるのは別のタイミング。
 class Monitor
   attr_reader :score
 
-  # FIXME: sqlite3 => mysql
   def initialize(ds, logfile)
     @score   = Hash.new(0)
     @ds = ds
@@ -99,7 +99,8 @@ class Monitor
     end
   end
 
-  def rank(name)
+  # BUG 2015-04-23
+  def status(name)
     pt     = @score[name][0]
     length = 0
     rank   = 1
@@ -107,24 +108,23 @@ class Monitor
       length += 1
       rank += 1 if val[0]>pt
     end
+    ret = "#{pt} pt, ##{rank} of #{length} players."
     if rank == 1
-      "You are the champ now."
-    else
-      "#{name}: #{pt} (#{rank}/#{length})"
+      ret << "\nYou are the weekly champ."
     end
+    ret
   end
 
   # CHANGED: return array
   # 通常の get は DB を引かず、Hash から返す。
   def get(num)
-    debug("#{__method__}: #{num}")
     self.best(num)
   end
 
   # get_myclass はハッシュから。
   # id の前から4文字マッチを取る。
-  def get_myclass(num,me)
-    pat = %r{#{me[0,4]}}
+  def get_myclass(num,sid)
+    pat = %r{#{sid[0,4]}}
     ret = Hash.new
     @ds.each do |r|
       uid = r[:uid]

@@ -8,7 +8,7 @@
 
 $debug = false
 
-YATT_VERSION = '0.40'
+YATT_VERSION = '0.41'
 DATE = '2015-04-23'
 
 require 'tk'
@@ -198,13 +198,14 @@ class Trainer
        ['On/off',proc{menu_toggle_contest},0],
        '---',
        ['reload', proc{menu_reload},2],
-       ['My status', proc{menu_my_rank},0],
-       ['Remove me',proc{menu_remove_me},0],
-       ['show All',proc{menu_show_all},5],
+       ['status', proc{menu_my_status},0],
+       # cache からしか消えない。
+       #['Remove me',proc{menu_remove_me},0],
        '---',
-       ['contest/global',proc{menu_global}],
-       ['contest/weekly',proc{menu_weekly}],
-       ['contest/class',proc{menu_myclass}]],
+       ['global',proc{menu_global}],
+#       ['weekly 30',proc{menu_weekly}],
+       ['weekly',proc{menu_show_all}],
+       ['class',proc{menu_myclass}]],
       [['Mode'],
        ['Sticky',proc{menu_sticky},0],
        ['Loose',proc{menu_loose},0],
@@ -286,8 +287,8 @@ port: #{@port}\n",
     sleep(1)
   end
 
-  def menu_my_rank
-    @scoreboard.rank(@myid)
+  def menu_my_status
+    @scoreboard.status(@myid, trials())
   end
 
   def menu_remove_me
@@ -970,22 +971,25 @@ class Scoreboard
   end
 
   # 3種類の update を作る。
+  # FIXME こんなのひどい。2015-04-23
   def update
+    return if @remote.nil?
     case @mode
     when WEEKLY
-      display(@remote.get(RANKER)) unless @remote.nil?
+      display(@remote.get(RANKER))
     when GLOBAL
-      display(@remote.get_global(RANKER)) unless @remote.nil?
+      display(@remote.get_global(RANKER))
     when MYCLASS
-      display(@remote.get_myclass(RANKER, @my_id)) unless @remote.nil?
+      display(@remote.get_myclass(RANKER, @my_id))
     end
   end
 
-  def rank(user)
+  # was 'rank'
+  def status(user, trials)
     return if (@remote.nil?)
-    if (ans = @remote.my_rank(user))
-      TkDialog.new(:title => 'your ranking',
-                   :message => "#{user}: #{ans}",
+    if (ans = @remote.status(user))
+      TkDialog.new(:title => user,
+                   :message => "#{ans}\ntotal #{trials} trials.",
                    :buttons => ['continue'])
     else
       self.can_not_talk(@server)
@@ -1018,11 +1022,6 @@ class Scoreboard
   def show_all
     display(@remote.all) unless @remote.nil?
   end
-
-#   def toggle
-#    start_drb unless @remote
-#    true
-#  end
 
 end # Scoreboard
 
