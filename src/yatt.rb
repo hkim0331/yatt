@@ -6,10 +6,10 @@
 # Copyright (C) 2002-2015 Hiroshi Kimura.
 #
 
-$debug = true
+$debug = false
 
-YATT_VERSION = '0.39'
-DATE = '2015-04-20'
+YATT_VERSION = '0.40'
+DATE = '2015-04-23'
 
 require 'tk'
 require 'drb'
@@ -108,9 +108,6 @@ class Trainer
     @textfile=File.join(@lib,YATT_TXT)
     @splash  =File.join(@lib,YATT_IMG)
     @speed_meter_status = true
-
-    # FIXME
-    # これを true にても立ち上がり時につなぎに行かない。
     @contest = false
 
     srand($$)
@@ -166,10 +163,23 @@ class Trainer
     insert(@textfile, @lines)
 
     TkDialog.new(:title => "contest",
-                 :message => '秘密練習以外は contest on にすること。',
+                 :message => "秘密練習以外は contest on にすること。\n
+これまでに #{trials()} 回、練習しました。",
                  :buttons => ['start'])
     menu_toggle_contest()
 
+  end
+
+  def lines(fname)
+    count = 0
+    File.foreach(fname) do |line|
+      count += 1
+    end
+    count
+  end
+
+  def trials()
+    Dir.glob("#{YATT_DIR}/??-??").map{|x| lines(x)}.inject(:+)
   end
 
   def do_menu(root)
@@ -266,9 +276,7 @@ port: #{@port}\n",
     @textarea.loose
   end
 
-  # FIXME: too complex.
   def menu_toggle_contest
-    #   3if true@scoreboard.start
     @contest = @scoreboard.toggle_contest(@myid)
     @logger.clear_highscore
   end
@@ -407,8 +415,6 @@ port: #{@port}\n",
     #
 
     @textarea.insert(@text.join)
-    #@textarea.insert(@text)
-
     @textarea.highlight("good",@line,@char)
     @scale.set(TIMEOUT)
     @logger = Logger.new
@@ -490,11 +496,11 @@ port: #{@port}\n",
           @char = 0
           @textarea.highlight("good",@line,@char)
         end
-      end# when "\n"
+      end # when "\n"
     when c    # match
       @logger.add_good(target)
       @textarea.unlight(@line,@char)
-      @char+=1
+      @char += 1
       @textarea.highlight("good",@line,@char)
     else # not match
       @logger.add_ng(target,key)
@@ -504,14 +510,14 @@ port: #{@port}\n",
         @textarea.highlight("good",@line,@char)
       end
     end
-  end#key_press
+  end #key_press
 
   def finished?
-    @line==@lines
+    @line == @lines
   end
 
   def epilog
-    @epilog=true
+    @epilog = true
     while (@timer.running?)
       @timer.stop
     end
