@@ -162,24 +162,38 @@ class Trainer
     debug "@doclength: #{@doclength}"
     insert(@textfile, @lines)
 
+    counts, points = trials()
     TkDialog.new(:title => "contest",
                  :message => "秘密練習以外は contest on にすること。\n
-これまでに #{trials()} 回、練習しました。",
+これまでに #{counts} 回、練習しました。\n
+総合点は #{points} 点です。",
                  :buttons => ['start'])
     menu_toggle_contest()
 
   end
 
-  def lines(fname)
-    count = 0
-    File.foreach(fname) do |line|
-      count += 1
-    end
-    count
-  end
+  # def lines(fname)
+  #   count = 0
+  #   File.foreach(fname) do |line|
+  #     count += 1
+  #   end
+  #   count
+  # end
+
+  # def trials()
+  #   Dir.glob("#{YATT_DIR}/??-??").map{|x| lines(x)}.inject(:+)
+  # end
 
   def trials()
-    Dir.glob("#{YATT_DIR}/??-??").map{|x| lines(x)}.inject(:+)
+    counts=0
+    points=0
+    Dir.glob("#{YATT_DIR}/??-??").each do |fname|
+      File.foreach(fname) do |line|
+        counts += 1
+        points += line.chomp.to_i
+      end
+    end
+    [counts, points]
   end
 
   def do_menu(root)
@@ -195,12 +209,12 @@ class Trainer
         # ['Pref'],
        ['Quit',proc{menu_quit},0]],
       [['Contest'],
-       ['On/off',proc{menu_toggle_contest},0],
+       ['On/off',proc{menu_toggle_contest}],
        '---',
-       ['reload', proc{menu_reload},2],
-       ['status', proc{menu_my_status},0],
+       ['reload', proc{menu_reload}],
+       ['weely status', proc{menu_my_status}],
        # cache からしか消えない。
-       #['Remove me',proc{menu_remove_me},0],
+       ['Remove me',proc{menu_remove_me}],
        '---',
        ['global',proc{menu_global}],
 #       ['weekly 30',proc{menu_weekly}],
@@ -988,8 +1002,10 @@ class Scoreboard
   def status(user, trials)
     return if (@remote.nil?)
     if (ans = @remote.status(user))
+      counts,points = trials
       TkDialog.new(:title => user,
-                   :message => "#{ans}\ntotal #{trials} trials.",
+                   :message =>
+                   "#{ans}\ntotal #{counts} trials, #{points} points",
                    :buttons => ['continue'])
     else
       self.can_not_talk(@server)
@@ -1135,7 +1151,6 @@ class SpeedMeter
     end
   end
 end # SpeedMeter
-
 
 #
 # main starts here.
