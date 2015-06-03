@@ -1,4 +1,4 @@
-# VERSION: 0.41
+# VERSION: 0.42
 
 BIN=${HOME}/bin
 MONITOR_BIN=/opt/yatt/bin
