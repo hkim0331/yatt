@@ -37,7 +37,7 @@ for i in ${FILES}; do
     ${SED} -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
 done
 
-DATE=`date +"%Y-%m-%d"`
+DATE=`date +%Y-%m-%d`
 # FIXME: must skip *.bak files.
 for i in src/*; do
     ${SED} -i.bak \
