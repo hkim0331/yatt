@@ -16,7 +16,7 @@ require 'drb'
 
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
-Copyright (C) 2002-2015.\n"
+Copyright (C) 2002-2016.\n"
 
 REQ_RUBY = "1.9.3"
 raise "require ruby >= "+REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) <0
@@ -172,18 +172,6 @@ class Trainer
 
   end
 
-  # def lines(fname)
-  #   count = 0
-  #   File.foreach(fname) do |line|
-  #     count += 1
-  #   end
-  #   count
-  # end
-
-  # def trials()
-  #   Dir.glob("#{YATT_DIR}/??-??").map{|x| lines(x)}.inject(:+)
-  # end
-
   def trials()
     counts=0
     points=0
@@ -212,7 +200,7 @@ class Trainer
        ['On/off',proc{menu_toggle_contest}],
        '---',
        ['reload', proc{menu_reload}],
-       ['weely status', proc{menu_my_status}],
+       ['weekly status', proc{menu_my_status}],
        # cache からしか消えない。
        ['Remove me',proc{menu_remove_me}],
        '---',
