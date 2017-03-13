@@ -2,7 +2,7 @@ all: install
 
 install:
 	@echo "'make linux' to install on linux."
-	@echo "'make osx' to install on osx."
+	@echo "'make macos' to install on macOS."
 	@echo "'make isc' to install on isc."
 	@echo "'make monitor' to install yatt-monitor locally."
 	@echo "'make melt' to make /Volumes/Data/Share/yatt/yatt-${VERSION}.tar"
