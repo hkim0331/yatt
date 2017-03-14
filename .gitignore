@@ -1,6 +1,5 @@
-*~
 log/
-*.db
-.ruby-version
 db/schema
-
+*~
+*.db
+*.bak

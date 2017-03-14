@@ -8,8 +8,8 @@
 
 $debug = false
 
-YATT_VERSION = '0.43'
-DATE = '2016-06-20'
+YATT_VERSION = '0.50'
+DATE = '2017-03-14'
 
 require 'tk'
 require 'drb'
@@ -1117,27 +1117,19 @@ class SpeedMeter
     @canvas.pack(params)
   end
 
-  def clear
+  def clear()
     @canvas.delete('all')
   end
 
+  # here
   def plot(n)
-    clear
-    n = min(n,MAX)
+    clear()
+    n = [n,MAX].min
     x,y = @xy[n]
-    TkcLine.new(@canvas, @ox, @oy, @ox+x, @oy-y,
-                :width => 2, :fill => 'red')
-    TkcOval.new(@canvas, @ox-2, @oy-2, @ox+2, @oy+2,
-                :fill => 'black')
+    TkcLine.new(@canvas, @ox, @oy, @ox+x, @oy-y, width:2, fill: 'red')
+    TkcOval.new(@canvas, @ox-2, @oy-2, @ox+2, @oy+2, fill: 'black')
   end
 
-  def min(m,n)
-    if m<n
-      m
-    else
-      n
-    end
-  end
 end # SpeedMeter
 
 #

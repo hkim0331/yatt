@@ -1,10 +1,46 @@
-この内容は README じゃねーな。FIXME?
+# Yatt (Yet Another Typing Tutor)
 
 ## depends
 
-* OSX: ruby 2.2.3 + Active Tcl
+* OSX: ruby (OK 2.4) + Active Tcl
 
-* ubuntu:
+* ubuntu: ruby <~ 2.2 (NG: ruby 2.3) + tk8.5
+
+## 2017-03-13
+
+* macOS: 2.4.0 + gem tk で OK.
+
+* ubutu: ruby2.3-tcltk ではエラー。
+
+```sh
+$ /opt/bin/ruby yatt.rb
+/usr/lib/ruby/2.3.0/tk/itemconfig.rb:115:in `hash_kv': wrong argument type nil (expected Array) (TypeError)
+	from /usr/lib/ruby/2.3.0/tk/itemconfig.rb:115:in `itemconfig_hash_kv'
+	from /usr/lib/ruby/2.3.0/tk/canvas.rb:722:in `_parse_create_args'
+	from /usr/lib/ruby/2.3.0/tk/canvas.rb:735:in `create'
+	from /usr/lib/ruby/2.3.0/tk/canvas.rb:758:in `create_self'
+	from /usr/lib/ruby/2.3.0/tk/canvas.rb:751:in `initialize'
+	from yatt.rb:1129:in `new'
+	from yatt.rb:1129:in `plot'
+	from yatt.rb:1113:in `initialize'
+	from yatt.rb:137:in `new'
+	from yatt.rb:137:in `initialize'
+	from yatt.rb:1160:in `new'
+	from yatt.rb:1160:in `<main>'
+```
+
+    2.2.6 を以下のオプションでインストールすると tmint では動いた。
+
+```sh
+$ ./configure --prefix=/opt \
+--with-tcltkversion=8.6 \
+--with-tcl-lib=/usr/lib/x86_64-linux-gnu \
+--with-tk-lib=/usr/lib/x86_64-linux-gnu \
+--with-tcl-include=/usr/include/tcl8.6 \
+--with-tk-include=/usr/include/tcl8.6 \
+--enable-pthread \
+--disable-install-doc --disable-install-rdoc
+```
 
 ## 2016-03-31
 
