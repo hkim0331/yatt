@@ -2,7 +2,7 @@ all: install
 
 install:
 	@echo "'make linux' to install on linux."
-	@echo "'make osx' to install on macOS."
+	@echo "'make macos' to install on macOS."
 	@echo "'make isc' to install on isc."
 	@echo "'make monitor' to install yatt-monitor locally."
 
@@ -14,7 +14,7 @@ linux:
 	(cd src && make linux)
 	(cd lib && make linux)
 
-osx:
+macos:
 	(cd src && make osx)
 	(cd lib && make osx)
 

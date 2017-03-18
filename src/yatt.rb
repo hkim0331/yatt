@@ -11,7 +11,7 @@ require 'drb'
 
 $debug = false
 
-YATT_VERSION = '0.60'
+YATT_VERSION = '0.61'
 DATE = '2017-03-19'
 
 COPYRIGHT = "programmed by Hiroshi Kimura
@@ -66,8 +66,6 @@ end
 #############
 class Trainer
 
-  @epilog = false
-
   def about
     TkDialog.new(:title => "Yet Another Typing Trainer",
                  :message => COPYRIGHT,
@@ -94,6 +92,7 @@ class Trainer
 
   # 長すぎ。
   def initialize(druby, lib)
+    @epilog = false
     @druby = druby
     @lib   = lib
     @myid  = ENV['USER']
@@ -101,8 +100,8 @@ class Trainer
     @windows = nil
     @width   = 78
     @lines   = 6
-    @textfile=File.join(@lib,YATT_TXT)
-    @splash  =File.join(@lib,YATT_IMG)
+    @textfile= File.join(@lib, YATT_TXT)
+    @splash  = File.join(@lib, YATT_IMG)
     @speed_meter_status = true
     @contest = false
 
@@ -146,7 +145,6 @@ class Trainer
     @stat = MyStatus.new(graph_frame, @splash)
     @stat.pack(:side => 'left')
 
-#    @scoreboard = Scoreboard.new(graph_frame,@server,@port, @contest)
     @scoreboard = Scoreboard.new(graph_frame, @druby, @contest)
     @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
@@ -870,11 +868,16 @@ class Scoreboard
 
     DRb.start_service
     @remote = DRbObject.new(nil, @druby)
+
     if @remote.ping =~ /ok/
-      puts "druby ok"
+      debug "druby ok"
     else
       can_not_talk(@druby)
     end
+
+  rescue
+    can_not_talk(@druby)
+    @remote = nil
   end
 
   def global
@@ -889,8 +892,8 @@ class Scoreboard
     @mode = MYCLASS
   end
 
-  def can_not_talk(server)
-    TkDialog.new(:title   => "can not talk to server",
+  def can_not_talk(druby)
+    TkDialog.new(:title   => "can not talk to #{druby}",
                  :message => "サーバと通信できません。
 下の continue を押し、
 次に出てくる OK ボタンを押せば yatt の練習はできますが
@@ -1150,7 +1153,5 @@ while (arg = ARGV.shift)
     usage(arg)
   end
 end
-
-#trainer = Trainer.new(druby, lib)
 Trainer.new(druby, lib)
 Tk.mainloop
