@@ -22,7 +22,7 @@ GOOD = "green"
 BAD  = "red"
 YATT_TXT   = "yatt.txt"
 YATT_IMG   = "yatt4.gif"
-DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
+DRB_SERVER = "150.69.90.82"
 PORT       = 23002
 RANKER     = 30
 if $debug

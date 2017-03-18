@@ -14,8 +14,6 @@ require 'sequel'
 
 YATT_VERSION = '0.50'
 DATE = '2017-03-14'
-REQ_RUBY = "1.9.3"
-raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
 
 def debug(s)
   STDERR.puts "debug: " + s if $debug
@@ -166,10 +164,10 @@ end
 # main
 #
 
-MONITOR = "yatt.melt.kyutech.ac.jp"
-LOG  = "/opt/yatt/log/yatt.log"
-DB = "mariadb.melt.kyutech.ac.jp"
+MONITOR = "dbs.melt.kyutech.ac.jp"
 PORT = 23002
+DB = "mariadb.melt.kyutech.ac.jp"
+LOG  = "/srv/yatt/log/yatt.log"
 BEST = 30
 
 hostname = MONITOR
@@ -177,12 +175,11 @@ port     = PORT
 logfile  = LOG
 
 $sqlite = false
+druby="druby://127.0.0.1:23002"
 while (arg = ARGV.shift)
   case arg
-  when /\A--(fqdn)|(hostname)|(server)\Z/
-    hostname = ARGV.shift
-  when /\A--port\Z/
-    port = ARGV.shift.to_i
+  when /\A--(druby)|(hostname)|(server)\Z/
+    druby = ARGV.shift
   when /\A--log\Z/
     logfile = ARGV.shift
   when /\A--sqlite/
@@ -204,10 +201,8 @@ end
 debug [RUBY_VERSION, YATT_VERSION, hostname, port].join(", ")
 
 begin
-  monitor = Monitor.new(ds, logfile)
-  uri = "druby://#{hostname}:#{port}"
-  puts uri if $debug
-  DRb.start_service(uri, monitor)
+  DRb.start_service(druby, Monitor.new(ds, logfile))
+  puts "druby: #{DRb.uri}"
   DRb.thread.join
 
 rescue => e
