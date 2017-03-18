@@ -11,8 +11,8 @@ require 'drb'
 
 $debug = false
 
-YATT_VERSION = '0.50'
-DATE = '2017-03-14'
+YATT_VERSION = '0.60'
+DATE = '2017-03-19'
 
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
