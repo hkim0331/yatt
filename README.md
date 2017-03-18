@@ -1,5 +1,10 @@
 # Yatt (Yet Another Typing Tutor)
 
+## DON'T FORGET
+
+mysql(mariadb) の grant all privileges ...
+さもないと Seqeul がどうののエラーでトンチンカンに時間を潰すだろう。
+
 ## 2017-03-15
 
 * mbp2

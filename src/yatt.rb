@@ -13,18 +13,20 @@ $debug = false
 
 YATT_VERSION = '0.50'
 DATE = '2017-03-14'
-COPYRIGHT= "programmed by Hiroshi Kimura
+
+COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
-REQ_RUBY = "1.9.3"
-raise "require ruby >= "+REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) <0
-GOOD = "green"
-BAD  = "red"
+
+DRUBY      = "druby://150.69.90.82:23002"
 YATT_TXT   = "yatt.txt"
 YATT_IMG   = "yatt4.gif"
-DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
-PORT       = 23002
+
+GOOD = "green"
+BAD  = "red"
+
 RANKER     = 30
+
 if $debug
   TIMEOUT = 10
 else
@@ -91,9 +93,8 @@ class Trainer
   end
 
   # 長すぎ。
-  def initialize(server,port,lib)
-    @server=server
-    @port  = port
+  def initialize(druby, lib)
+    @druby = druby
     @lib   = lib
     @myid  = ENV['USER']
 
@@ -145,7 +146,8 @@ class Trainer
     @stat = MyStatus.new(graph_frame, @splash)
     @stat.pack(:side => 'left')
 
-    @scoreboard = Scoreboard.new(graph_frame,@server,@port, @contest)
+#    @scoreboard = Scoreboard.new(graph_frame,@server,@port, @contest)
+    @scoreboard = Scoreboard.new(graph_frame, @druby, @contest)
     @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
 
@@ -236,8 +238,7 @@ class Trainer
 version: #{YATT_VERSION}
 date: #{DATE}
 lib: #{LIB}
-server: #{@server}
-port: #{@port}\n",
+#{@druby}\n",
                  :buttons => ['continue'])
   end
 
@@ -852,7 +853,7 @@ class Scoreboard
   WEEKLY = :weekly
   MYCLASS= :myclass
 
-  def initialize(parent, server, port, stat)
+  def initialize(parent, druby, stat)
     @mode = WEEKLY
     @text = TkText.new(parent,
                      :takefocus => 0,
@@ -864,14 +865,15 @@ class Scoreboard
     @scr = TkScrollbar.new(parent)
     @text.yscrollbar(@scr)
     highlight("highlight")
-    @server = server
-    @port = port
+    @druby = druby
     @my_id = ENV['USER']
 
     DRb.start_service
-    @remote = DRbObject.new(nil,"druby://#{@server}:#{@port}")
-    unless @remote.ping =~ /ok/
-      can_not_talk(@server)
+    @remote = DRbObject.new(nil, @druby)
+    if @remote.ping =~ /ok/
+      puts "druby ok"
+    else
+      can_not_talk(@druby)
     end
   end
 
@@ -991,7 +993,7 @@ class Scoreboard
                    "#{ans}\ntotal #{counts} trials, #{points} points",
                    :buttons => ['continue'])
     else
-      self.can_not_talk(@server)
+      self.can_not_talk(@druby)
     end
   end
 
@@ -1130,11 +1132,8 @@ end # SpeedMeter
 #
 # main starts here.
 #
-
-server = DRB_SERVER
-port   = PORT
-lib    = LIB
-
+druby = DRUBY
+lib   = LIB
 while (arg = ARGV.shift)
   case arg
   when /--server/
@@ -1152,5 +1151,6 @@ while (arg = ARGV.shift)
   end
 end
 
-trainer = Trainer.new(server, port, lib)
+#trainer = Trainer.new(druby, lib)
+Trainer.new(druby, lib)
 Tk.mainloop
