@@ -1,4 +1,4 @@
-#!/usr/bin/env dash
+#!/bin/sh
 # -*- mode: Shell-script; coding: utf-8; -*-
 #
 # programmed by Hiroshi Kimura, 2012-01-12.
@@ -34,12 +34,18 @@ FILES="db/Makefile src/Makefile"
 
 # normally, format of comments are '# VERSION: number'.
 for i in ${FILES}; do
+    if [[ $i =~ bak$ ]]; then
+        continue;
+    fi
     ${SED} -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
 done
 
 DATE=`date +%Y-%m-%d`
 # FIXME: must skip *.bak files.
 for i in src/*; do
+    if [[ $i =~ bak$ ]]; then
+        continue;
+    fi
     ${SED} -i.bak \
            -e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
            -e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
