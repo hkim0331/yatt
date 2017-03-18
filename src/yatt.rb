@@ -3,33 +3,28 @@
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
-# Copyright (C) 2002-2015 Hiroshi Kimura.
+# Copyright (C) 2002-2017 Hiroshi Kimura.
 #
+
+require 'tk'
+require 'drb'
 
 $debug = false
 
 YATT_VERSION = '0.50'
 DATE = '2017-03-14'
-
-require 'tk'
-require 'drb'
-
 COPYRIGHT= "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
-Copyright (C) 2002-2016.\n"
-
+Copyright (C) 2002-2017.\n"
 REQ_RUBY = "1.9.3"
 raise "require ruby >= "+REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) <0
-
 GOOD = "green"
 BAD  = "red"
-
 YATT_TXT   = "yatt.txt"
 YATT_IMG   = "yatt4.gif"
 DRB_SERVER = 'yatt.melt.kyutech.ac.jp'
 PORT       = 23002
 RANKER     = 30
-
 if $debug
   TIMEOUT = 10
 else

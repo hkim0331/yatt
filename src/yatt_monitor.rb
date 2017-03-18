@@ -3,7 +3,7 @@
 #
 # yatt (proxy) score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
-# Copyright (C)2002-2012, Hiroshi Kimura.
+# Copyright (C) 2002-2017, Hiroshi Kimura.
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
@@ -168,9 +168,9 @@ end
 
 MONITOR = "yatt.melt.kyutech.ac.jp"
 LOG  = "/opt/yatt/log/yatt.log"
+DB = "mariadb.melt.kyutech.ac.jp"
 PORT = 23002
 BEST = 30
-DB = "mariadb.melt.kyutech.ac.jp"
 
 hostname = MONITOR
 port     = PORT

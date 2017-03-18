@@ -5,7 +5,6 @@ install:
 	@echo "'make osx' to install on macOS."
 	@echo "'make isc' to install on isc."
 	@echo "'make monitor' to install yatt-monitor locally."
-	@echo "'make melt' to make /Volumes/Data/Share/yatt/yatt-${VERSION}.tar"
 
 isc:
 	(cd src && make isc)

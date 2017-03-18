@@ -1,16 +1,29 @@
 # Yatt (Yet Another Typing Tutor)
 
-## depends
+## 2017-03-15
 
-* OSX: ruby (OK 2.4) + Active Tcl
+* mbp2
+  ruby(2.4.0) + gem install tk
 
-* ubuntu: ruby <~ 2.2 (NG: ruby 2.3) + tk8.5
+* tmint, isc
+  ruby2.3-tcltk ではエラーで動かない。
+  ruby <~ 2.2 + tk8.5
 
-## 2017-03-13
+2.2.6 を以下のオプションでインストールすると tmint では動いた。
 
-* macOS: 2.4.0 + gem tk で OK.
+```sh
+$ ./configure --prefix=/opt \
+--with-tcltkversion=8.6 \
+--with-tcl-lib=/usr/lib/x86_64-linux-gnu \
+--with-tk-lib=/usr/lib/x86_64-linux-gnu \
+--with-tcl-include=/usr/include/tcl8.6 \
+--with-tk-include=/usr/include/tcl8.6 \
+--enable-pthread \
+--disable-install-doc --disable-install-rdoc
 
-* ubutu: ruby2.3-tcltk ではエラー。
+```
+
+動かない時のログ。
 
 ```sh
 $ /opt/bin/ruby yatt.rb
@@ -29,19 +42,6 @@ $ /opt/bin/ruby yatt.rb
 	from yatt.rb:1160:in `<main>'
 ```
 
-    2.2.6 を以下のオプションでインストールすると tmint では動いた。
-
-```sh
-$ ./configure --prefix=/opt \
---with-tcltkversion=8.6 \
---with-tcl-lib=/usr/lib/x86_64-linux-gnu \
---with-tk-lib=/usr/lib/x86_64-linux-gnu \
---with-tcl-include=/usr/include/tcl8.6 \
---with-tk-include=/usr/include/tcl8.6 \
---enable-pthread \
---disable-install-doc --disable-install-rdoc
-```
-
 ## 2016-03-31
 
 * OSX：rbenv でインストールした ruby 2.2.3 + ActiveTcl8.6 で ruby yatt.rb OK。
@@ -51,8 +51,6 @@ $ ./configure --prefix=/opt \
 * 情報センターの /edu/bin/ruby は hkimura build の 2.1.0.
 
 * 2.2.4 や 2.3.0 では Tk が正しく起動しない。
-
-* rbenv でインストールした ruby 2.2.3 + ActiveTcl8.6 で ruby yatt.rb OK。
 
 * 情報センターの /edu/bin/ruby は 2.1.0
 
