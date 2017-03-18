@@ -28,6 +28,7 @@ monitor: yatt_monitor.rb yatt_monitor.service
 	mkdir -p ${MONITOR_BIN} ${MONITOR_LOG}
 	install -m 0755 yatt_monitor.rb ${MONITOR_BIN}
 	@echo 'do not forget to open monitor port(default 23002/tcp).'
+# ここ。dbs.melt は systemd だが。
 #	install -m 0755 yatt_monitor.service /etc/init.d/yatt_monitor
 #	update-rc.d yatt_monitor defaults
 

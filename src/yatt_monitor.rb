@@ -15,8 +15,8 @@ require 'sequel'
 YATT_VERSION = '0.50'
 DATE = '2017-03-14'
 
-DRUBY = "druby://dbs.melt.kyutech.ac.jp:23002"
-DB    = "dbs.melt.kyutech.ac.jp"
+DRUBY = "druby://150.69.90.82:23002"
+DB    = "150.69.90.82"
 LOG   = "/srv/yatt/log/yatt.log"
 BEST  = 30
 
