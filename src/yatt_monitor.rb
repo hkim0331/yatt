@@ -16,7 +16,7 @@ YATT_VERSION = '0.61'
 DATE = '2017-03-19'
 
 DRUBY = "druby://150.69.90.82:23002"
-DB    = "150.69.90.82"
+DB    = "127.0.0.1"
 LOG   = "/srv/yatt/log/yatt.log"
 BEST  = 30
 
@@ -199,4 +199,3 @@ begin
 rescue => e
   puts "#{e.class}:#{e.message}"
 end
-
