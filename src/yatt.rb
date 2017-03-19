@@ -65,7 +65,6 @@ end
 
 #############
 class Trainer
-
   def about
     TkDialog.new(:title => "Yet Another Typing Trainer",
                  :message => COPYRIGHT,
