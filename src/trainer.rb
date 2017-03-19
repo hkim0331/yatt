@@ -28,6 +28,8 @@ class Trainer
 
   # 長すぎ。
   def initialize(druby, lib)
+    @left_to_right = true
+
     @epilog = false
     @druby = druby
     @lib   = lib
@@ -36,12 +38,11 @@ class Trainer
     @windows = nil
     @width   = 78
 
-    #    @textfile= File.join(@lib, YATT_TXT)
     @text_all = File.open(File.join(@lib, YATT_TXT)) do |fp|
       fp.readlines
     end
 
-    # to show yatt @lines lines
+    # to show @lines in yatt textarea
     @lines   = 6
 
     @splash  = File.join(@lib, YATT_IMG)
@@ -56,10 +57,10 @@ class Trainer
     do_menu(root)
     base = TkFrame.new(root, :relief => 'groove', :borderwidth =>2)
     base.pack
-    @textarea=MyText.new(base,
-      :background => 'white',
-      :width  => @width,
-      :height => @lines + 1)
+    @textarea = MyText.new(base,
+                           :background => 'white',
+                           :width  => @width,
+                           :height => @lines + 1)
     @font = "Courier"
     @size = "14"
     if File.exists?(MY_FONT)
@@ -75,15 +76,17 @@ class Trainer
     @speed_meter = SpeedMeter.new(meter_frame)
     @speed_meter.pack(:side => 'left')
 
-    @scale=TkScale.new(meter_frame,
-      :orient => 'horizontal',
-      :length => 600,
-      :from   => 0,
-      :to     => TIMEOUT,
-      :tickinterval => TIMEOUT/2)
+    @scale = TkScale.new(meter_frame,
+                       :orient => 'horizontal',
+                       :length => 600,
+                       :from   => 0,
+                       :to     => TIMEOUT,
+                       :tickinterval => TIMEOUT/2)
     @scale.pack(:fill =>'x')
 
-    graph_frame = TkFrame.new(root,:relief => 'groove',:borderwidth => 2)
+    graph_frame = TkFrame.new(root,
+                              :relief => 'groove',
+                              :borderwidth => 2)
     graph_frame.pack
     @stat = MyStatus.new(graph_frame, @splash)
     @stat.pack(:side => 'left')
@@ -116,7 +119,9 @@ class Trainer
   end
 
   def do_menu(root)
-    menu_frame = TkFrame.new(root,:relief=>'raised',:bd=>1)
+    menu_frame = TkFrame.new(root,
+                             :relief=>'raised',
+                             :bd=>1)
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu = [
       [['Yatt'],
@@ -327,31 +332,30 @@ lib: #{LIB}
     @num_chars = 0
     tick = 1000
     interval=tick/1000 # interval==1
-    # right to left
-    #@scale.set(TIMEOUT)
-    # left to right
-    @scale.set(0)
-    #
-    @timer = TkAfter.new(tick, #msec
-      -1,    #forever
-      proc{
-        if (@time_remains < 0 or self.finished?)
-          @timer.cancel
-        elsif (! @wait_for_first_key)
-          @time_remains -= interval
-          # left to right
-          @scale.set(TIMEOUT - @time_remains)
-          # right to left
-          #@scale.set(@time_remains)
-          #
-          @speed_meter.plot(@num_chars) if @speed_meter_status
-          @num_chars = 0
-        end
-      }).start
+    if @left_to_right
+      @scale.set(0)
+    else
+      @scale.set(TIMEOUT)
+    end
+    @timer =
+      TkAfter.new(tick,
+                  -1,
+                  proc{
+                    if (@time_remains < 0 or self.finished?)
+                      @timer.cancel
+                    elsif (! @wait_for_first_key)
+                      @time_remains -= interval
+                      if @left_to_rught
+                        @scale.set(@time_remains)
+                      else
+                        @scale.set(TIMEOUT - @time_remains)
+                      end
+                      @speed_meter.plot(@num_chars) if @speed_meter_status
+                      @num_chars = 0
+                    end}).start
   end
 
   # core of yatt.rb
-  # rewrite 2002.06.08
   def key_press(kk,key)
     return if @epilog
 
