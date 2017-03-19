@@ -35,8 +35,15 @@ class Trainer
 
     @windows = nil
     @width   = 78
-    @lines   = 6
-    @textfile= File.join(@lib, YATT_TXT)
+
+    #    @textfile= File.join(@lib, YATT_TXT)
+    @text_all = File.open(File.join(@lib, YATT_TXT)) do |fp|
+      fp.readlines
+    end
+
+    # to show yatt @lines lines
+    @lines   = 5
+
     @splash  = File.join(@lib, YATT_IMG)
     @speed_meter_status = true
     @contest = false
@@ -84,13 +91,11 @@ class Trainer
     @scoreboard = Scoreboard.new(graph_frame, @druby, @contest)
     @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
-
-    raise "#{@textfile} does not exist " unless File.file?(@textfile)
-    @doclength = 0
-    File.foreach(@textfile) do |line|
-      @doclength += 1
-    end
-    insert(@textfile, @lines)
+    # @doclength = 0
+    # File.foreach(@textfile) do |line|
+    #   @doclength += 1
+    # end
+    insert(@lines)
 
     counts, points = trials()
     TkDialog.new(:title => "contest",
@@ -189,7 +194,7 @@ lib: #{LIB}
 
   def menu_new
     @timer.cancel
-    insert(@textfile, @lines)
+    insert(@lines)
   end
 
   def menu_quit
@@ -304,7 +309,7 @@ lib: #{LIB}
     @stat.percentile
   end
 
-  def insert(file, num_lines)
+  def insert(num_lines)
     # reset session parameters
     @line = 0
     @char = 0
@@ -312,31 +317,15 @@ lib: #{LIB}
     @time_remains = TIMEOUT
     @wait_for_first_key = true
 
-    ## いちいちファイルを読むの、めんどくさくね？
-    ## 立ち上げ時に一度読んだのを使いまわさないか？
-    @text=[]
-    File.open(file,"r") do |fp|
-      # read out lines
-      rand(@doclength - 1.2*num_lines).times do
-        fp.gets
-      end
-
-      # read in 'num_lines'
-      num_lines.times do
-        @text.push fp.gets
-      end
-    end
-
-    # for 0.38, count non-space chars
-    debug "@text.length: #{@text.join.length}"
+    pos = rand(@text_all.length - 1.2*num_lines)
+    @text = @text_all[pos, pos + num_lines]
     if (@text.join.length < 350)
-      self.insert(file, num_lines)
+      self.insert(num_lines)
       return
     end
-    #
 
     @textarea.insert(@text.join)
-    @textarea.highlight("good",@line,@char)
+    @textarea.highlight("good", @line, @char)
     @scale.set(TIMEOUT)
     @logger = Logger.new
     @num_chars = 0
@@ -388,8 +377,8 @@ lib: #{LIB}
       @wait_for_first_key = false
       @logger.start
     end
-    @num_chars+=1
-    if (@time_remains<0) or (@line>=@lines) # session ends
+    @num_chars += 1
+    if (@time_remains < 0) or (@line >= @lines) # session ends
       @logger.finish    # stop KeyPress event ASAP
       epilog
       return
@@ -494,8 +483,7 @@ lib: #{LIB}
     ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
-#    sleep(1)
-    insert(@textfile, @lines)
+    insert(@lines)
     @epilog = false
   end #epilog
 
