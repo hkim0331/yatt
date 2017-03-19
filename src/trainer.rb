@@ -174,7 +174,6 @@ lib: #{LIB}
 
   def menu_global
     @scoreboard.global
-    sleep(1)
     @scoreboard.update
   end
 
@@ -305,7 +304,6 @@ lib: #{LIB}
     @stat.percentile
   end
 
-  # file からnum_lines を抽出、
   def insert(file, num_lines)
     # reset session parameters
     @line = 0
@@ -314,10 +312,11 @@ lib: #{LIB}
     @time_remains = TIMEOUT
     @wait_for_first_key = true
 
-    # @text は配列でなければならない。行と列でテキストに色付けする。
+    ## いちいちファイルを読むの、めんどくさくね？
+    ## 立ち上げ時に一度読んだのを使いまわさないか？
     @text=[]
     File.open(file,"r") do |fp|
-      # read off 'start' lines
+      # read out lines
       rand(@doclength - 1.2*num_lines).times do
         fp.gets
       end
@@ -445,41 +444,36 @@ lib: #{LIB}
     end
     score   = @logger.score
     strokes = @logger.goods + @logger.bads
-    # hotfix 0.22.2
     errors  = if @logger.goods == 0
                 100.0
               else
                 (((@logger.bads.to_f/@logger.goods.to_f)*1000).floor).to_f/10
               end
-    #
-    msg     = "#{score} points in #{@logger.diff_time} second.\n"+
-      "strokes: #{strokes}\n"+
-      "errors:  #{errors}%\n"
-    if errors>3.0
+    msg = "#{score} points in #{@logger.diff_time} second.\n"+
+          "strokes: #{strokes}\n"+
+          "errors:  #{errors}%\n"
+    if errors > 3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
-    else
-      if score >70
-        # 0.38
-        if errors < 1.0
-          msg += "\nyour error-rate < 1.0%.\nBonus 30.\n"
-          score += 30
-        else
+    elsif errors > 1.0 and score > 70
           msg += "\nyour error-rate < 3.0%.\nBonus 10.\n"
           score += 10
-        end
-      end
+    elsif errors <= 1.0 and score > 70
+          msg += "\nyour error-rate < 1.0%.\nBonus 30.\n"
+          score += 30
     end
     if c = @logger.complete?
-      score +=100
+      score += 100
       msg += "+ bonus complete (100)\n"
-      score += (tr=@time_remains*50)
+      score += (tr = @time_remains*50)
       msg += "+ bonus time remains (#{tr})\n"
     end
     if p = @logger.perfect?
       score += 300
       msg += "+ bonus perfect (300)\n"
     end
-    msg += "becomes #{score}!!!\n" if (c or p)
+    if (c or p)
+      msg += "becomes #{score}!!!\n"
+    end
 
     @logger.save(score)
     @logger.save_errors(errors)
@@ -500,7 +494,7 @@ lib: #{LIB}
     ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
-    sleep(1)
+#    sleep(1)
     insert(@textfile, @lines)
     @epilog = false
   end #epilog
