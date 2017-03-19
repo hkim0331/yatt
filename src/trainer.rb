@@ -320,15 +320,11 @@ lib: #{LIB}
     @time_remains = TIMEOUT
     @wait_for_first_key = true
 
-    start = rand(@doclength - 2*num_lines)
-    #debug
-    puts "start: #{start}"
-
     # @text は配列でなければならない。行と列でテキストに色付けする。
     @text=[]
     File.open(file,"r") do |fp|
       # read off 'start' lines
-      start.times do
+      rand(@doclength - 1.2*num_lines).times do
         fp.gets
       end
 
