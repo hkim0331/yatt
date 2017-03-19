@@ -8,19 +8,19 @@
 
 require 'tk'
 require 'drb'
-require './logger.rb'
-require './my-plot.rb'
-require './my-status.rb'
-require './my-text.rb'
-require './scoreboard.rb'
-require './speed-meter.rb'
-require './trainer.rb'
+
+require_relative 'logger'
+require_relative 'my-plot'
+require_relative 'my-status'
+require_relative 'my-text'
+require_relative 'scoreboard'
+require_relative 'speed-meter'
+require_relative 'trainer'
 
 $debug = false
 
 YATT_VERSION = '0.61'
 DATE = '2017-03-19'
-
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
@@ -40,7 +40,7 @@ else
   TIMEOUT = 60
 end
 
-# FIXME: Windows では ENV を取れない。
+# FIXME: No ENV in Windows.
 if File.exists?("/Applications")
   LIB = File.join(ENV['HOME'], 'Library/yatt')
 elsif File.exists?("/edu")
@@ -78,14 +78,10 @@ druby = DRUBY
 lib   = LIB
 while (arg = ARGV.shift)
   case arg
-  when /--server/
-    server = ARGV.shift
-  when /--port/
-    port = ARGV.shift
+  when /--druby/
+    druby = ARGV.shift
   when /--lib/
     lib = ARGV.shift
-  when /--noserver/
-    server = nil
   when /--debug/
     $debug = true
   else
