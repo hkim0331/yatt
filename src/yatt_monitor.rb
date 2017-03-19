@@ -9,7 +9,7 @@
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
 
-require 'drb'
+require 'drb/drb'
 require 'sequel'
 
 YATT_VERSION = '0.71'
