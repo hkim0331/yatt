@@ -1,4 +1,4 @@
-# VERSION: 0.70
+# VERSION: 0.71
 class MyStatus <TkCanvas
   # WIDTH, etc., must be calculated from the width of `text' area.
   # How should I do?

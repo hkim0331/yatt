@@ -1,4 +1,4 @@
-# VERSION: 0.70
+# VERSION: 0.71
 class MyText < TkText
   @@sticky = false
   @@loose  = false

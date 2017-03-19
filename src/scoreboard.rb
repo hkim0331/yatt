@@ -1,5 +1,5 @@
 # coding: utf-8
-# VERSION: 0.70
+# VERSION: 0.71
 class Scoreboard
 
   WIDTH  = 30
