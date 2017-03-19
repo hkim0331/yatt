@@ -1,4 +1,5 @@
 # VERSION: 0.71
+
 class SpeedMeter
   include Math
 
@@ -19,11 +20,11 @@ class SpeedMeter
                            :width => WIDTH,
                            :height => HEIGHT,
                            :takefocus => 0)
-    r = (WIDTH/2)*0.8
+    r = (WIDTH/2) * 0.8
     pi = 3.14
     @xy = (0..MAX).map{|n| [r*cos(pi-n*pi/MAX), r*sin(pi-n*pi/MAX)]}
     @ox = WIDTH/2
-    @oy = HEIGHT*0.8
+    @oy = HEIGHT * 0.8
     plot(0)
   end
 
@@ -38,7 +39,7 @@ class SpeedMeter
   # here
   def plot(n)
     clear()
-    n = [n,MAX].min
+    n = [n, MAX].min
     x,y = @xy[n]
     TkcLine.new(@canvas, @ox, @oy, @ox+x, @oy-y, width:2, fill: 'red')
     TkcOval.new(@canvas, @ox-2, @oy-2, @ox+2, @oy+2, fill: 'black')

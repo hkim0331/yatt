@@ -1,5 +1,6 @@
 # coding: utf-8
 # VERSION: 0.71
+
 class Scoreboard
 
   WIDTH  = 30
@@ -103,7 +104,6 @@ class Scoreboard
       my_entry = 0
       ranking = ""
       rankers.each do |data|
-        debug "#{data}"
         ranker,point_date = data
         point,date = point_date
         ranking << "%2s" % line + "%5s" % point + " " +"%-10s" % ranker +
@@ -147,7 +147,7 @@ class Scoreboard
   def status(user, trials)
     return if (@remote.nil?)
     if (ans = @remote.status(user))
-      counts,points = trials
+      counts, points = trials
       TkDialog.new(:title => user,
                    :message =>
                    "#{ans}\ntotal #{counts} trials, #{points} points",

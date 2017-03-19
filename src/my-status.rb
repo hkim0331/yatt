@@ -1,7 +1,7 @@
 # VERSION: 0.71
+
 class MyStatus <TkCanvas
-  # WIDTH, etc., must be calculated from the width of `text' area.
-  # How should I do?
+
   WIDTH   = 420
   HEIGHT  = 200
   C_WIDTH = 10
@@ -35,7 +35,7 @@ class MyStatus <TkCanvas
     max = 0
     keys.each do |key|
       next if key.chr == ' '      # do not display ' '
-      n = good[key]+bad[key]
+      n = good[key] + bad[key]
       max = n if n>max
     end
     ratio = (HEIGHT-C_HEIGHT*2).to_f/max
@@ -43,10 +43,10 @@ class MyStatus <TkCanvas
     oy = HEIGHT-C_HEIGHT
     half_x = dx/2
     base_y = HEIGHT-C_HEIGHT/2
-    while (key=keys.shift)
+    while (key = keys.shift)
       next if key.chr == ' '      # do not display ' '
       if (@percentile)
-        n = good[key]+bad[key]
+        n = good[key] + bad[key]
         rect(ox,oy,good[key].to_f*max/n,bad[key].to_f*max/n,dx,ratio)
       else
         rect(ox,oy,good[key],bad[key],dx,ratio)
@@ -56,12 +56,12 @@ class MyStatus <TkCanvas
     end
   end
 
-  def rect(x,y,good,bad,dx,ry)
-    TkcRectangle.new(@graph,x,y,x+dx,y-good*ry, fill: GOOD)
-    TkcRectangle.new(@graph,x,y-good*ry,x+dx,y-(good+bad)*ry, fill: BAD)
+  def rect(x, y, good, bad, dx, ry)
+    TkcRectangle.new(@graph, x, y, x+dx, y-good*ry, fill: GOOD)
+    TkcRectangle.new(@graph, x, y-good*ry, x+dx, y-(good+bad)*ry, fill: BAD)
   end
 
   def text(x,y,char)
-    TkcText.new(@graph,x,y,:text=>char.chr)
+    TkcText.new(@graph, x, y, :text=>char.chr)
   end
 end # Status

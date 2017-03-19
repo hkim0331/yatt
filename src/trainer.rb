@@ -1,5 +1,6 @@
 # coding: utf-8
 # VERSION: 0.71
+
 class Trainer
   def about
     TkDialog.new(:title => "Yet Another Typing Trainer",
@@ -20,13 +21,15 @@ class Trainer
     scr.pack(:side => 'left', :fill => 'y')
     text.yscrollbar(scr)
     File.foreach(README) do |line|
-      text.insert('end',line)
+      text.insert('end', line)
     end
     text.configure(:state => 'disabled')
   end
 
   # 長すぎ。
   def initialize(druby, lib)
+    @left_to_right = true
+
     @epilog = false
     @druby = druby
     @lib   = lib
@@ -34,8 +37,14 @@ class Trainer
 
     @windows = nil
     @width   = 78
+
+    @text_all = File.open(File.join(@lib, YATT_TXT)) do |fp|
+      fp.readlines
+    end
+
+    # to show @lines in yatt textarea
     @lines   = 6
-    @textfile= File.join(@lib, YATT_TXT)
+
     @splash  = File.join(@lib, YATT_IMG)
     @speed_meter_status = true
     @contest = false
@@ -48,10 +57,10 @@ class Trainer
     do_menu(root)
     base = TkFrame.new(root, :relief => 'groove', :borderwidth =>2)
     base.pack
-    @textarea=MyText.new(base,
-      :background => 'white',
-      :width  => @width,
-      :height => @lines + 1)
+    @textarea = MyText.new(base,
+                           :background => 'white',
+                           :width  => @width,
+                           :height => @lines + 1)
     @font = "Courier"
     @size = "14"
     if File.exists?(MY_FONT)
@@ -67,15 +76,17 @@ class Trainer
     @speed_meter = SpeedMeter.new(meter_frame)
     @speed_meter.pack(:side => 'left')
 
-    @scale=TkScale.new(meter_frame,
-      :orient => 'horizontal',
-      :length => 600,
-      :from   => 0,
-      :to     => TIMEOUT,
-      :tickinterval => TIMEOUT/2)
+    @scale = TkScale.new(meter_frame,
+                       :orient => 'horizontal',
+                       :length => 600,
+                       :from   => 0,
+                       :to     => TIMEOUT,
+                       :tickinterval => TIMEOUT/2)
     @scale.pack(:fill =>'x')
 
-    graph_frame = TkFrame.new(root,:relief => 'groove',:borderwidth => 2)
+    graph_frame = TkFrame.new(root,
+                              :relief => 'groove',
+                              :borderwidth => 2)
     graph_frame.pack
     @stat = MyStatus.new(graph_frame, @splash)
     @stat.pack(:side => 'left')
@@ -84,13 +95,7 @@ class Trainer
     @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
 
-    raise "#{@textfile} does not exist " unless File.file?(@textfile)
-    @doclength = 0
-    File.foreach(@textfile) do |line|
-      @doclength += 1
-    end
-    debug "@doclength: #{@doclength}"
-    insert(@textfile, @lines)
+    insert()
 
     counts, points = trials()
     TkDialog.new(:title => "contest",
@@ -99,12 +104,11 @@ class Trainer
 総合点は #{points} 点です。",
                  :buttons => ['start'])
     menu_toggle_contest()
-
   end
 
   def trials()
-    counts=0
-    points=0
+    counts = 0
+    points = 0
     Dir.glob("#{YATT_DIR}/??-??").each do |fname|
       File.foreach(fname) do |line|
         counts += 1
@@ -115,7 +119,9 @@ class Trainer
   end
 
   def do_menu(root)
-    menu_frame = TkFrame.new(root,:relief=>'raised',:bd=>1)
+    menu_frame = TkFrame.new(root,
+                             :relief=>'raised',
+                             :bd=>1)
     menu_frame.pack(:side=>'top',:fill=>'x')
     menu = [
       [['Yatt'],
@@ -175,7 +181,6 @@ lib: #{LIB}
 
   def menu_global
     @scoreboard.global
-    sleep(1)
     @scoreboard.update
   end
 
@@ -191,7 +196,7 @@ lib: #{LIB}
 
   def menu_new
     @timer.cancel
-    insert(@textfile, @lines)
+    insert()
   end
 
   def menu_quit
@@ -270,17 +275,12 @@ lib: #{LIB}
   end
 
   def menu_bigger()
-    @size = (@size.to_i+2).to_s
+    @size = [@size.to_i+2, 64].min.to_s
     my_set_font()
   end
 
   def menu_smaller()
-    size= (@size.to_i)-2
-    @size = if size > 10
-              size.to_s
-            else
-              "10"
-            end
+    @size = [@size.to_i-2, 10].max.to_s
     my_set_font()
   end
 
@@ -297,8 +297,8 @@ lib: #{LIB}
   end
 
   def menu_reset_font()
-    @font='Courier'
-    @size=14
+    @font = 'Courier'
+    @size = 14
     my_set_font()
     #    menu_save_font()
   end
@@ -311,8 +311,7 @@ lib: #{LIB}
     @stat.percentile
   end
 
-  # file からnum_lines を抽出、
-  def insert(file, num_lines)
+  def insert()
     # reset session parameters
     @line = 0
     @char = 0
@@ -320,55 +319,43 @@ lib: #{LIB}
     @time_remains = TIMEOUT
     @wait_for_first_key = true
 
-    # @text は配列でなければならない。行と列でテキストに色付けする。
-    @text=[]
-    File.open(file,"r") do |fp|
-      # read off 'start' lines
-      rand(@doclength - 1.2*num_lines).times do
-        fp.gets
-      end
-
-      # read in 'num_lines'
-      num_lines.times do
-        @text.push fp.gets
-      end
-    end
-
-    # for 0.38, count non-space chars
-    debug "@text.length: #{@text.join.length}"
+    pos = rand(@text_all.length - 1.2 * @lines)
+    @text = @text_all[pos, @lines]
     if (@text.join.length < 350)
-      self.insert(file, num_lines)
+      self.insert()
       return
     end
-    #
 
     @textarea.insert(@text.join)
-    @textarea.highlight("good",@line,@char)
-    @scale.set(TIMEOUT)
+    @textarea.highlight("good", @line, @char)
     @logger = Logger.new
     @num_chars = 0
     tick = 1000
     interval=tick/1000 # interval==1
-    @timer = TkAfter.new(tick, #msec
-      -1,    #forever
-      proc{
-        if (@time_remains < 0 or self.finished?)
-          @timer.cancel
-        elsif (! @wait_for_first_key)
-          @time_remains -= interval
-          # left to right
-          # @scale.set(TIMEOUT - @time_remains)
-          # right to left
-          @scale.set(@time_remains)
-          #
-          @speed_meter.plot(@num_chars) if @speed_meter_status
-          @num_chars = 0
-        end
-      }).start
+    if @left_to_right
+      @scale.set(0)
+    else
+      @scale.set(TIMEOUT)
+    end
+    @timer =
+      TkAfter.new(tick,
+                  -1,
+                  proc{
+                    if (@time_remains < 0 or self.finished?)
+                      @timer.cancel
+                    elsif (! @wait_for_first_key)
+                      @time_remains -= interval
+                      if @left_to_rught
+                        @scale.set(@time_remains)
+                      else
+                        @scale.set(TIMEOUT - @time_remains)
+                      end
+                      @speed_meter.plot(@num_chars) if @speed_meter_status
+                      @num_chars = 0
+                    end}).start
   end
 
   # core of yatt.rb
-  # rewrite 2002.06.08
   def key_press(kk,key)
     return if @epilog
 
@@ -395,8 +382,8 @@ lib: #{LIB}
       @wait_for_first_key = false
       @logger.start
     end
-    @num_chars+=1
-    if (@time_remains<0) or (@line>=@lines) # session ends
+    @num_chars += 1
+    if (@time_remains < 0) or (@line >= @lines) # session ends
       @logger.finish    # stop KeyPress event ASAP
       epilog
       return
@@ -451,41 +438,36 @@ lib: #{LIB}
     end
     score   = @logger.score
     strokes = @logger.goods + @logger.bads
-    # hotfix 0.22.2
     errors  = if @logger.goods == 0
                 100.0
               else
                 (((@logger.bads.to_f/@logger.goods.to_f)*1000).floor).to_f/10
               end
-    #
-    msg     = "#{score} points in #{@logger.diff_time} second.\n"+
-      "strokes: #{strokes}\n"+
-      "errors:  #{errors}%\n"
-    if errors>3.0
+    msg = "#{score} points in #{@logger.diff_time} second.\n"+
+          "strokes: #{strokes}\n"+
+          "errors:  #{errors}%\n"
+    if errors > 3.0
       msg += "\nError-rate is too high.\nYou have to achieve 3.0%.\n"
-    else
-      if score >70
-        # 0.38
-        if errors < 1.0
-          msg += "\nyour error-rate < 1.0%.\nBonus 30.\n"
-          score += 30
-        else
+    elsif errors > 1.0 and score > 70
           msg += "\nyour error-rate < 3.0%.\nBonus 10.\n"
           score += 10
-        end
-      end
+    elsif errors <= 1.0 and score > 70
+          msg += "\nyour error-rate < 1.0%.\nBonus 30.\n"
+          score += 30
     end
     if c = @logger.complete?
-      score +=100
+      score += 100
       msg += "+ bonus complete (100)\n"
-      score += (tr=@time_remains*50)
+      score += (tr = @time_remains*50)
       msg += "+ bonus time remains (#{tr})\n"
     end
     if p = @logger.perfect?
       score += 300
       msg += "+ bonus perfect (300)\n"
     end
-    msg += "becomes #{score}!!!\n" if (c or p)
+    if (c or p)
+      msg += "becomes #{score}!!!\n"
+    end
 
     @logger.save(score)
     @logger.save_errors(errors)
@@ -506,8 +488,7 @@ lib: #{LIB}
     ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
-    sleep(1)
-    insert(@textfile, @lines)
+    insert()
     @epilog = false
   end #epilog
 

@@ -1,4 +1,5 @@
 # VERSION: 0.71
+
 class Logger
   attr_reader :good, :ng, :start_time, :finish_time, :complete
   attr_writer :complete
@@ -82,11 +83,7 @@ class Logger
   end
 
   def sum(hsh)
-    s=0
-    hsh.each_value do |x|
-      s+=x
-    end
-    s
+    hsh.values.sum
   end
 
   def accumulate
@@ -95,13 +92,6 @@ class Logger
     end
     @ng.each do |key,value|
       @@sum_ng[key] += value
-    end
-  end
-
-  def audit
-    STDERR.puts "----------"
-    (@@sum_good.keys | @@sum_ng.keys).sort.each do |key|
-      STDERR.puts "#{key.chr}:#{@@sum_good[key]}:#{@@sum_ng[key]}\n"
     end
   end
 
