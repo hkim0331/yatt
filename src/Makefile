@@ -11,7 +11,8 @@ isc:
 	install -m 0755 *.rb /edu/lib/yatt
 	${RM} /edu/bin/yatt
 	ln -s /edu/lib/yatt/yatt.rb /edu/bin/yatt
-	@echo 'check /edu/bin/yatt ruby interpreter'
+	sed -i.bak '1 c\
+#!/edu/bin/ruby' /edu/bin/yatt
 
 macos: osx
 
@@ -24,7 +25,8 @@ linux:
 	install -m 0755 *.rb /opt/lib/yatt
 	${RM} /opt/bin/yatt
 	ln -s /opt/lib/yatt/yatt.rb /opt/bin/yatt
-	@echo 'check /opt/bin/yatt ruby interpreter'
+	sed -i.bak '1 c\
+#!/opt/bin/ruby' /opt/bin/yatt
 
 monitor: gems
 	mkdir -p /srv/yatt/bin /srv/yatt/log
