@@ -123,20 +123,18 @@ class Trainer
        ['readme',proc{readme},0],
        ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
        '---',
-        # ['New', proc{menu_new},0],
-        # ['Pref'],
+       # ['New', proc{menu_new},0], # 新しいテキストを挿入する。
+       # ['Pref'],
        ['Quit',proc{menu_quit},0]],
       [['Contest'],
        ['On/off',proc{menu_toggle_contest}],
        '---',
-       ['reload', proc{menu_reload}],
        ['weekly status', proc{menu_my_status}],
-       # cache からしか消えない。
-       ['Remove me',proc{menu_remove_me}],
+       ['Remove me',proc{menu_remove_me}], # cache からしか消えない。
        '---',
-       ['global',proc{menu_global}],
-#       ['weekly 30',proc{menu_weekly}],
-       ['weekly',proc{menu_show_all}],
+       # ['refresh', proc{menu_reload}], # スコアボードをリフレッシュする。
+       ['total',proc{menu_global}],
+       ['week',proc{menu_show_all}],
        ['class',proc{menu_myclass}]],
       [['Mode'],
        ['Sticky',proc{menu_sticky},0],
@@ -302,7 +300,7 @@ lib: #{LIB}
     @font='Courier'
     @size=14
     my_set_font()
-#    menu_save_font()
+    #    menu_save_font()
   end
 
   def my_set_font()
@@ -322,7 +320,9 @@ lib: #{LIB}
     @time_remains = TIMEOUT
     @wait_for_first_key = true
 
-    start = rand(@doclength - 2*num_lines) # 2 for programming ease.
+    start = rand(@doclength - 2*num_lines)
+    #debug
+    puts "start: #{start}"
 
     # @text は配列でなければならない。行と列でテキストに色付けする。
     @text=[]
