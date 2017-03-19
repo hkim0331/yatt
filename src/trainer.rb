@@ -42,7 +42,7 @@ class Trainer
     end
 
     # to show yatt @lines lines
-    @lines   = 5
+    @lines   = 6
 
     @splash  = File.join(@lib, YATT_IMG)
     @speed_meter_status = true
@@ -91,11 +91,8 @@ class Trainer
     @scoreboard = Scoreboard.new(graph_frame, @druby, @contest)
     @scoreboard.pack(:expand => 1,:fill => 'both')
     @scoreboard.splash
-    # @doclength = 0
-    # File.foreach(@textfile) do |line|
-    #   @doclength += 1
-    # end
-    insert(@lines)
+
+    insert()
 
     counts, points = trials()
     TkDialog.new(:title => "contest",
@@ -194,7 +191,7 @@ lib: #{LIB}
 
   def menu_new
     @timer.cancel
-    insert(@lines)
+    insert()
   end
 
   def menu_quit
@@ -309,7 +306,7 @@ lib: #{LIB}
     @stat.percentile
   end
 
-  def insert(num_lines)
+  def insert()
     # reset session parameters
     @line = 0
     @char = 0
@@ -317,20 +314,24 @@ lib: #{LIB}
     @time_remains = TIMEOUT
     @wait_for_first_key = true
 
-    pos = rand(@text_all.length - 1.2*num_lines)
-    @text = @text_all[pos, pos + num_lines]
+    pos = rand(@text_all.length - 1.2 * @lines)
+    @text = @text_all[pos, @lines]
     if (@text.join.length < 350)
-      self.insert(num_lines)
+      self.insert()
       return
     end
 
     @textarea.insert(@text.join)
     @textarea.highlight("good", @line, @char)
-    @scale.set(TIMEOUT)
     @logger = Logger.new
     @num_chars = 0
     tick = 1000
     interval=tick/1000 # interval==1
+    # right to left
+    #@scale.set(TIMEOUT)
+    # left to right
+    @scale.set(0)
+    #
     @timer = TkAfter.new(tick, #msec
       -1,    #forever
       proc{
@@ -339,9 +340,9 @@ lib: #{LIB}
         elsif (! @wait_for_first_key)
           @time_remains -= interval
           # left to right
-          # @scale.set(TIMEOUT - @time_remains)
+          @scale.set(TIMEOUT - @time_remains)
           # right to left
-          @scale.set(@time_remains)
+          #@scale.set(@time_remains)
           #
           @speed_meter.plot(@num_chars) if @speed_meter_status
           @num_chars = 0
@@ -483,7 +484,7 @@ lib: #{LIB}
     ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
-    insert(@lines)
+    insert()
     @epilog = false
   end #epilog
 
