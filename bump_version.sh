@@ -15,7 +15,7 @@ else
 fi
 
 # files to footprint version number.
-FILES="db/Makefile src/Makefile"
+FILES="db/Makefile src/Makefile src/*.rb"
 
 # normally, format of comments are '# VERSION: number'.
 for i in ${FILES}; do
@@ -23,7 +23,7 @@ for i in ${FILES}; do
 done
 
 TODAT=`date +%F`
-for i in src/*; do
+for i in src/yatt.rb src/yatt_monitor.rb; do
     if [[ $i =~ bak$ ]]; then
         continue;
     fi
