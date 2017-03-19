@@ -1,4 +1,5 @@
 # VERSION: 0.71
+
 class MyText < TkText
   @@sticky = false
   @@loose  = false
@@ -21,7 +22,7 @@ class MyText < TkText
   end
 
   def highlight(stat,line,char)
-    pos = (line+1).to_s+"."+char.to_s
+    pos = (line + 1).to_s + "." + char.to_s
     @text.tag_add(stat,pos)
   end
 

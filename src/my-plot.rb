@@ -1,4 +1,5 @@
 # VERSION: 0.71
+
 class MyPlot
   WIDTH  = 300
   HEIGHT = 200
@@ -16,20 +17,17 @@ class MyPlot
   end
 
   def plot(lst)
-    len=lst.length
-    max=0
-    lst.each do |item|
-      max=item if item > max
-    end
-    dx=(WIDTH-MX*2).to_f/len
-    ratio=SHRINK*(HEIGHT-MY).to_f/max
+    len = lst.length
+    max = lst.max
+    dx = (WIDTH-MX*2).to_f/len
+    ratio = SHRINK*(HEIGHT-MY).to_f/max
     x_axes(WIDTH-MX)
     y_axes(max, ratio)
     lst = lst.map {|y| (HEIGHT-MY)-y*ratio}
     x = MX
     while (y = lst.shift)
       TkcOval.new(@graph,x,y,x+R,y-R,:outline => 'red',:fill => 'red')
-      x+=dx
+      x += dx
     end
   end
 
@@ -48,7 +46,7 @@ class MyPlot
   end
 
   def replot(lst)
-    clear
+    clear()
     plot(lst)
   end
 end

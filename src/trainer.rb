@@ -1,5 +1,6 @@
 # coding: utf-8
 # VERSION: 0.71
+
 class Trainer
   def about
     TkDialog.new(:title => "Yet Another Typing Trainer",
@@ -20,7 +21,7 @@ class Trainer
     scr.pack(:side => 'left', :fill => 'y')
     text.yscrollbar(scr)
     File.foreach(README) do |line|
-      text.insert('end',line)
+      text.insert('end', line)
     end
     text.configure(:state => 'disabled')
   end
@@ -89,7 +90,6 @@ class Trainer
     File.foreach(@textfile) do |line|
       @doclength += 1
     end
-    debug "@doclength: #{@doclength}"
     insert(@textfile, @lines)
 
     counts, points = trials()
@@ -99,12 +99,11 @@ class Trainer
 総合点は #{points} 点です。",
                  :buttons => ['start'])
     menu_toggle_contest()
-
   end
 
   def trials()
-    counts=0
-    points=0
+    counts = 0
+    points = 0
     Dir.glob("#{YATT_DIR}/??-??").each do |fname|
       File.foreach(fname) do |line|
         counts += 1
@@ -270,17 +269,12 @@ lib: #{LIB}
   end
 
   def menu_bigger()
-    @size = (@size.to_i+2).to_s
+    @size = [@size.to_i+2, 64].min.to_s
     my_set_font()
   end
 
   def menu_smaller()
-    size= (@size.to_i)-2
-    @size = if size > 10
-              size.to_s
-            else
-              "10"
-            end
+    @size = [@size.to_i-2, 10].max.to_s
     my_set_font()
   end
 
@@ -297,8 +291,8 @@ lib: #{LIB}
   end
 
   def menu_reset_font()
-    @font='Courier'
-    @size=14
+    @font = 'Courier'
+    @size = 14
     my_set_font()
     #    menu_save_font()
   end
