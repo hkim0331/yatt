@@ -6,26 +6,26 @@ all:
 	@echo "'make linux' to install on general linuxen."
 	@echo "'make monitor' to install yatt monitor under ${YATT_MONITOR}."
 
-isc:
-	mkdir -p /edu/lib/yatt
-	install -m 0755 *.rb /edu/lib/yatt
-	${RM} /edu/bin/yatt
-	ln -s /edu/lib/yatt/yatt.rb /edu/bin/yatt
-	sed -i.bak '1 c\
-#!/edu/bin/ruby' /edu/bin/yatt
-
 macos: osx
 
 osx:
 	${RM} ${HOME}/bin/yatt
 	ln -s ${PWD}/yatt.rb ${HOME}/bin/yatt
 
+isc:
+	mkdir -p /edu/lib/yatt
+	install -m 0755 *.rb /edu/lib/yatt
+	${RM} /edu/bin/yatt
+	ln -s /edu/lib/yatt/yatt.rb /edu/bin/yatt
+	sed -i --follow-symlinks '1 c\
+#!/edu/bin/ruby' /edu/bin/yatt
+
 linux:
 	mkdir -p /opt/lib/yatt
 	install -m 0755 *.rb /opt/lib/yatt
 	${RM} /opt/bin/yatt
 	ln -s /opt/lib/yatt/yatt.rb /opt/bin/yatt
-	sed -i.bak '1 c\
+	sed -i --follow-symlinks '1 c\
 #!/opt/bin/ruby' /opt/bin/yatt
 
 monitor: gems
