@@ -40,15 +40,14 @@ else
   TIMEOUT = 60
 end
 
-# FIXME: No ENV in Windows.
-if File.exists?("/Applications")
+if File.exists?(File.join(ENV['HOME'], 'Library/yatt'))
   LIB = File.join(ENV['HOME'], 'Library/yatt')
-elsif File.exists?("/edu")
+elsif File.exists?('/edu/lib/yatt')
   LIB = '/edu/lib/yatt'
-elsif File.exists?('/opt/lib/yatt/yatt.txt')
+elsif File.exists?('/opt/lib/yatt')
   LIB = '/opt/lib/yatt'
-else
-  LIB = File.join(ENV['HOME'], 'lib/yatt')
+elsif File.exists?('../lib')
+  LIB = '../lib'
 end
 
 README       = File.join(LIB, "README")
