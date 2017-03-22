@@ -45,6 +45,8 @@ if File.exists?("/Applications")
   LIB = File.join(ENV['HOME'], 'Library/yatt')
 elsif File.exists?("/edu")
   LIB = '/edu/lib/yatt'
+elsif File.exists?('/opt/lib/yatt/yatt.txt')
+  LIB = '/opt/lib/yatt'
 else
   LIB = File.join(ENV['HOME'], 'lib/yatt')
 end
@@ -70,6 +72,20 @@ EOU
   exit(1)
 end
 
+# ruby 2.2.6 Array does not recognize sum.
+begin
+  [1,2,3].sum
+rescue
+  module Summable
+    def sum
+      inject(:+)
+    end
+  end
+
+  class Array
+    include Summable
+  end
+end
 
 #
 # main starts here.
