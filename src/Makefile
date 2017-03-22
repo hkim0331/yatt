@@ -1,4 +1,4 @@
-# VERSION: 0.72
+# VERSION: 0.73
 
 all:
 	@echo "'make osx' to install on osx(develop)."
