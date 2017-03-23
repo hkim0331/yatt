@@ -22,7 +22,7 @@ for i in ${FILES}; do
     ${SED} -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
 done
 
-TODAT=`date +%F`
+TODAY=`date +%F`
 for i in src/yatt.rb src/yatt_monitor.rb; do
     if [[ $i =~ bak$ ]]; then
         continue;
