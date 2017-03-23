@@ -19,7 +19,7 @@ require_relative 'trainer'
 
 $debug = false
 
-YATT_VERSION = '0.73'
+YATT_VERSION = '0.74'
 DATE = '2017-03-24'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
