@@ -56,7 +56,7 @@ end
 require 'drb'
 
 YATT_PROBE_VERSION="0.4.3"
-DATE = '2017-03-14'
+DATE = ''
 
 INTERVAL=30
 HOW_MANY=10

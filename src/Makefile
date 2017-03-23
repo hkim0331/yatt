@@ -1,8 +1,4 @@
-# VERSION: 0.50
-
-BIN=${HOME}/bin
-MONITOR_BIN=/opt/yatt/bin
-MONITOR_LOG=/opt/yatt/log
+# VERSION: 0.73
 
 all:
 	@echo "'make osx' to install on osx(develop)."
@@ -10,26 +6,35 @@ all:
 	@echo "'make linux' to install on general linuxen."
 	@echo "'make monitor' to install yatt monitor under ${YATT_MONITOR}."
 
-isc: yatt.rb
-	install -m 0755 yatt.rb /edu/bin/yatt
-	./chsb --sb /edu/bin/ruby /edu/bin/yatt
+macos: osx
 
-osx: yatt.rb
-	mkdir -p ${BIN}
-	install -m 0755 yatt.rb ${BIN}/yatt
+osx:
+	${RM} ${HOME}/bin/yatt
+	ln -s ${PWD}/yatt.rb ${HOME}/bin/yatt
 
-linux: yatt.rb
-	mkdir -p ${BIN}
-	install -m 0755 yatt.rb ${BIN}/yatt
+isc:
+	mkdir -p /edu/lib/yatt
+	install -m 0755 *.rb /edu/lib/yatt
+	${RM} /edu/bin/yatt
+	ln -s /edu/lib/yatt/yatt.rb /edu/bin/yatt
+	sed -i --follow-symlinks '1 c\
+#!/edu/bin/ruby' /edu/bin/yatt
 
-server: monitor gems
+linux:
+	mkdir -p /opt/lib/yatt
+	install -m 0755 *.rb /opt/lib/yatt
+	${RM} /opt/bin/yatt
+	ln -s /opt/lib/yatt/yatt.rb /opt/bin/yatt
+	sed -i --follow-symlinks '1 c\
+#!/opt/bin/ruby' /opt/bin/yatt
 
-monitor: yatt_monitor.rb yatt_monitor.service
-	mkdir -p ${MONITOR_BIN} ${MONITOR_LOG}
-	install -m 0755 yatt_monitor.rb ${MONITOR_BIN}
+monitor: gems
+	mkdir -p /srv/yatt/bin /srv/yatt/log
+	install -m 0755 yatt_monitor.rb /srv/yatt/bin
 	@echo 'do not forget to open monitor port(default 23002/tcp).'
-	install -m 0755 yatt_monitor.service /etc/init.d/yatt_monitor
-	update-rc.d yatt_monitor defaults
+# systemd.
+#	install -m 0755 yatt_monitor.service /etc/init.d/yatt_monitor
+#	update-rc.d yatt_monitor defaults
 
 gems:
 	gem install sequel mysql2

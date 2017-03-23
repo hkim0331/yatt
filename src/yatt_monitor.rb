@@ -3,19 +3,22 @@
 #
 # yatt (proxy) score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
-# Copyright (C)2002-2012, Hiroshi Kimura.
+# Copyright (C) 2002-2017, Hiroshi Kimura.
 #
 # update 2012-04-02, icome connection.
 # 2012-04-22, rename yatt_server as yatt_monitor.
 #
 
-require 'drb'
+require 'drb/drb'
 require 'sequel'
 
-YATT_VERSION = '0.50'
-DATE = '2017-03-14'
-REQ_RUBY = "1.9.3"
-raise "require ruby >= " + REQ_RUBY if (RUBY_VERSION <=> REQ_RUBY) < 0
+YATT_VERSION = '0.73'
+DATE = ''
+
+DRUBY = "druby://150.69.90.82:23002"
+DB    = "127.0.0.1"
+LOG   = "/srv/yatt/log/yatt.log"
+BEST  = 30
 
 def debug(s)
   STDERR.puts "debug: " + s if $debug
@@ -28,11 +31,8 @@ USAGE
 
 OPTIONS(default value)
 
-  --server name, --hostname name, --fqdn name
-        use name as yatt score server hostname(localhost).
-
-  --port num
-        use num/tcp as yatt score server port(23002).
+  --druby
+        use uri for remote druby object(#{DRUBY}).
 
   --log file
         log yatt/yatt_server communication into file.
@@ -73,7 +73,6 @@ class Monitor
   # changed: 2012-04-21, yatt から最高点以外のデータも送られてくる。
   # その変更に対応すること。
   def put(name, score, time)
-    debug ("#{__method__}: #{name}, #{score}, #{time}")
     File.open(@logfile,"a") do |fp|
       fp.puts "#{time} #{name} #{score}"
     end
@@ -141,7 +140,7 @@ class Monitor
     ret = Hash.new
     @ds.each do |r|
       uid = r[:uid]
-      if ret[uid].nil? or ret[uid][0]<r[:score]
+      if ret[uid].nil? or ret[uid][0] < r[:score]
         ret[uid] = [r[:score], r[:updated_at].strftime("%m/%d %H:%M")]
       end
     end
@@ -166,23 +165,14 @@ end
 # main
 #
 
-MONITOR = "yatt.melt.kyutech.ac.jp"
-LOG  = "/opt/yatt/log/yatt.log"
-PORT = 23002
-BEST = 30
-DB = "mariadb.melt.kyutech.ac.jp"
-
-hostname = MONITOR
-port     = PORT
-logfile  = LOG
+druby   = DRUBY
+logfile = LOG
 
 $sqlite = false
 while (arg = ARGV.shift)
   case arg
-  when /\A--(fqdn)|(hostname)|(server)\Z/
-    hostname = ARGV.shift
-  when /\A--port\Z/
-    port = ARGV.shift.to_i
+  when /\A--druby\Z/
+    druby = ARGV.shift
   when /\A--log\Z/
     logfile = ARGV.shift
   when /\A--sqlite/
@@ -201,16 +191,11 @@ else
   ds = Sequel.connect("mysql2://yatt:yyy@#{DB}/yatt")[:yatt]
 end
 
-debug [RUBY_VERSION, YATT_VERSION, hostname, port].join(", ")
-
 begin
-  monitor = Monitor.new(ds, logfile)
-  uri = "druby://#{hostname}:#{port}"
-  puts uri if $debug
-  DRb.start_service(uri, monitor)
+  DRb.start_service(druby, Monitor.new(ds, logfile))
+  puts "druby: #{DRb.uri}"
   DRb.thread.join
 
 rescue => e
   puts "#{e.class}:#{e.message}"
 end
-

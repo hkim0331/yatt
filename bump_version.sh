@@ -1,20 +1,5 @@
-#!/usr/bin/env dash
+#!/bin/sh
 # -*- mode: Shell-script; coding: utf-8; -*-
-#
-# programmed by Hiroshi Kimura, 2012-01-12.
-#
-# = bump_version_model.sh
-# プロジェクト内のファイルに一貫するバージョンナンバーを付与する。
-#
-# == usage
-# 1. このファイルをプロジェクトフォルダにコピーし、
-# 2. FILESに必要なファイルをスペースで区切ってリスト
-# 3. do it.
-#
-# == updats
-# 2012-01-15, updated.
-# 2012-01-28, add comments.
-# 2015-04-23, stop backup *.bak files. (under constrution)
 
 if [ ! $# = 1 ]; then
     echo usage: $0 VERSION
@@ -23,27 +8,28 @@ fi
 VERSION=$1
 
 # in Linux, sed = gnu sed, in OSX, sed != gnu sed.
-if [ `uname` = 'Linux' ]; then
-    SED=/bin/sed
-else
+if [ -e /usr/local/bin/gsed ]; then
     SED=/usr/local/bin/gsed
+else
+    SED=`which sed`
 fi
 
 # files to footprint version number.
-FILES="db/Makefile src/Makefile"
+FILES="db/Makefile src/Makefile src/*.rb"
 
 # normally, format of comments are '# VERSION: number'.
 for i in ${FILES}; do
     ${SED} -i.bak "s/^# VERSION:.*$/# VERSION: ${VERSION}/" $i
 done
 
-DATE=`date +%Y-%m-%d`
-# FIXME: must skip *.bak files.
-for i in src/*; do
+TODAT=`date +%F`
+for i in src/yatt.rb src/yatt_monitor.rb; do
+    if [[ $i =~ bak$ ]]; then
+        continue;
+    fi
     ${SED} -i.bak \
            -e "s/^YATT_VERSION\s*=.*$/YATT_VERSION = '${VERSION}'/" \
-           -e "s/^DATE\s*=.*$/DATE = '${DATE}'/" $i
+           -e "s/^DATE\s*=.*$/DATE = '${TODAY}'/" $i
 done
 
 echo ${VERSION} > VERSION
-
