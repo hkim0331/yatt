@@ -9,6 +9,7 @@ all:
 macos: osx
 
 osx:
+	mkdir -p ${HOME}/bin
 	${RM} ${HOME}/bin/yatt
 	ln -s ${PWD}/yatt.rb ${HOME}/bin/yatt
 
