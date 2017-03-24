@@ -1,4 +1,4 @@
-# VERSION: 0.73
+# VERSION: 0.74
 
 class MyStatus <TkCanvas
 

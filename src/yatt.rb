@@ -19,8 +19,8 @@ require_relative 'trainer'
 
 $debug = false
 
-YATT_VERSION = '0.73'
-DATE = ''
+YATT_VERSION = '0.74'
+DATE = '2017-03-24'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
@@ -66,7 +66,7 @@ def usage(s)
   print <<EOU
 unknown arg: #{s}
 usage:
-  #{$0} [--noserver|--server server] [--port port] [--lib path]
+  #{$0} [--druby uri] [--lib path]
 EOU
   exit(1)
 end
@@ -97,6 +97,9 @@ while (arg = ARGV.shift)
     druby = ARGV.shift
   when /--lib/
     lib = ARGV.shift
+  when /--version/
+    puts YATT_VERSION
+    exit(1)
   when /--debug/
     $debug = true
   else

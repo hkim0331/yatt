@@ -25,7 +25,7 @@ $ ./configure --prefix=/opt \
 --with-tk-include=/usr/include/tcl8.6 \
 --enable-pthread \
 --disable-install-doc --disable-install-rdoc
-
+$
 ```
 
 動かない時のログ。
@@ -45,6 +45,7 @@ $ /opt/bin/ruby yatt.rb
 	from yatt.rb:137:in `initialize'
 	from yatt.rb:1160:in `new'
 	from yatt.rb:1160:in `<main>'
+$
 ```
 
 ## 2016-03-31

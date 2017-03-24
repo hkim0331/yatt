@@ -1,4 +1,4 @@
-# VERSION: 0.73
+# VERSION: 0.74
 
 all:
 	@echo "'make osx' to install on osx(develop)."
@@ -9,6 +9,7 @@ all:
 macos: osx
 
 osx:
+	mkdir -p ${HOME}/bin
 	${RM} ${HOME}/bin/yatt
 	ln -s ${PWD}/yatt.rb ${HOME}/bin/yatt
 
