@@ -309,6 +309,10 @@ lib: #{LIB}
 
   def menu_percentile
     @stat.percentile
+    TkDialog.new(
+      :title => "Percentile Graph",
+      :message => "次のトライアルからタイプミスグラフが100分率表示になります。",
+      :buttons => ['continue'])
   end
 
   def insert()
