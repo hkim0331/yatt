@@ -82,7 +82,11 @@ class Trainer
                        :from   => 0,
                        :to     => TIMEOUT,
                        :tickinterval => TIMEOUT/2)
-    @scale.pack(:fill =>'x')
+    @scale.pack(:side =>'left')
+
+    # boarder?
+    @errorbox = TkLabel.new(meter_frame, :text => '0')
+    @errorbox.pack(:padx => 10, :side => 'right')
 
     graph_frame = TkFrame.new(root,
                               :relief => 'groove',
@@ -316,6 +320,7 @@ lib: #{LIB}
   end
 
   def insert()
+    @errors = 0
     # reset session parameters
     @line = 0
     @char = 0
@@ -422,6 +427,8 @@ lib: #{LIB}
       @char += 1
       @textarea.highlight("good",@line,@char)
     else # not match
+      @errors += 1
+      @errorbox.text(@errors)
       @logger.add_ng(target,key)
       @textarea.highlight("bad",@line,@char)
       if @textarea.value_loose
