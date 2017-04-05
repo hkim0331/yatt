@@ -12,7 +12,7 @@
 require 'drb/drb'
 require 'sequel'
 
-YATT_VERSION = '0.75'
+YATT_VERSION = '0.76'
 DATE = '2017-04-05'
 
 DRUBY = "druby://150.69.90.82:23002"
