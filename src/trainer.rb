@@ -321,6 +321,7 @@ lib: #{LIB}
 
   def insert()
     @errors = 0
+    @errorbox.text(@errors)
     # reset session parameters
     @line = 0
     @char = 0
