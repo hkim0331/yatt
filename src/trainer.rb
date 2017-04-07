@@ -26,6 +26,10 @@ class Trainer
     text.configure(:state => 'disabled')
   end
 
+  def choose_image(glob)
+    Dir.glob(glob).shuffle[0]
+  end
+
   # 長すぎ。
   def initialize(druby, lib)
     @left_to_right = true
@@ -45,7 +49,7 @@ class Trainer
     # to show @lines in yatt textarea
     @lines   = 6
 
-    @splash  = File.join(@lib, YATT_IMG)
+    @splash = choose_image(File.join(@lib, YATT_IMG))
     @speed_meter_status = true
     @contest = false
 
@@ -73,6 +77,7 @@ class Trainer
 
     meter_frame = TkFrame.new(root)
     meter_frame.pack
+
     @speed_meter = SpeedMeter.new(meter_frame)
     @speed_meter.pack(:side => 'left')
 
@@ -84,8 +89,8 @@ class Trainer
                        :tickinterval => TIMEOUT/2)
     @scale.pack(:side =>'left')
 
-    # boarder?
-    @errorbox = TkLabel.new(meter_frame, :text => '0')
+    @errorbox = TkLabel.new(meter_frame,
+                            :width=> 2, :text => '0', :foreground => BAD)
     @errorbox.pack(:padx => 10, :side => 'right')
 
     graph_frame = TkFrame.new(root,
