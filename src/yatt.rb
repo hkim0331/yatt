@@ -27,7 +27,7 @@ Copyright (C) 2002-2017.\n"
 
 DRUBY      = "druby://150.69.90.82:23002"
 YATT_TXT   = "yatt.txt"
-YATT_IMG   = "yatt4.gif"
+YATT_IMG   = "yatt*.gif"
 
 GOOD = "green"
 BAD  = "red"
@@ -71,7 +71,7 @@ EOU
   exit(1)
 end
 
-# ruby 2.2.6 Array does not recognize sum.
+# ruby 2.2 Array class does not recognize sum.
 begin
   [1,2,3].sum
 rescue
