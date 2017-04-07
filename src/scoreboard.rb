@@ -1,5 +1,5 @@
 # coding: utf-8
-# VERSION: 0.77
+# VERSION: 0.78
 
 class Scoreboard
 
@@ -85,8 +85,12 @@ class Scoreboard
                  "= Realtime Typing Contest =\n\n"+
                  "To join the realtime contest,\n"+
                  "choose contest from Misc menu.\n\n"+
-                 "2014-07-07, bonus +30 if error rate < 3.0%.\n\n"+
-                 "2014-06-16, fix '-' key bug.\n")
+                 "+10 if error rate < 3.0%,\n"+
+                 "+30 if error rate < 1.0%,\n"+
+                 "+100 if complete, and \n"+
+                 "+300 if perfect.\n\n" +
+                 "For bonus poins, you have to get 70 at least."
+                 )
     @text.configure(:state => 'disabled')
   end
 

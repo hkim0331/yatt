@@ -6,6 +6,8 @@
 # Copyright (C) 2002-2017 Hiroshi Kimura.
 #
 
+puts "心を落ち着け、起動を待とう。戦いの日は近い。情セの PC は遅い。"
+
 require 'tk'
 require 'drb'
 
@@ -19,7 +21,7 @@ require_relative 'trainer'
 
 $debug = false
 
-YATT_VERSION = '0.77'
+YATT_VERSION = '0.78'
 DATE = '2017-04-07'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
