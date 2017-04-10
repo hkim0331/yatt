@@ -89,8 +89,8 @@ class Scoreboard
                  " +30 if error rate < 1.0%,\n"+
                  " +100 if complete, and \n"+
                  " +300 if perfect.\n\n" +
-                 " For bonus poins, you have to get\n"+
-                 " 70pt at least."
+                 "For bonus poins, you have to\n"+
+                 "get 70pt at least!"
                  )
     @text.configure(:state => 'disabled')
   end
