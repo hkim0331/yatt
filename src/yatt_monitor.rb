@@ -63,7 +63,7 @@ class Monitor
 
   # CHANGED: return array (was string).
   def best(n)
-    @score.sort{|a,b| b[1][0]<=>a[1][0]}[0..n-1]
+    @score.sort{|a,b| b[1][0] <=> a[1][0]}[0..n-1]
   end
 
   def all
@@ -76,9 +76,9 @@ class Monitor
     File.open(@logfile,"a") do |fp|
       fp.puts "#{time} #{name} #{score}"
     end
-    @ds.insert(:uid => name,
-               :score => score,
-               :updated_at => Time.now.strftime("%Y-%m-%d %H:%M:%S"))
+    @ds.insert(uid: name,
+               score: score,
+               updated_at: Time.now.strftime("%Y-%m-%d %H:%M:%S"))
     if score > @score[name][0]
       @score[name] = [score, time]
     end

@@ -2,19 +2,19 @@
 
 class MyStatus <TkCanvas
 
-  WIDTH   = 420
-  HEIGHT  = 200
-  C_WIDTH = 10
-  C_HEIGHT= 20
+  WIDTH    = 420
+  HEIGHT   = 200
+  C_WIDTH  = 10
+  C_HEIGHT = 20
 
   def initialize(parent,splash)
     @graph = TkCanvas.new(parent,
-                          :width => WIDTH,
-                          :height => HEIGHT,
-                          :background => 'white')
+                          width: WIDTH,
+                          height: HEIGHT,
+                          background: 'white')
     if FileTest.exists?(splash)
-      img = TkPhotoImage.new(:file=>splash)
-      TkcImage.new(@graph,WIDTH/2,130,:image=>img)
+      img = TkPhotoImage.new(file: splash)
+      TkcImage.new(@graph,WIDTH/2,130, image: img)
     end
     @percentile = false
   end
@@ -30,7 +30,7 @@ class MyStatus <TkCanvas
   def plot(good, bad)
     @graph.delete("all")
     keys = (good.keys | bad.keys).sort
-    return if keys.length<2
+    return if keys.length < 2
     dx = (WIDTH-2*C_WIDTH).to_f/(keys.length-1) # -1 for ' '
     max = 0
     keys.each do |key|
@@ -47,11 +47,11 @@ class MyStatus <TkCanvas
       next if key.chr == ' '      # do not display ' '
       if (@percentile)
         n = good[key] + bad[key]
-        rect(ox,oy,good[key].to_f*max/n,bad[key].to_f*max/n,dx,ratio)
+        rect(ox, oy, good[key].to_f*max/n, bad[key].to_f*max/n, dx, ratio)
       else
-        rect(ox,oy,good[key],bad[key],dx,ratio)
+        rect(ox, oy, good[key], bad[key], dx, ratio)
       end
-      text(ox+half_x,base_y,key)
+      text(ox+half_x, base_y, key)
       ox += dx
     end
   end
@@ -62,6 +62,6 @@ class MyStatus <TkCanvas
   end
 
   def text(x,y,char)
-    TkcText.new(@graph, x, y, :text=>char.chr)
+    TkcText.new(@graph, x, y, text: char.chr)
   end
 end # Status

@@ -12,11 +12,11 @@ class Scoreboard
   def initialize(parent, druby, stat)
     @mode = WEEKLY
     @text = TkText.new(parent,
-                     :takefocus => 0,
-                     :background => 'gray',
-                     :width => WIDTH,
-                     :height => HEIGHT,
-                     :state => 'disabled')
+                     takefocus:  0,
+                     background:'gray',
+                     width:  WIDTH,
+                     height: HEIGHT,
+                     state: 'disabled')
     @stat = stat
     @scr = TkScrollbar.new(parent)
     @text.yscrollbar(@scr)
@@ -51,17 +51,17 @@ class Scoreboard
   end
 
   def can_not_talk(druby)
-    TkDialog.new(:title   => "can not talk to #{druby}",
-                 :message => "サーバと通信できません。
+    TkDialog.new(title:   "can not talk to #{druby}",
+                 message: "サーバと通信できません。
 下の continue を押し、
 次に出てくる OK ボタンを押せば yatt の練習はできますが
 コンテストには参加できません。
 しばらく秘密練習に励んでください。",
-                 :buttons => ['continue'])
+                 buttons: ['continue'])
   end
 
   def pack(param)
-    @scr.pack(:side=>'left', :fill=>'y')
+    @scr.pack(side: 'left', fill: 'y')
     @text.pack(param)
   end
 
@@ -71,7 +71,7 @@ class Scoreboard
 
   def highlight(color)
     @text.tag_configure("highlight",
-                        :background=>"red",:foreground=>"white")
+                        background: "red", foreground: "white")
   end
 
   def remove(user)
@@ -79,7 +79,7 @@ class Scoreboard
   end
 
   def splash
-    @text.configure(:state => 'normal')
+    @text.configure(state: 'normal')
     @text.delete('1.0','end')
     @text.insert('end',
                  "= Realtime Typing Contest =\n\n"+
@@ -92,7 +92,7 @@ class Scoreboard
                  "For bonus poins, you have to\n"+
                  "get 70pt at least!"
                  )
-    @text.configure(:state => 'disabled')
+    @text.configure(state: 'disabled')
   end
 
   # changed: rankers is an array. [[hkim, [65, "2012-04-02"]]]
@@ -100,10 +100,10 @@ class Scoreboard
     debug "#{__method__}: rankers=#{rankers}"
     if (rankers.empty?)
       debug "rankers emty."
-      @text.configure(:state => 'normal')
+      @text.configure(state: 'normal')
       @text.delete('1.0','end')
       @text.insert('end',"no entry.")
-      @text.configure(:state => 'disabled')
+      @text.configure(state: 'disabled')
     else
       line = 1
       my_entry = 0
@@ -116,7 +116,7 @@ class Scoreboard
         my_entry=line if @my_id =~ /#{ranker}/
         line += 1
       end
-      @text.configure(:state => 'normal')
+      @text.configure(state: 'normal')
       @text.delete('1.0','end')
       @text.insert('end',ranking)
 
@@ -124,14 +124,14 @@ class Scoreboard
       unless my_entry == 0
         @text.tag_add("highlight","#{my_entry}.0","#{my_entry}.end")
       end
-      @text.configure(:state => 'disabled')
+      @text.configure(state: 'disabled')
     end
   end
 
   def bgcolor(color)
-    @text.configure(:state => 'normal')
-    @text.configure(:background => color)
-    @text.configure(:state => 'disabled')
+    @text.configure(state: 'normal')
+    @text.configure(background: color)
+    @text.configure(state: 'disabled')
   end
 
   # 3種類の update を作る。
@@ -153,10 +153,10 @@ class Scoreboard
     return if (@remote.nil?)
     if (ans = @remote.status(user))
       counts, points = trials
-      TkDialog.new(:title => user,
-                   :message =>
+      TkDialog.new(title: user,
+                   message:
                    "#{ans}\ntotal #{counts} trials, #{points} points",
-                   :buttons => ['continue'])
+                   buttons: ['continue'])
     else
       self.can_not_talk(@druby)
     end

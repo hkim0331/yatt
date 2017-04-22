@@ -19,17 +19,15 @@ require_relative 'scoreboard'
 require_relative 'speed-meter'
 require_relative 'trainer'
 
-$debug = false
-
 YATT_VERSION = '0.80'
 DATE = '2017-04-22'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
 
-DRUBY      = "druby://150.69.90.82:23002"
-YATT_TXT   = "yatt.txt"
-YATT_IMG   = "yatt*.gif"
+DRUBY    = "druby://150.69.90.82:23002"
+YATT_TXT = "yatt.txt"
+YATT_IMG = "yatt*.gif"
 
 GOOD = "green"
 BAD  = "red"
@@ -50,11 +48,12 @@ end
 
 README       = File.join(LIB, "README")
 YATT_DIR     = File.join(ENV['HOME'], '.yatt')
-Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 HISTORY      = File.join(YATT_DIR, 'history')
 TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
 ACCURACY     = File.join(YATT_DIR, 'accuracy')
 MY_FONT      = File.join(YATT_DIR, 'font')
+
+Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 
 def debug(s)
   STDERR.puts s if $debug
@@ -94,6 +93,8 @@ end
 
 druby = DRUBY
 lib   = LIB
+$debug = false
+
 while (arg = ARGV.shift)
   case arg
   when /--druby/

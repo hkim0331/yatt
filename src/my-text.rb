@@ -11,25 +11,25 @@ class MyText < TkText
   end
 
   def insert(text)
-    @text.configure(:state=>'normal')
-    @text.delete('1.0','end')
-    @text.insert('end',text)
-    @text.configure(:state=>'disabled')
+    @text.configure(state: 'normal')
+    @text.delete('1.0', 'end')
+    @text.insert('end', text)
+    @text.configure(state: 'disabled')
   end
 
   def pack
     @text.pack
   end
 
-  def highlight(stat,line,char)
+  def highlight(stat, line, char)
     pos = (line + 1).to_s + "." + char.to_s
-    @text.tag_add(stat,pos)
+    @text.tag_add(stat, pos)
   end
 
-  def unlight(line,char)
-    pos = (line+1).to_s+"."+char.to_s
-    @text.tag_remove('good',pos)
-    @text.tag_remove('bad',pos) unless @@sticky
+  def unlight(line, char)
+    pos = (line+1).to_s + "." + char.to_s
+    @text.tag_remove('good', pos)
+    @text.tag_remove('bad', pos) unless @@sticky
   end
 
   def sticky

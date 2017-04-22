@@ -9,10 +9,10 @@ class MyPlot
   R  = 5
 
   def initialize(title)
-    @toplevel = TkToplevel.new(:title => title)
+    @toplevel = TkToplevel.new(title: title)
     @graph = TkCanvas.new(@toplevel,
-                        :width => WIDTH,
-                        :height => HEIGHT)
+                        width:  WIDTH,
+                        height: HEIGHT)
     @graph.pack
   end
 
@@ -26,7 +26,7 @@ class MyPlot
     lst = lst.map {|y| (HEIGHT-MY)-y*ratio}
     x = MX
     while (y = lst.shift)
-      TkcOval.new(@graph,x,y,x+R,y-R,:outline => 'red',:fill => 'red')
+      TkcOval.new(@graph,x,y,x+R,y-R, outline: 'red', fill: 'red')
       x += dx
     end
   end
@@ -37,8 +37,8 @@ class MyPlot
 
   def y_axes(max,ratio)
     TkcLine.new(@graph,MX,HEIGHT-MY,MX,MY)
-    TkcText.new(@graph,MX/2,HEIGHT-max*ratio,:text => max.to_s)
-    TkcText.new(@graph,MX/2,HEIGHT-MY, :text => '0')
+    TkcText.new(@graph,MX/2,HEIGHT-max*ratio, text: max.to_s)
+    TkcText.new(@graph,MX/2,HEIGHT-MY, text: '0')
   end
 
   def clear

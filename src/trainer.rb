@@ -3,9 +3,9 @@
 
 class Trainer
   def about
-    TkDialog.new(:title => "Yet Another Typing Trainer",
-                 :message => COPYRIGHT,
-                 :buttons => ['continue'])
+    TkDialog.new(title:   "Yet Another Typing Trainer",
+                 message: COPYRIGHT,
+                 buttons: ['continue'])
   end
 
   def readme
@@ -14,16 +14,16 @@ class Trainer
     frame1.pack
 
     text = TkText.new(frame1)
-    text.configure(:width  => 40, :height => 30)
-    text.pack(:side => 'right')
+    text.configure(width: 40, height: 30)
+    text.pack(side: 'right')
 
     scr = TkScrollbar.new(frame1)
-    scr.pack(:side => 'left', :fill => 'y')
+    scr.pack(side: 'left', fill: 'y')
     text.yscrollbar(scr)
     File.foreach(README) do |line|
       text.insert('end', line)
     end
-    text.configure(:state => 'disabled')
+    text.configure(state: 'disabled')
   end
 
   def choose_image(glob)
@@ -60,12 +60,12 @@ class Trainer
     root.bind('KeyPress', proc{|k,n| key_press(k,n)},'%k','%N')
     #
     do_menu(root)
-    base = TkFrame.new(root, :relief => 'groove', :borderwidth =>2)
+    base = TkFrame.new(root, relief: 'groove', borderwidth: 2)
     base.pack
     @textarea = MyText.new(base,
-                           :background => 'white',
-                           :width  => @width,
-                           :height => @lines + 1)
+                           background: 'white',
+                           width:  @width,
+                           height: @lines + 1)
     @font = "Courier"
     @size = "14"
     if File.exists?(MY_FONT)
@@ -80,39 +80,39 @@ class Trainer
     meter_frame.pack
 
     @speed_meter = SpeedMeter.new(meter_frame)
-    @speed_meter.pack(:side => 'left')
+    @speed_meter.pack(side: 'left')
 
     @scale = TkScale.new(meter_frame,
-                       :orient => 'horizontal',
-                       :length => 600,
-                       :from   => 0,
-                       :to     => TIMEOUT,
-                       :tickinterval => TIMEOUT/2)
-    @scale.pack(:side =>'left')
+                       orient:  'horizontal',
+                       length:  600,
+                       from:    0,
+                       to:      TIMEOUT,
+                       tickinterval: TIMEOUT/2)
+    @scale.pack(side: 'left')
 
     @errorbox = TkLabel.new(meter_frame,
-                            :width=> 2, :text => '0', :foreground => BAD)
-    @errorbox.pack(:padx => 10, :side => 'right')
+                            width: 2, text: '0', foreground: BAD)
+    @errorbox.pack(padx: 10, side: 'right')
 
     graph_frame = TkFrame.new(root,
-                              :relief => 'groove',
-                              :borderwidth => 2)
+                              relief: 'groove',
+                              borderwidth: 2)
     graph_frame.pack
     @stat = MyStatus.new(graph_frame, @splash)
-    @stat.pack(:side => 'left')
+    @stat.pack(side: 'left')
 
     @scoreboard = Scoreboard.new(graph_frame, @druby, @contest)
-    @scoreboard.pack(:expand => 1,:fill => 'both')
+    @scoreboard.pack(expand: 1, fill: 'both')
     @scoreboard.splash
 
     insert()
 
     counts, points = trials()
-    TkDialog.new(:title => "contest",
-                 :message => "秘密練習以外は contest on にすること。\n
-これまでに #{counts} 回、練習しました。\n
-総合点は #{points} 点です。",
-                 :buttons => ['start'])
+    TkDialog.new(title: "contest",
+                 message: "これまでに #{counts} 回、練習しました。\n"+
+                 "総合点は #{points} 点です。\n"+
+                 "秘密練習は contest off で。",
+                 buttons: ['start'])
     menu_toggle_contest()
   end
 
@@ -130,9 +130,9 @@ class Trainer
 
   def do_menu(root)
     menu_frame = TkFrame.new(root,
-                             :relief=>'raised',
-                             :bd=>1)
-    menu_frame.pack(:side=>'top',:fill=>'x')
+                             relief: 'raised',
+                             bd: 1)
+    menu_frame.pack(side: 'top', fill: 'x')
     menu = [
       [['Yatt'],
        ['about...',proc{about},0],
@@ -176,17 +176,17 @@ class Trainer
        '---',
        ['remember font', proc{menu_save_font()}],
        ['reset font', proc{menu_reset_font()}]]]
-    TkMenubar.new(menu_frame, menu).pack(:side=>'top',:fill=>'x')
+    TkMenubar.new(menu_frame, menu).pack(side: 'top', fill: 'x')
   end
 
   def show_params
-    TkDialog.new(:title => 'yatt params',
-                 :message =>"ruby: #{RUBY_VERSION}
+    TkDialog.new(title:   'yatt params',
+                 message: "ruby: #{RUBY_VERSION}
 version: #{YATT_VERSION}
 date: #{DATE}
 lib: #{LIB}
 #{@druby}\n",
-                 :buttons => ['continue'])
+                 buttons: ['continue'])
   end
 
   def menu_global
@@ -314,15 +314,15 @@ lib: #{LIB}
   end
 
   def my_set_font()
-    @textarea.configure(:font=>"#{@font} #{@size}")
+    @textarea.configure(font: "#{@font} #{@size}")
   end
 
   def menu_percentile
     @stat.percentile
     TkDialog.new(
-      :title => "Percentile Graph",
-      :message => "次のトライアルからタイプミスグラフが100分率表示になります。",
-      :buttons => ['continue'])
+      title:   "Percentile Graph",
+      message: "次のトライアルからタイプミスグラフが100分率表示になります。",
+      buttons: ['continue'])
   end
 
   def insert()
@@ -503,15 +503,15 @@ lib: #{LIB}
     @scoreboard.update if @contest
 
     sleep(1)
-    ret = TkDialog.new(:title   => 'yet another type trainer',
-                 :message => msg,
-                 :buttons => 'continue').value
+    ret = TkDialog.new(title: 'yet another type trainer',
+                       message: msg,
+                       buttons: 'continue').value
     @trials += 1
     if @trials % TAKE_A_REST == 0
-      ret = TkDialog.new(:title   => 'yet another type trainer',
-                         :message => 'がんばってるな。
+      ret = TkDialog.new(title:   'yet another type trainer',
+                         message: 'がんばってるな。
 でも、休憩も必要だぞ。',
-                         :buttons => ['yes, quit', 'no, continue']).value
+                         buttons: ['yes, quit', 'no, continue']).value
       exit(0) if ret == 0
     end
     insert()
