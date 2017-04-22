@@ -1,4 +1,4 @@
-# VERSION: 0.78
+# VERSION: 0.80
 
 class Logger
   attr_reader :good, :ng, :start_time, :finish_time, :complete
