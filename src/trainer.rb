@@ -32,6 +32,7 @@ class Trainer
 
   # 長すぎ。
   def initialize(druby, lib)
+    @trials = 0
     @left_to_right = true
 
     @epilog = false
@@ -499,12 +500,20 @@ lib: #{LIB}
       @scoreboard.submit(@myid,score)
     end
 
-    #
     @scoreboard.update if @contest
+
     sleep(1)
     ret = TkDialog.new(:title   => 'yet another type trainer',
                  :message => msg,
                  :buttons => 'continue').value
+    @trials += 1
+    if @trials % TAKE_A_REST == 0
+      ret = TkDialog.new(:title   => 'yet another type trainer',
+                         :message => 'がんばってるな。
+でも、休憩も必要だぞ。',
+                         :buttons => ['yes, quit', 'no, continue']).value
+      exit(0) if ret == 0
+    end
     insert()
     @epilog = false
   end #epilog
