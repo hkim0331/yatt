@@ -34,13 +34,9 @@ YATT_IMG   = "yatt*.gif"
 GOOD = "green"
 BAD  = "red"
 
-RANKER     = 30
-
-if $debug
-  TIMEOUT = 10
-else
-  TIMEOUT = 60
-end
+RANKER      = 30
+TIMEOUT     = 60
+TAKE_A_REST = 10
 
 if File.exists?(File.join(ENV['HOME'], 'Library/yatt'))
   LIB = File.join(ENV['HOME'], 'Library/yatt')
@@ -109,6 +105,8 @@ while (arg = ARGV.shift)
     exit(1)
   when /--debug/
     $debug = true
+    TIMEOUT = 5
+    TAKE_A_REST = 2
   else
     usage(arg)
   end
