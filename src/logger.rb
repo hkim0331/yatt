@@ -51,14 +51,18 @@ class Logger
   end
 
   def score
-    debug = false
     w = 0.3
     time = diff_time()
-    sum_good = sum(@good)
-    sum_ng   = sum(@ng)
-    num_keys = sum_good + sum_ng
+    # sum_good = sum(@good)
+    # sum_ng   = sum(@ng)
+    # num_keys = sum_good + sum_ng
+    # return 0 if sum_good == 0
+    sum_good = @good.empty? ? 0 : sum(@good)
     return 0 if sum_good == 0
-    score=(w*sum_good*(sum_good.to_f/num_keys)**3*(num_keys/time)).floor
+    sum_ng = @ng.empty? ? 0 : sum(@good)
+    num_keys = sum_good + sum_ng
+    # this is yatt score.
+    score = (w*sum_good * (sum_good.to_f/num_keys)**3 * (num_keys/time)).floor
   end
 
   def highscore

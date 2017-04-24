@@ -34,7 +34,7 @@ BAD  = "red"
 
 RANKER      = 30
 TIMEOUT     = 60
-TAKE_A_REST = 10
+TAKE_A_REST = 20
 
 if File.exists?(File.join(ENV['HOME'], 'Library/yatt'))
   LIB = File.join(ENV['HOME'], 'Library/yatt')
@@ -106,7 +106,7 @@ while (arg = ARGV.shift)
     exit(1)
   when /--debug/
     $debug = true
-    TIMEOUT = 5
+    TIMEOUT = 3
     TAKE_A_REST = 2
   else
     usage(arg)
