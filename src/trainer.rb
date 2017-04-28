@@ -258,7 +258,7 @@ lib: #{LIB}
     File.foreach(TODAYS_SCORE) do |line|
       lst.push(line.chomp.to_i)
     end
-    menu_score(lst,Time.now.strftime("%Y-%m-%d"))
+    menu_score(lst, Time.now.strftime("%Y-%m-%d"))
   end
 
   def menu_total_score
