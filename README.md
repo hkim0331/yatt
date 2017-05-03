@@ -5,6 +5,14 @@
 mysql(mariadb) の grant all privileges ...
 さもないと Seqeul がどうののエラーでトンチンカンに時間を潰すだろう。
 
+## 2017-05-03
+
+「最近の傾向をみて警告を表示」に手をつける。
+
+* accuracy, history はそれぞれ、errors, records がよかったな。
+* ACCURACY_THRES 導入
+
+
 ## 2017-03-15
 
 * mbp2
@@ -271,4 +279,3 @@ $
 
 ---
 hkimura.
-

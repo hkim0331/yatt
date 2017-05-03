@@ -30,6 +30,35 @@ class Trainer
     Dir.glob(glob).shuffle[0]
   end
 
+  def errors_last(n)
+    errors = Array.new(n, 0)
+    i  = 0
+    File.foreach(ACCURACY) do |line|
+      error, rest = line.split(/ /, 2)
+      errors[i] = error.to_f
+      i = (i + 1) % n
+    end
+    if i == 0
+      errors[i .. n-1]
+    else
+      errors[i .. n-1] + errors[0 .. i-1]
+    end
+  end
+
+  def tendency(n)
+    ys = errors_last(n)
+debug ys.join(', ')
+    xs = (1 .. n).to_a
+
+    sx = xs.inject(:+)
+    sy = ys.inject(:+)
+    sx2 = xs.map{|x| x * x}.inject(:+)
+    sxy = [xs, ys].transpose.map{|xy| xy.inject(:*)}.inject(:+)
+
+    d = (n * sx2) - (sx * sx)
+    [ (n * sxy - sx* sy)/d, (sx2 * sy - sxy * sx)/d ]
+  end
+
   # 長すぎ。
   def initialize(druby, lib)
     @trials = 0
@@ -507,12 +536,16 @@ lib: #{LIB}
                        message: msg,
                        buttons: 'continue').value
     @trials += 1
-    if @trials % TAKE_A_REST == 0
+    tend = tendency(10)[0]
+debug "tend: #{tend}"
+    if @trials % TAKE_A_REST == 0 or tend > ACCURACY_THRES
       ret = TkDialog.new(title:   'yet another type trainer',
-                         message: 'がんばってるな。
-でも、休憩も必要だぞ。',
+                         message: "がんばってるな。
+でも、休憩も必要だぞ。(#{@trials}, #{tend})",
                          buttons: ['yes, quit', 'no, continue']).value
-      exit(0) if ret == 0
+      if ret == 0
+        exit(0)
+      end
     end
     insert()
     @epilog = false
