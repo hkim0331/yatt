@@ -1,5 +1,5 @@
 # coding: utf-8
-# VERSION: 0.82
+# VERSION: 0.90
 
 class Trainer
   def about
