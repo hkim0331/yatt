@@ -88,7 +88,7 @@ end
 # main starts here.
 #
 
-# FIXME:ssh portforwarding
+# FIXME: ssh portforwarding
 # こちらのポートがサーバから見えないとダメじゃないかな？
 #DRb.start_service('druby://127.0.0.1:23003')
 

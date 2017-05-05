@@ -188,6 +188,7 @@ end
 if $sqlite
   ds = Sequel.sqlite("../db/yatt.db")[:yatt]
 else
+  # FIXME
   ds = Sequel.connect("mysql2://yatt:yyy@#{DB}/yatt")[:yatt]
 end
 
