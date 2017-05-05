@@ -4,10 +4,6 @@
 # yatt (proxy) score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C) 2002-2017, Hiroshi Kimura.
-#
-# update 2012-04-02, icome connection.
-# 2012-04-22, rename yatt_server as yatt_monitor.
-#
 
 require 'drb/drb'
 require 'sequel'
@@ -184,17 +180,16 @@ while (arg = ARGV.shift)
   end
 end
 
-# 2015-04-02, db.melt => mariadb.melt
 if $sqlite
   ds = Sequel.sqlite("../db/yatt.db")[:yatt]
 else
-  # FIXME
-  ds = Sequel.connect("mysql2://yatt:yyy@#{DB}/yatt")[:yatt]
+  # must provide from outside
+  ds = Sequel.connect("mysql2://#{ENV['YATT_USER']}:#{ENV['YATT_PASSWORD']}@#{DB}/yatt")[:yatt]
 end
 
 begin
   DRb.start_service(druby, Monitor.new(ds, logfile))
-  puts "druby: #{DRb.uri}"
+  debug "druby: #{DRb.uri}"
   DRb.thread.join
 
 rescue => e
