@@ -183,7 +183,6 @@ end
 if $sqlite
   ds = Sequel.sqlite("../db/yatt.db")[:yatt]
 else
-  # must provide from outside
   ds = Sequel.connect("mysql2://#{ENV['YATT_USER']}:#{ENV['YATT_PASSWORD']}@#{DB}/yatt")[:yatt]
 end
 
