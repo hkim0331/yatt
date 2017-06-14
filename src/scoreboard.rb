@@ -28,7 +28,7 @@ class Scoreboard
     @remote = DRbObject.new(nil, @druby)
 
     if @remote.ping =~ /ok/
-      debug "druby ok"
+      puts  "druby ok" if ENV['YATT_DEBUG']
     else
       can_not_talk(@druby)
     end
@@ -97,9 +97,9 @@ class Scoreboard
 
   # changed: rankers is an array. [[hkim, [65, "2012-04-02"]]]
   def display(rankers)
-    debug "#{__method__}: rankers=#{rankers}"
+#    debug "#{__method__}: rankers=#{rankers}"
     if (rankers.empty?)
-      debug "rankers emty."
+#      debug "rankers emty."
       @text.configure(state: 'normal')
       @text.delete('1.0','end')
       @text.insert('end',"no entry.")
@@ -165,7 +165,7 @@ class Scoreboard
   # 2003.06.30,
   # changed 2012-04-21,
   def submit(myid, score)
-    debug "#{__method__}: #{myid}, #{score}"
+#    debug "#{__method__}: #{myid}, #{score}"
     if @remote
        @remote.put(myid,score,Time.now.strftime("%m/%d %H:%M"))
      end
@@ -190,4 +190,3 @@ class Scoreboard
   end
 
 end # Scoreboard
-

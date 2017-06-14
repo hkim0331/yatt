@@ -6,7 +6,7 @@
 # Copyright (C) 2002-2017 Hiroshi Kimura.
 #
 
-system("/edu/bin/xcowsay \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"") if File.exists?("/edu/bin/xcowsay")
+system("/edu/bin/xcowsay --time=8 \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"") if File.exists?("/edu/bin/xcowsay")
 
 require 'tk'
 require 'drb'
@@ -20,7 +20,7 @@ require_relative 'speed-meter'
 require_relative 'trainer'
 
 YATT_VERSION = '0.91'
-DATE = '2017-05-05'
+DATE = '2017-06-14'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
@@ -37,17 +37,10 @@ TIMEOUT     = 60
 TAKE_A_REST = 20
 ACCURACY_THRES = 0.5
 
-if File.exists?(File.join(ENV['HOME'], 'Library/yatt'))
-  LIB = File.join(ENV['HOME'], 'Library/yatt')
-elsif File.exists?('/edu/lib/yatt')
-  LIB = '/edu/lib/yatt'
-elsif File.exists?('/opt/lib/yatt')
-  LIB = '/opt/lib/yatt'
-elsif File.exists?('../lib')
-  LIB = '../lib'
-end
-
+LIB = [File.join(ENV['HOME'],'Library/yatt'),
+    '/edu/lib/yatt','/opt/lib/yatt/','../lib'].select{|x| File.exists?(x)}.first
 README       = File.join(LIB, "README")
+
 YATT_DIR     = File.join(ENV['HOME'], '.yatt')
 HISTORY      = File.join(YATT_DIR, 'history')
 TODAYS_SCORE = File.join(YATT_DIR, Time.now.strftime('%m-%d'))
@@ -56,9 +49,10 @@ MY_FONT      = File.join(YATT_DIR, 'font')
 
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
 
-def debug(s)
-  STDERR.puts s if $debug
-end
+# stop, 2017-06-14
+# def debug(s)
+#   STDERR.puts s if ENV['YATT_DEBUG']
+# end
 
 def usage(s)
   print <<EOU
@@ -88,16 +82,19 @@ end
 # main starts here.
 #
 
-# FIXME: ssh portforwarding
+# FIXME:ssh portforwarding
 # こちらのポートがサーバから見えないとダメじゃないかな？
-#DRb.start_service('druby://127.0.0.1:23003')
+#DRb.start_service('druby://127.0.0.1:23002')
 
 druby = DRUBY
 lib   = LIB
-$debug = false
 
 while (arg = ARGV.shift)
   case arg
+  when /--debug/
+    TIMEOUT = 3
+    TAKE_A_REST = 2
+    druby='druby://127.0.0.1:23002'
   when /--druby/
     druby = ARGV.shift
   when /--lib/
@@ -105,13 +102,11 @@ while (arg = ARGV.shift)
   when /--version/
     puts YATT_VERSION
     exit(1)
-  when /--debug/
-    $debug = true
-    TIMEOUT = 3
-#    TAKE_A_REST = 2
   else
     usage(arg)
   end
 end
+
+
 Trainer.new(druby, lib)
 Tk.mainloop

@@ -1,5 +1,3 @@
-# VERSION: 0.91
-
 class Logger
   attr_reader :good, :ng, :start_time, :finish_time, :complete
   attr_writer :complete
@@ -53,16 +51,16 @@ class Logger
   def score
     w = 0.3
     time = diff_time()
-    # sum_good = sum(@good)
-    # sum_ng   = sum(@ng)
-    # num_keys = sum_good + sum_ng
+    # sum_good = @good.empty? ? 0 : sum(@good)
     # return 0 if sum_good == 0
-    sum_good = @good.empty? ? 0 : sum(@good)
-    return 0 if sum_good == 0
-    sum_ng = @ng.empty? ? 0 : sum(@ng)
-    num_keys = sum_good + sum_ng
+    # sum_ng = @ng.empty? ? 0 : sum(@ng)
+    # num_keys = sum_good + sum_ng
+    sum_goods = goods()
+    sum_bads  = bads()
+    total = sum_goods + sum_bads
     # this is yatt score.
-    score = (w*sum_good * (sum_good.to_f/num_keys)**3 * (num_keys/time)).floor
+    #score = (w*sum_good * (sum_good.to_f/num_keys)**3 * (num_keys/time)).floor
+    (w * sum_goods * (sum_goods/total.to_f)**3 * (total/time)).floor
   end
 
   def highscore
@@ -78,16 +76,24 @@ class Logger
     @@highscore = 0
   end
 
+  # bug?
+  # def goods
+  #   sum(good)
+  # end
+  #
+  # def bads
+  #   sum(ng)
+  # end
+  #
+  # def sum(hsh)
+  #   hsh.values.sum
+  # end
   def goods
-    sum(good)
+    @good.values.sum
   end
 
   def bads
-    sum(ng)
-  end
-
-  def sum(hsh)
-    hsh.values.sum
+    @ng.values.sum
   end
 
   def accumulate
@@ -105,7 +111,6 @@ class Logger
       fp.puts "#{errors}\t#{Time.now}"
     end
   end
-  #
 
   def save(score)
     File.open(TODAYS_SCORE, "a") do |fp|

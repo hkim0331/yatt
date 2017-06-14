@@ -47,7 +47,7 @@ class Trainer
 
   def tendency(n)
     ys = errors_last(n)
-debug ys.join(', ')
+    puts ys.join(', ') if ENV['YATT_DEBUG']
     xs = (1 .. n).to_a
 
     sx = xs.inject(:+)
@@ -166,7 +166,7 @@ debug ys.join(', ')
       [['Yatt'],
        ['about...',proc{about},0],
        ['readme',proc{readme},0],
-       ['debug', proc{show_params},0], # FIXME: debug on/off ができるように。
+       ['params', proc{show_params},0],
        '---',
        # ['New', proc{menu_new},0], # 新しいテキストを挿入する。
        # ['Pref'],
@@ -485,6 +485,7 @@ lib: #{LIB}
     end
     score   = @logger.score
     strokes = @logger.goods + @logger.bads
+    puts "strokes: #{strokes}" if ENV['YATT_DEBUG']
     errors  = if @logger.goods == 0
                 100.0
               else
@@ -537,7 +538,7 @@ lib: #{LIB}
                        buttons: 'continue').value
     @trials += 1
     tend = tendency(10)[0]
-debug "tend: #{tend}"
+    puts "tend: #{tend}" if ENV['YATT_DEBUG']
     if @trials % TAKE_A_REST == 0 or tend > ACCURACY_THRES
       ret = TkDialog.new(title:   'yet another type trainer',
                          message: "がんばってるな。

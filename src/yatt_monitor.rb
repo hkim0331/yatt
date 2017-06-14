@@ -4,21 +4,21 @@
 # yatt (proxy) score server version 2
 # programmed by hkim@melt.kyutech.ac.jp
 # Copyright (C) 2002-2017, Hiroshi Kimura.
+#
+# update 2012-04-02, icome connection.
+# 2012-04-22, rename yatt_server as yatt_monitor.
+#
 
 require 'drb/drb'
 require 'sequel'
 
 YATT_VERSION = '0.91'
-DATE = '2017-05-05'
+DATE = '2017-06-14'
 
 DRUBY = "druby://150.69.90.82:23002"
 DB    = "127.0.0.1"
 LOG   = "/srv/yatt/log/yatt.log"
 BEST  = 30
-
-def debug(s)
-  STDERR.puts "debug: " + s if $debug
-end
 
 def usage
   print <<EOF
@@ -33,9 +33,6 @@ OPTIONS(default value)
   --log file
         log yatt/yatt_server communication into file.
         file must be gives as an absolute path(../log/yyyy-mm-dd.log).
-
-  --debug
-        debug mode.
 
 EOF
   exit 1
@@ -163,32 +160,32 @@ end
 
 druby   = DRUBY
 logfile = LOG
+debug   = false
 
-$sqlite = false
 while (arg = ARGV.shift)
   case arg
+  when /--debug/
+    debug = true
   when /\A--druby\Z/
     druby = ARGV.shift
   when /\A--log\Z/
     logfile = ARGV.shift
-  when /\A--sqlite/
-    $sqite = true
-  when /\A--debug/
-    $debug = true
   else
     usage
   end
 end
 
-if $sqlite
+if debug
   ds = Sequel.sqlite("../db/yatt.db")[:yatt]
+  druby = 'druby://127.0.0.1:23002'
+  logfile = 'yatt_monitor.log'
 else
-  ds = Sequel.connect("mysql2://#{ENV['YATT_USER']}:#{ENV['YATT_PASSWORD']}@#{DB}/yatt")[:yatt]
+  ds = Sequel.connect("mysql2://#{ENV['YATT_USER']}:#{ENV['YATT_PASSEORD']}@#{DB}/yatt")[:yatt]
 end
 
 begin
   DRb.start_service(druby, Monitor.new(ds, logfile))
-  debug "druby: #{DRb.uri}"
+  puts "druby: #{DRb.uri}"
   DRb.thread.join
 
 rescue => e

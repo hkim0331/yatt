@@ -5,6 +5,18 @@
 mysql(mariadb) の grant all privileges ...
 さもないと Seqeul がどうののエラーでトンチンカンに時間を潰すだろう。
 
+## 2017-06-14
+
+* LIB の選択を Array.select.firstで。
+* $debug やめる。
+* def debug やめる。
+* bugfix logger: goods() and bads()
+* tag 0.91
+
+tmac2 のリモートリポジトリを guthub に変更していた。
+imac3 のソースを tmac2 に手動マージ。
+
+
 ## 2017-05-03
 
 「最近の傾向をみて警告を表示」に手をつける。
