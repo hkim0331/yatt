@@ -6,7 +6,7 @@
 # Copyright (C) 2002-2017 Hiroshi Kimura.
 #
 
-system("/edu/bin/xcowsay \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"") if File.exists?("/edu/bin/xcowsay")
+system("/edu/bin/xcowsay \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ") if File.exists?("/edu/bin/xcowsay")
 
 require 'tk'
 require 'drb'
@@ -81,10 +81,6 @@ end
 #
 # main starts here.
 #
-
-# FIXME:ssh portforwarding
-# こちらのポートがサーバから見えないとダメじゃないかな？
-#DRb.start_service('druby://127.0.0.1:23003')
 
 druby = DRUBY
 lib   = LIB

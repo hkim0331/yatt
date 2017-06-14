@@ -61,12 +61,13 @@ class Trainer
 
   # 長すぎ。
   def initialize(druby, lib)
+    @druby = druby
+    @lib   = lib
+
     @trials = 0
     @left_to_right = true
 
     @epilog = false
-    @druby = druby
-    @lib   = lib
     @myid  = ENV['USER']
 
     @windows = nil
