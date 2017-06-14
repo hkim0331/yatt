@@ -15,6 +15,11 @@ class Scoreboard
     @stat = stat
     @my_id = ENV['USER']
 
+    unless @remote.ping =~ /ok/
+      can_not_talk(@druby)
+      @remote = nil
+    end
+
     @mode = WEEKLY
     @text = TkText.new(parent,
                      takefocus:  0,
@@ -26,13 +31,6 @@ class Scoreboard
     @text.yscrollbar(@scr)
     highlight("highlight")
 
-#    DRb.start_service
-#    @remote = DRbObject.new(nil, @druby)
-    raise unless @remote.ping =~ /ok/
-
-  rescue
-    can_not_talk(@druby)
-    @remote = nil
   end
 
   def global
