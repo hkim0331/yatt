@@ -10,6 +10,10 @@ class Scoreboard
   MYCLASS= :myclass
 
   def initialize(parent, druby, stat)
+    @druby = druby
+    @stat = stat
+    @my_id = ENV['USER']
+
     @mode = WEEKLY
     @text = TkText.new(parent,
                      takefocus:  0,
@@ -17,12 +21,9 @@ class Scoreboard
                      width:  WIDTH,
                      height: HEIGHT,
                      state: 'disabled')
-    @stat = stat
     @scr = TkScrollbar.new(parent)
     @text.yscrollbar(@scr)
     highlight("highlight")
-    @druby = druby
-    @my_id = ENV['USER']
 
     DRb.start_service
     @remote = DRbObject.new(nil, @druby)
