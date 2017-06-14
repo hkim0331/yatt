@@ -26,12 +26,7 @@ class Scoreboard
 
     DRb.start_service
     @remote = DRbObject.new(nil, @druby)
-
-    if @remote.ping =~ /ok/
-      puts  "druby ok" if ENV['YATT_DEBUG']
-    else
-      can_not_talk(@druby)
-    end
+    raise unless @remote.ping =~ /ok/
 
   rescue
     can_not_talk(@druby)
