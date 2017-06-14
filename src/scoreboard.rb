@@ -15,11 +15,6 @@ class Scoreboard
     @stat = stat
     @my_id = ENV['USER']
 
-    unless @remote.ping =~ /ok/
-      can_not_talk(@druby)
-      @remote = nil
-    end
-
     @mode = WEEKLY
     @text = TkText.new(parent,
                      takefocus:  0,
@@ -31,6 +26,10 @@ class Scoreboard
     @text.yscrollbar(@scr)
     highlight("highlight")
 
+    raise unless @remote.ping =~ /ok/
+  rescue
+    can_not_talk(@druby)
+    @remote = nil
   end
 
   def global
@@ -92,9 +91,7 @@ class Scoreboard
 
   # changed: rankers is an array. [[hkim, [65, "2012-04-02"]]]
   def display(rankers)
-#    debug "#{__method__}: rankers=#{rankers}"
     if (rankers.empty?)
-#      debug "rankers emty."
       @text.configure(state: 'normal')
       @text.delete('1.0','end')
       @text.insert('end',"no entry.")
@@ -143,7 +140,6 @@ class Scoreboard
     end
   end
 
-  # was 'rank'
   def status(user, trials)
     return if (@remote.nil?)
     if (ans = @remote.status(user))
@@ -160,7 +156,6 @@ class Scoreboard
   # 2003.06.30,
   # changed 2012-04-21,
   def submit(myid, score)
-#    debug "#{__method__}: #{myid}, #{score}"
     if @remote
        @remote.put(myid,score,Time.now.strftime("%m/%d %H:%M"))
      end

@@ -108,11 +108,7 @@ if ENV['YATT_DEBUG']
   TAKE_A_REST = 2
 end
 
-begin
-  DRb.start_service
-  remote = DRbObject.new(nil, druby)
-rescue
-  remote = nil
-end
+DRb.start_service
+remote = DRbObject.new(nil, druby)
 Trainer.new(druby, remote, lib)
 Tk.mainloop
