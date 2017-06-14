@@ -19,8 +19,8 @@ require_relative 'scoreboard'
 require_relative 'speed-meter'
 require_relative 'trainer'
 
-YATT_VERSION = '0.91'
-DATE = '2017-06-14'
+YATT_VERSION = '0.94'
+DATE = '2017-06-15'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
