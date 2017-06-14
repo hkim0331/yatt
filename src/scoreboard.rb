@@ -9,8 +9,9 @@ class Scoreboard
   WEEKLY = :weekly
   MYCLASS= :myclass
 
-  def initialize(parent, druby, stat)
+  def initialize(parent, druby, remote, stat)
     @druby = druby
+    @remote = remote
     @stat = stat
     @my_id = ENV['USER']
 
@@ -25,8 +26,8 @@ class Scoreboard
     @text.yscrollbar(@scr)
     highlight("highlight")
 
-    DRb.start_service
-    @remote = DRbObject.new(nil, @druby)
+#    DRb.start_service
+#    @remote = DRbObject.new(nil, @druby)
     raise unless @remote.ping =~ /ok/
 
   rescue

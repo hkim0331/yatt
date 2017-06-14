@@ -60,7 +60,7 @@ class Trainer
   end
 
   # 長すぎ。
-  def initialize(druby, lib)
+  def initialize(druby, remote, lib)
     @druby = druby
     @lib   = lib
     @myid  = ENV['USER']
@@ -131,7 +131,9 @@ class Trainer
     @stat = MyStatus.new(graph_frame, @splash)
     @stat.pack(side: 'left')
 
-    @scoreboard = Scoreboard.new(graph_frame, @druby, @contest)
+    #CHANGED
+    @scoreboard = Scoreboard.new(graph_frame, druby, remote, @contest)
+    #
     @scoreboard.pack(expand: 1, fill: 'both')
     @scoreboard.splash
 
