@@ -160,27 +160,26 @@ end
 
 druby   = DRUBY
 logfile = LOG
-debug   = false
 
+$sqlite = false
 while (arg = ARGV.shift)
   case arg
-  when /--debug/
-    debug = true
   when /\A--druby\Z/
     druby = ARGV.shift
   when /\A--log\Z/
     logfile = ARGV.shift
+  when /\A--sqlite/
+    $sqite = true
   else
     usage
   end
 end
 
-if debug
+# 2015-04-02, db.melt => mariadb.melt
+if $sqlite
   ds = Sequel.sqlite("../db/yatt.db")[:yatt]
-  druby = 'druby://127.0.0.1:23002'
-  logfile = 'yatt_monitor.log'
 else
-  ds = Sequel.connect("mysql2://#{ENV['YATT_USER']}:#{ENV['YATT_PASSEORD']}@#{DB}/yatt")[:yatt]
+  ds = Sequel.connect("mysql2://yatt:yyy@#{DB}/yatt")[:yatt]
 end
 
 begin

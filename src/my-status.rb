@@ -1,5 +1,3 @@
-# VERSION: 0.91
-
 class MyStatus <TkCanvas
 
   WIDTH    = 420

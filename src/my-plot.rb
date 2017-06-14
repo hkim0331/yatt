@@ -1,5 +1,3 @@
-# VERSION: 0.91
-
 class MyPlot
   WIDTH  = 300
   HEIGHT = 200
