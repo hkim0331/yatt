@@ -88,12 +88,15 @@ class Logger
   # def sum(hsh)
   #   hsh.values.sum
   # end
+
+  # ruby 2.2.7 returns nil when hash has no data.
+  # ruby 2.4.1 returns 0.
   def goods
-    @good.values.sum
+    @good.values.sum or 0
   end
 
   def bads
-    @ng.values.sum
+    @ng.values.sum or 0
   end
 
   def accumulate
