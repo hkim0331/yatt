@@ -19,7 +19,7 @@ require_relative 'yatt-plot'
 require_relative 'yatt-status'
 require_relative 'yatt-text'
 
-YATT_VERSION = '0.94'
+YATT_VERSION = '0.95'
 DATE = '2017-06-15'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
@@ -59,12 +59,18 @@ EOU
 end
 
 # ruby 2.2 Array class does not recognize sum.
+# [].sum throw exception.
 begin
   [1,2,3].sum
+  [].sum
 rescue
   module Summable
     def sum
-      inject(:+)
+      if self.empty?
+        0
+      else
+        inject(:+)
+      end
     end
   end
 

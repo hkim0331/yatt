@@ -48,18 +48,13 @@ class Logger
     @complete && (sum(@ng)==0)
   end
 
+  # this is yatt score.
   def score
     w = 0.3
     time = diff_time()
-    # sum_good = @good.empty? ? 0 : sum(@good)
-    # return 0 if sum_good == 0
-    # sum_ng = @ng.empty? ? 0 : sum(@ng)
-    # num_keys = sum_good + sum_ng
     sum_goods = goods()
     sum_bads  = bads()
     total = sum_goods + sum_bads
-    # this is yatt score.
-    #score = (w*sum_good * (sum_good.to_f/num_keys)**3 * (num_keys/time)).floor
     (w * sum_goods * (sum_goods/total.to_f)**3 * (total/time)).floor
   end
 
@@ -76,36 +71,12 @@ class Logger
     @@highscore = 0
   end
 
-  # bug?
-  # def goods
-  #   sum(good)
-  # end
-  #
-  # def bads
-  #   sum(ng)
-  # end
-  #
-  # def sum(hsh)
-  #   hsh.values.sum
-  # end
-
-  # ruby 2.2.7 returns nil when hash has no data.
-  # ruby 2.4.1 returns 0.
   def goods
-    hash_values_sum(@good)
+    @good.values.sum
   end
 
   def bads
-    hash_values_sum(@ng)
-  end
-
-  def hash_values_sum(h)
-    v = h.values
-    if v.empty?
-      0
-    else
-      v.sum
-    end
+    @ng.values.sum
   end
 
   def accumulate
