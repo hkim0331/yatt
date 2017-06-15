@@ -12,12 +12,12 @@ require 'tk'
 require 'drb'
 
 require_relative 'logger'
-require_relative 'my-plot'
-require_relative 'my-status'
-require_relative 'my-text'
 require_relative 'scoreboard'
 require_relative 'speed-meter'
 require_relative 'trainer'
+require_relative 'yatt-plot'
+require_relative 'yatt-status'
+require_relative 'yatt-text'
 
 YATT_VERSION = '0.94'
 DATE = '2017-06-15'
@@ -48,11 +48,6 @@ ACCURACY     = File.join(YATT_DIR, 'accuracy')
 MY_FONT      = File.join(YATT_DIR, 'font')
 
 Dir.mkdir(YATT_DIR) unless File.directory?(YATT_DIR)
-
-# stop, 2017-06-14
-# def debug(s)
-#   STDERR.puts s if ENV['YATT_DEBUG']
-# end
 
 def usage(s)
   print <<EOU

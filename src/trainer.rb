@@ -542,8 +542,7 @@ lib: #{LIB}
     puts "tend: #{tend}" if ENV['YATT_DEBUG']
     if @trials % TAKE_A_REST == 0 or tend > ACCURACY_THRES
       ret = TkDialog.new(title:   'yet another type trainer',
-                         message: "がんばってるな。
-でも、休憩も必要だぞ。(#{@trials}, #{tend})",
+                         message: 'がんばってるな。休憩も必要だぞ。',
                          buttons: ['yes, quit', 'no, continue']).value
       if ret == 0
         exit(0)

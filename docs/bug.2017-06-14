@@ -1,0 +1,23 @@
+TypeError: nil can't be coerced into Fixnum
+---< backtrace of Ruby side >-----
+/auto/edu/lib/yatt/logger.rb:60:in `+'
+/auto/edu/lib/yatt/logger.rb:60:in `score'
+/auto/edu/lib/yatt/trainer.rb:487:in `epilog'
+/auto/edu/lib/yatt/trainer.rb:434:in `key_press'
+/auto/edu/lib/yatt/trainer.rb:88:in `block in initialize'
+/edu/lib/ruby/2.2.0/tk/event.rb:474:in `call'
+/edu/lib/ruby/2.2.0/tk/event.rb:474:in `eval_cmd'
+/edu/lib/ruby/2.2.0/tk/event.rb:474:in `block in install_bind_for_event_class'
+/edu/lib/ruby/2.2.0/tk.rb:1455:in `call'
+/edu/lib/ruby/2.2.0/tk.rb:1455:in `eval_cmd'
+/edu/lib/ruby/2.2.0/tk.rb:1455:in `cb_eval'
+/edu/lib/ruby/2.2.0/tk.rb:1402:in `call'
+/edu/lib/ruby/2.2.0/tk.rb:1606:in `block in callback'
+/edu/lib/ruby/2.2.0/tk.rb:1605:in `catch'
+/edu/lib/ruby/2.2.0/tk.rb:1605:in `callback'
+/edu/lib/ruby/2.2.0/tk.rb:1300:in `mainloop'
+/edu/lib/ruby/2.2.0/tk.rb:1300:in `block in <module:TkCore>'
+---< backtrace of Tk side >-------
+    invoked from within
+"rb_out c00001 57 32"
+    (command bound to event)

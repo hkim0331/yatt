@@ -92,11 +92,20 @@ class Logger
   # ruby 2.2.7 returns nil when hash has no data.
   # ruby 2.4.1 returns 0.
   def goods
-    @good.values.sum or 0
+    hash_values_sum(@good)
   end
 
   def bads
-    @ng.values.sum or 0
+    hash_values_sum(@ng)
+  end
+
+  def hash_values_sum(h)
+    v = h.values
+    if v.empty?
+      0
+    else
+      v.sum
+    end
   end
 
   def accumulate

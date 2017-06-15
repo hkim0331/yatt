@@ -1,9 +1,6 @@
 # Yatt (Yet Another Typing Tutor)
 
-## DON'T FORGET
-
-mysql(mariadb) の grant all privileges ...
-さもないと Seqeul がどうののエラーでトンチンカンに時間を潰すだろう。
+これは README というより、Changelog だわな。
 
 ## 2017-06-14
 
@@ -16,6 +13,11 @@ mysql(mariadb) の grant all privileges ...
 tmac2 のリモートリポジトリを guthub に変更していた。
 imac3 のソースを tmac2 に手動マージ。
 
+
+## DON'T FORGET
+
+mysql(mariadb) の grant all privileges ...
+さもないと Seqeul がどうののエラーでトンチンカンに時間を潰すだろう。
 
 ## 2017-05-03
 
