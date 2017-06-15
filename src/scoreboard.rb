@@ -1,5 +1,5 @@
 # coding: utf-8
-# VERSION: 0.95
+# VERSION: 0.96
 
 class Scoreboard
 
