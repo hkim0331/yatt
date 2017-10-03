@@ -2,6 +2,40 @@
 
 これは README というより、Changelog だわな。
 
+## 2017-10-03
+
+機械制御　16104114 溝口竜馬
+yattのエラーについての詳細
+
+```
+NoMethodError: undefined method `sum' for #<Logger:0x0055b926b28ab0>
+---< backtrace of Ruby side >-----
+/auto/edu/lib/yatt/logger.rb:48:in `perfect?'
+/auto/edu/lib/yatt/trainer.rb:513:in `epilog'
+/auto/edu/lib/yatt/trainer.rb:448:in `key_press'
+/auto/edu/lib/yatt/trainer.rb:88:in `block in initialize'
+/edu/lib/ruby/2.2.0/tk/event.rb:474:in `call'
+/edu/lib/ruby/2.2.0/tk/event.rb:474:in `eval_cmd'
+/edu/lib/ruby/2.2.0/tk/event.rb:474:in `block in install_bind_for_event_class'
+/edu/lib/ruby/2.2.0/tk.rb:1455:in `call'
+/edu/lib/ruby/2.2.0/tk.rb:1455:in `eval_cmd'
+/edu/lib/ruby/2.2.0/tk.rb:1455:in `cb_eval'
+/edu/lib/ruby/2.2.0/tk.rb:1402:in `call'
+/edu/lib/ruby/2.2.0/tk.rb:1606:in `block in callback'
+/edu/lib/ruby/2.2.0/tk.rb:1605:in `catch'
+/edu/lib/ruby/2.2.0/tk.rb:1605:in `callback'
+/edu/lib/ruby/2.2.0/tk.rb:1300:in `mainloop'
+/edu/lib/ruby/2.2.0/tk.rb:1300:in `block in <module:TkCore>'
+---< backtrace of Tk side >-------
+    invoked from within
+"rb_out c00001 36 65293"
+    (command bound to event)
+```
+
+```ruby
+sum(@ng) => @ng.values.inject(:+)
+```
+
 ## 2017-06-14
 
 * LIB の選択を Array.select.firstで。
