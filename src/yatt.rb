@@ -19,8 +19,8 @@ require_relative 'yatt-plot'
 require_relative 'yatt-status'
 require_relative 'yatt-text'
 
-YATT_VERSION = '0.96'
-DATE = '2017-06-15'
+YATT_VERSION = '0.97'
+DATE = '2017-10-03'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
