@@ -1,4 +1,4 @@
-# VERSION: 0.96
+# VERSION: 0.97
 
 class SpeedMeter
   include Math

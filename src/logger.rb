@@ -45,7 +45,7 @@ class Logger
   end
 
   def perfect?
-    @complete && (sum(@ng)==0)
+    @complete && (@ng.values.inject(:+)==0)
   end
 
   # this is yatt score.
