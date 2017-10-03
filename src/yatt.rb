@@ -6,7 +6,9 @@
 # Copyright (C) 2002-2017 Hiroshi Kimura.
 #
 
-system("/edu/bin/xcowsay --time=8 \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ") if File.exists?("/edu/bin/xcowsay")
+if File.exists?("/edu/bin/xcowsay")
+  system("/edu/bin/xcowsay --time=8 \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ")
+end
 
 require 'tk'
 require 'drb'
@@ -19,8 +21,8 @@ require_relative 'yatt-plot'
 require_relative 'yatt-status'
 require_relative 'yatt-text'
 
-YATT_VERSION = '0.96'
-DATE = '2017-06-15'
+YATT_VERSION = '0.97'
+DATE = '2017-09-30'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
@@ -103,6 +105,7 @@ end
 if ENV['YATT_DEBUG']
   TIMEOUT = 3
   TAKE_A_REST = 2
+#  druby = 'druby://127.0.0.1:23002'
 end
 
 DRb.start_service
