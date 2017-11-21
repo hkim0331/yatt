@@ -19,7 +19,7 @@ module TkItemConfigOptkeys
 end
 require 'drb'
 
-require_relative 'logger'
+require_relative 'yatt_logger'
 require_relative 'scoreboard'
 require_relative 'speed-meter'
 require_relative 'trainer'
@@ -103,15 +103,13 @@ while (arg = ARGV.shift)
   when /--version/
     puts YATT_VERSION
     exit(1)
+  when /--debug/
+    druby = 'druby://127.0.0.1:23002'
+    TIMEOUT = 3
+    TAKE_A_REST = 2
   else
     usage(arg)
   end
-end
-
-if ENV['YATT_DEBUG']
-  TIMEOUT = 3
-  TAKE_A_REST = 2
-#  druby = 'druby://127.0.0.1:23002'
 end
 
 DRb.start_service
