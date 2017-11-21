@@ -6,7 +6,7 @@
 # Copyright (C) 2002-2017 Hiroshi Kimura.
 #
 
-system("/edu/bin/xcowsay \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ") if File.exists?("/edu/bin/xcowsay")
+system("/edu/bin/xcowsay --time=8 \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ") if File.exists?("/edu/bin/xcowsay")
 
 require 'tk'
 # thanks https://stackoverflow.com/questions/43011258/ruby-tks-canvas-and-shapes-are-bugging-out
