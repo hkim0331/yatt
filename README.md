@@ -4,9 +4,6 @@
 
 ## 2017-10-03
 
-機械制御　16104114 溝口竜馬
-yattのエラーについての詳細
-
 ```
 NoMethodError: undefined method `sum' for #<Logger:0x0055b926b28ab0>
 ---< backtrace of Ruby side >-----
