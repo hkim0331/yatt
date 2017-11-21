@@ -9,6 +9,12 @@
 system("/edu/bin/xcowsay \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ") if File.exists?("/edu/bin/xcowsay")
 
 require 'tk'
+# thanks https://stackoverflow.com/questions/43011258/ruby-tks-canvas-and-shapes-are-bugging-out
+module TkItemConfigOptkeys
+    def itemconfig_hash_kv(id, keys, enc_mode = [], conf = [])
+        hash_kv(__conv_item_keyonly_opts(id, keys), enc_mode, conf)
+    end
+end
 require 'drb'
 
 require_relative 'logger'
