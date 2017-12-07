@@ -1,0 +1,15 @@
+[Unit]
+Description = yatt monitor daemon
+
+[Service]
+WorkingDirectory = /srv/yatt/bin
+Environment=YATT_USER=yatt
+Environment=YATT_PASSWORD=yyy
+ExecStart = /srv/yatt/bin/yatt_monitor.sh --log /srv/log/yatt.log
+Restart = always
+TimeoutSec = 300
+Type = simple
+User = hkim
+
+[Install]
+WantedBy = multi-user.target
