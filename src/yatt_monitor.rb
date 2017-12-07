@@ -11,9 +11,10 @@
 
 require 'drb/drb'
 require 'sequel'
+require 'logger'
 
-YATT_VERSION = '0.97'
-DATE = '2017-10-03'
+YATT_VERSION = '1.0.1'
+DATE = '2017-11-21'
 
 DRUBY = "druby://150.69.90.82:23002"
 DB    = "127.0.0.1"
@@ -23,7 +24,7 @@ BEST  = 30
 def usage
   print <<EOF
 USAGE
-  #{0} [OPTION]...
+  #{$0} [OPTION]...
 
 OPTIONS(default value)
 
@@ -47,7 +48,8 @@ class Monitor
   def initialize(ds, logfile)
     @score   = Hash.new(0)
     @ds = ds
-    @logfile = logfile
+    @log = Logger.new(logfile)
+    @log.level = Logger::INFO
   end
 
   def clear
@@ -66,9 +68,7 @@ class Monitor
   # changed: 2012-04-21, yatt から最高点以外のデータも送られてくる。
   # その変更に対応すること。
   def put(name, score, time)
-    File.open(@logfile,"a") do |fp|
-      fp.puts "#{time} #{name} #{score}"
-    end
+    @log.info("#{name} #{score}")
     @ds.insert(uid: name,
                score: score,
                updated_at: Time.now.strftime("%Y-%m-%d %H:%M:%S"))
@@ -169,7 +169,11 @@ while (arg = ARGV.shift)
   when /\A--log\Z/
     logfile = ARGV.shift
   when /\A--sqlite/
-    $sqite = true
+    $sqlite = true
+  when /\A--debug/
+    $sqlite = true
+    logfile = STDOUT
+    druby = 'druby://127.0.0.1:23002'
   else
     usage
   end

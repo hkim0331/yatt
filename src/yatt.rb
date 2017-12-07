@@ -6,7 +6,9 @@
 # Copyright (C) 2002-2017 Hiroshi Kimura.
 #
 
-system("/edu/bin/xcowsay --time=8 \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ") if File.exists?("/edu/bin/xcowsay")
+if File.exists?("/edu/bin/xcowsay")
+  system("/edu/bin/xcowsay --time=8 \"心を落ち着け、起動を待とう。\n戦いの日は近い。\n情セの PC は速くない。\"& ")
+end
 
 require 'tk'
 # thanks https://stackoverflow.com/questions/43011258/ruby-tks-canvas-and-shapes-are-bugging-out
@@ -17,7 +19,7 @@ module TkItemConfigOptkeys
 end
 require 'drb'
 
-require_relative 'logger'
+require_relative 'yatt_logger'
 require_relative 'scoreboard'
 require_relative 'speed-meter'
 require_relative 'trainer'
@@ -25,8 +27,8 @@ require_relative 'yatt-plot'
 require_relative 'yatt-status'
 require_relative 'yatt-text'
 
-YATT_VERSION = '0.97'
-DATE = '2017-10-03'
+YATT_VERSION = '1.0.1'
+DATE = '2017-11-21'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2017.\n"
@@ -101,14 +103,13 @@ while (arg = ARGV.shift)
   when /--version/
     puts YATT_VERSION
     exit(1)
+  when /--debug/
+    druby = 'druby://127.0.0.1:23002'
+    TIMEOUT = 3
+    TAKE_A_REST = 2
   else
     usage(arg)
   end
-end
-
-if ENV['YATT_DEBUG']
-  TIMEOUT = 3
-  TAKE_A_REST = 2
 end
 
 DRb.start_service
