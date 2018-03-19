@@ -1,5 +1,6 @@
 [Unit]
 Description = yatt monitor daemon
+Wants=mysql.service
 
 [Service]
 WorkingDirectory = /srv/yatt/bin
