@@ -175,13 +175,12 @@ while (arg = ARGV.shift)
   when /\A--debug/
     $sqlite = true
     logfile = STDOUT
-    druby = 'druby://127.0.0.1:23002'
+    druby = 'druby://127.0.0.1:4001'
   else
     usage
   end
 end
 
-# 2015-04-02, db.melt => mariadb.melt
 if $sqlite
   ds = Sequel.sqlite("../db/yatt.db")[:yatt]
 else

@@ -4,13 +4,13 @@ Wants=mysql.service
 
 [Service]
 WorkingDirectory = /srv/yatt/bin
-Environment=YATT_USER=yatt
-Environment=YATT_PASSWORD=yyy
-ExecStart = /srv/yatt/bin/yatt_monitor.sh --log /srv/log/yatt.log
+Environment = YATT_USER = yatt
+Environment = YATT_PASSWORD = yyy
+ExecStart = /srv/yatt/bin/yatt-monitor.sh --log /srv/yatt/log/yatt.log
 Restart = always
 TimeoutSec = 300
 Type = simple
-User = hkim
+User = ubuntu
 
 [Install]
 WantedBy = multi-user.target

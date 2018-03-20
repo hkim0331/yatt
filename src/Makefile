@@ -33,10 +33,10 @@ linux:
 monitor: gems
 	mkdir -p /srv/yatt/bin /srv/yatt/log
 	install -m 0755 yatt_monitor.rb /srv/yatt/bin
-	@echo 'do not forget to open monitor port(default 23002/tcp).'
-# systemd.
-#	install -m 0755 yatt_monitor.service /etc/init.d/yatt_monitor
-#	update-rc.d yatt_monitor defaults
+	install yatt-monitor.service /etc/systemd/system/
+	systemctl enable yatt-monitor
+	systemctl start yatt-monitor
+	@echo 'do not forget to open monitor port(default 4001/tcp).'
 
 gems:
 	gem install sequel mysql2
