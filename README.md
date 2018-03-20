@@ -2,6 +2,22 @@
 
 これは README というより、Changelog だわな。
 
+## 2018-03-20 dbs->db 移行に関する調整
+
+* macOS + ruby 2.1.10 で動くか？
+  → yes.
+* macOS + ruby 2.2.9 で動くか？
+  → yes.
+* druby://150.69.90.82:23002 を変更しなければ。
+
+* db にruby 入れるくらいなら ssh ポートフォワードでいけないか？
+
+* mint linux で apt install ruby2.3-tcltk のあと、ruby yatt.rb はいけ
+  た。→ Makefile の linuxエントリーを書き換えないと。
+
+* sudo make linux で、*.rb も *.txt も /opt/lib/yatt/ にコピーはどうか
+  な？
+
 ## 2017-11-21
 
 druby はポート転送できるか？単純にはできなかったような。

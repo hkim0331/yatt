@@ -22,12 +22,13 @@ isc:
 #!/edu/bin/ruby' /edu/bin/yatt
 
 linux:
-	mkdir -p /opt/lib/yatt
+	mkdir -p /opt/lib/yatt /opt/bin
 	install -m 0755 *.rb /opt/lib/yatt
 	${RM} /opt/bin/yatt
 	ln -s /opt/lib/yatt/yatt.rb /opt/bin/yatt
-	sed -i --follow-symlinks '1 c\
-#!/opt/bin/ruby' /opt/bin/yatt
+# with ruby2.3-tcltk installed, yatt works. 2018-03-20
+#	sed -i --follow-symlinks '1 c\
+##!/opt/bin/ruby' /opt/bin/yatt
 
 monitor: gems
 	mkdir -p /srv/yatt/bin /srv/yatt/log

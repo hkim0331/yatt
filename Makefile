@@ -1,4 +1,4 @@
-all: install
+fall: install
 
 install:
 	@echo "'make linux' to install on linux."

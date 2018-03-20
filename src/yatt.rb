@@ -3,7 +3,7 @@
 #
 # yatt: yet another typing trainer
 # programmed by Hiroshi.Kimura@melt.kyutech.ac.jp
-# Copyright (C) 2002-2017 Hiroshi Kimura.
+# Copyright (C) 2002-2018 Hiroshi Kimura.
 #
 
 if File.exists?("/edu/bin/xcowsay")
@@ -31,9 +31,9 @@ YATT_VERSION = '1.0.1'
 DATE = '2017-11-21'
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
-Copyright (C) 2002-2017.\n"
+Copyright (C) 2002-2018.\n"
 
-DRUBY    = "druby://150.69.90.82:23002"
+DRUBY    = "druby://150.69.90.3:4001"
 YATT_TXT = "yatt.txt"
 YATT_IMG = "yatt*.gif"
 
@@ -104,7 +104,7 @@ while (arg = ARGV.shift)
     puts YATT_VERSION
     exit(1)
   when /--debug/
-    druby = 'druby://127.0.0.1:23002'
+    druby = 'druby://127.0.0.1:4001'
     TIMEOUT = 3
     TAKE_A_REST = 2
   else
