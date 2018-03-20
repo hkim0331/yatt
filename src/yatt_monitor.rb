@@ -13,8 +13,8 @@ require 'drb/drb'
 require 'sequel'
 require 'logger'
 
-YATT_VERSION = '1.0.1'
-DATE = '2017-11-21'
+YATT_VERSION = '1.1.1'
+DATE = '2018-03-20'
 
 # changed database server address, 2018-03-19
 DRUBY = "druby://150.69.90.3:4001"
