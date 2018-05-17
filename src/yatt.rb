@@ -17,6 +17,7 @@ module TkItemConfigOptkeys
         hash_kv(__conv_item_keyonly_opts(id, keys), enc_mode, conf)
     end
 end
+
 require 'drb'
 
 require_relative 'yatt_logger'
@@ -28,7 +29,9 @@ require_relative 'yatt-status'
 require_relative 'yatt-text'
 
 YATT_VERSION = '1.1.1'
+
 DATE = '2018-03-20'
+
 COPYRIGHT = "programmed by Hiroshi Kimura
 version #{YATT_VERSION}(#{DATE})
 Copyright (C) 2002-2018.\n"
